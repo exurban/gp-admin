@@ -14,7 +14,9 @@ const CountByCollection: React.FC = () => {
 
   if (data && data.photoCountByCollection) {
     const items = data.photoCountByCollection.itemCountList;
-    itemCounts = items?.map(item => ({ name: item.name, count: item.count }));
+    if (items) {
+      itemCounts = items.map(item => ({ name: item.name as string, count: item.count }));
+    }
   }
 
   if (error) return <p>Error loading collection counts.</p>;

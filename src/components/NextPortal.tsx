@@ -10,10 +10,11 @@ const NextPortal: React.FC<Props> = ({ children, selector }) => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // @ts-ignore
     ref.current = document.querySelector(selector);
     setMounted(true);
   }, [selector]);
-
+  // @ts-ignore
   return mounted ? createPortal(children, ref.current) : null;
 };
 

@@ -23,13 +23,17 @@ const LocationsTable: React.FC<Props> = ({
   const [selectedColumn, setSelectedColumn] = useState(0);
   const [sortAscending, setSortAscending] = useState(false);
 
-  const [search, { data: searchData }] = useLazyQuery(SearchLocationsDocument, {
+  const [search, { called, data: searchData }] = useLazyQuery(SearchLocationsDocument, {
     variables: {
       input: {
         searchString: searchString
       }
     }
   });
+
+  if (called) {
+    setSelectedItem(undefined);
+  }
 
   /**
    * Column name (title) and attr., which should match property key from database.

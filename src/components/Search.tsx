@@ -1,42 +1,28 @@
-import { useEffect, useRef, Dispatch, SetStateAction, useState, EventListener } from "react";
+import { useRef, Dispatch, SetStateAction, useState, FormEvent } from "react";
 import { Flex, Input, Button } from "bumbag";
 import { QueryLazyOptions } from "@apollo/client";
-import { Exact, SearchLocationsInput } from "../graphql-operations";
 
 type Props = {
   searchString: string;
   setSearchString: Dispatch<SetStateAction<string>>;
-  search: (options?: QueryLazyOptions<Exact<{ input: SearchLocationsInput }>> | undefined) => void;
+  search: (options?: QueryLazyOptions<{ input: { searchString: string } }> | undefined) => void;
 };
 
+// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const Search: React.FC<Props> = ({ searchString, setSearchString, search }) => {
   const searchInput = useRef(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // If pressed key is our target key then set to true
-  const downHandler = (event: EventListener) => {
-    if (event.key === "/") {
-      event.preventDefault();
-      if (searchInput.current && searchInput.current != null) {
-        searchInput.current.focus();
-        searchInput.current.select();
-      }
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("keydown", downHandler);
-    return () => {
-      window.removeEventListener("keydown", downHandler);
-    };
-  }, []);
-
-  function handleSearchChange(e) {
+  function onSearchChange(e: FormEvent<HTMLInputElement>) {
     e.preventDefault();
+
+    // @ts-ignore
     setSearchTerm(e.target.value);
+    console.log(searchTerm);
   }
 
-  const sendSearchTerm = e => {
+  const sendSearchTerm = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSearchString(searchTerm);
   };
@@ -45,10 +31,10 @@ const Search: React.FC<Props> = ({ searchString, setSearchString, search }) => {
     <form onSubmit={sendSearchTerm}>
       <Flex flexDirection="row">
         <Input
-          className="filter-input"
+          className="search-input"
           ref={searchInput}
           value={searchTerm}
-          onChange={handleSearchChange}
+          onChange={onSearchChange}
           before={<Input.Icon icon="solid-search" />}
           placeholder="Search..."
           width="300px"

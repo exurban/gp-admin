@@ -4,7 +4,6 @@ import { ApolloClient, createHttpLink, InMemoryCache, NormalizedCacheObject } fr
 import merge from "deepmerge";
 import { setContext } from "@apollo/client/link/context";
 import { getSession } from "next-auth/client";
-import { TypedTypePolicies } from "../graphql-operations";
 
 export const APOLLO_STATE_PROP_NAME = "__APOLLO_STATE__";
 
@@ -31,29 +30,6 @@ const authLink = setContext(async (_, { headers }) => {
   }
   return undefined;
 });
-
-const typePolicies: TypedTypePolicies = {
-  Query: {
-    fields: {
-      // photographers: {
-      //   read: function (existing) {
-      //     if (existing) {
-      //       console.log(`${existing}`);
-      //       return existing;
-      //     }
-      //   },
-      //   merge: function (existing, incoming) {
-      //     if (!existing) {
-      //       return {
-      //         __typename: incoming.__typename,
-      //         photographers: incoming.photographers
-      //       };
-      //     }
-      //   }
-      // }
-    }
-  }
-};
 
 function createApolloClient() {
   return new ApolloClient({

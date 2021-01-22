@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { Flex, Heading } from "bumbag";
 
 const Home: React.FC = () => {

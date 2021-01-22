@@ -43,6 +43,7 @@
     "react-image-file-resizer": "^0.3.10",
     "react-table": "^7.6.2",
     "typedoc": "^0.20.16",
+    "use-keyboard-shortcut": "^1.0.6",
     "yup": "^0.32.8"
   },
   "devDependencies": {

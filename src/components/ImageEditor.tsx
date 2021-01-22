@@ -53,12 +53,12 @@ const ORIENTATION_TO_ANGLE = {
   8: -90
 };
 
-type Area = {
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-};
+// type Area = {
+//   width: number;
+//   height: number;
+//   x: number;
+//   y: number;
+// };
 
 type Props = {
   imageSrc: string | undefined;
@@ -78,8 +78,8 @@ const ImageEditor: React.FC<Props> = ({
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels] = useState<Area>({ width: 0, height: 0, x: 0, y: 0 });
-  const [, setCroppedImage] = useState("");
+  // const [croppedAreaPixels] = useState<Area>({ width: 0, height: 0, x: 0, y: 0 });
+  // const [, setCroppedImage] = useState("");
 
   /**
    * If image is switched, cropped, zoomed or rotated, setHasChanges is set to true to give
@@ -121,6 +121,7 @@ const ImageEditor: React.FC<Props> = ({
       console.log(`image data: ${base64String}`);
       // apply rotation if needed
       const orientation = await getOrientation(blob);
+      // @ts-ignore
       // eslint-disable-next-line
       const rotation = ORIENTATION_TO_ANGLE[orientation];
       let rotationResult;
@@ -211,11 +212,12 @@ const ImageEditor: React.FC<Props> = ({
    * Takes base64String (imageData variable), applies croppedArea and rotation and
    * returns the result as croppedImage to its parent via getBlobUrl
    */
-  // const onCropComplete = async croppedAreaPixels => {
-  //   const croppedImage = await getCroppedImg(imageData, croppedAreaPixels, rotation);
-  //   console.log(`croppedImage: ${croppedImage}`);
-  //   getBlobUrl(croppedImage);
-  // };
+  // @ts-ignore
+  const onCropComplete = async croppedAreaPixels => {
+    const croppedImage = await getCroppedImg(imageData, croppedAreaPixels, rotation);
+    console.log(`croppedImage: ${croppedImage}`);
+    // getBlobUrl(croppedImage);
+  };
 
   // const showCroppedImage = useCallback(async () => {
   //   try {

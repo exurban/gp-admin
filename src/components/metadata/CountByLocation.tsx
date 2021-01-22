@@ -14,7 +14,9 @@ const CountByLocation: React.FC = () => {
 
   if (data && data.photoCountByLocation) {
     const items = data.photoCountByLocation.itemCountList;
-    itemCounts = items?.map(item => ({ name: item.name, count: item.count }));
+    if (items) {
+      itemCounts = items.map(item => ({ name: item.name as string, count: item.count }));
+    }
   }
 
   if (error) return <p>Error loading location counts.</p>;

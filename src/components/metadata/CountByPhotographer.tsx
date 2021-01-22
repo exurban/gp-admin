@@ -14,7 +14,9 @@ const CountByPhotographer: React.FC = () => {
 
   if (data && data.photoCountByPhotographer) {
     const items = data.photoCountByPhotographer.itemCountList;
-    itemCounts = items?.map(item => ({ name: item.name, count: item.count }));
+    if (items) {
+      itemCounts = items.map(item => ({ name: item.name as string, count: item.count }));
+    }
   }
 
   if (error) return <p>Error loading photographer counts.</p>;

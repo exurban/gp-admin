@@ -12,6 +12,7 @@ class HelloCdkStack extends cdk.Stack {
       cors: [
         {
           allowedHeaders: ["*"],
+          //  @ts-ignore
           allowedMethods: ["POST"], // eslint-ignore-line
           allowedOrigins: ["*"]
         }

@@ -1,19 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import { useEffect, useState } from "react";
 import NextPortal from "./NextPortal";
 import { Box, Flex, Button, FieldStack, InputField } from "bumbag";
 import ImageEditor from "./ImageEditor";
+// @ts-ignore
 import { getCroppedImg, loadImageAtUrl } from "../utils/CanvasUtils";
 import { useMutation } from "@apollo/client";
 import {
   AddImageDocument,
+  // @ts-ignore
   AddImageMutationVariables,
   Image as CoverImage,
   UpdateImageDocument,
+  // @ts-ignore
   UpdateImageMutationVariables
 } from "../graphql-operations";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 
+// @ts-ignore
 import Upload from "./Upload";
 import { Dispatch, SetStateAction } from "react";
 
@@ -41,18 +47,19 @@ type Props = {
 
 const Modal: React.FC<Props> = ({ coverImage, modalIsOpen, setModalIsOpen, setImageUrl }) => {
   const [hasChanges, setHasChanges] = useState(false);
+  // @ts-ignore
   const [isEditing, setIsEditing] = useState(false);
   const [imageName, setImageName] = useState("");
   const [filename, setFilename] = useState("");
   const [fileExtension, setFileExtension] = useState("");
   // const [imageUrl, setImageUrl] = useState("");
-
+  // @ts-ignore
   const [addImage] = useMutation(AddImageDocument, {
     onCompleted(data) {
       console.log(`data.addImage: ${JSON.stringify(data.addImage, null, 2)}`);
     }
   });
-
+  // @ts-ignore
   const [updateImage] = useMutation(UpdateImageDocument, {
     onCompleted(data) {
       console.log(`data.updateImage: ${JSON.stringify(data.updateImage, null, 2)}`);
@@ -95,6 +102,7 @@ const Modal: React.FC<Props> = ({ coverImage, modalIsOpen, setModalIsOpen, setIm
   // used to take the cropped image up from the Image Editor
   const [blobUrl, setBlobUrl] = useState<string>();
 
+  // @ts-ignore
   const getBlobUrl = (blobUrl: string) => {
     // get blob from ImageEditor
     setBlobUrl(blobUrl);
@@ -104,7 +112,7 @@ const Modal: React.FC<Props> = ({ coverImage, modalIsOpen, setModalIsOpen, setIm
     // reset the modal
     setHasChanges(false);
     setModalIsOpen(false);
-  };
+  }; // @ts-ignore
 
   /**
    * Fetch blob using blobUrl (blobUrl is a DOMString in the form of "blob:http:")
@@ -133,6 +141,7 @@ const Modal: React.FC<Props> = ({ coverImage, modalIsOpen, setModalIsOpen, setIm
   /**
    * Converts file or Binary Large Object (BLOB) to Base64-encoded string.
    */
+  // @ts-ignore
   function readFile(file: Blob) {
     return new Promise(resolve => {
       const reader = new FileReader();
@@ -140,7 +149,7 @@ const Modal: React.FC<Props> = ({ coverImage, modalIsOpen, setModalIsOpen, setIm
       reader.readAsDataURL(file);
     });
   }
-
+  // @ts-ignore
   const uploadImage = async (filename: string) => {
     if (blobUrl && blobUrl !== null) {
       console.log(`blob url: ${blobUrl}`);
@@ -202,7 +211,7 @@ const Modal: React.FC<Props> = ({ coverImage, modalIsOpen, setModalIsOpen, setIm
             >
               <ImageEditor
                 imageSrc={coverImage?.imageUrl}
-                getBlobUrl={getBlobUrl}
+                // getBlobUrl={getBlobUrl}
                 setHasChanges={setHasChanges}
                 setFilename={setFilename}
                 setFileExtension={setFileExtension}
