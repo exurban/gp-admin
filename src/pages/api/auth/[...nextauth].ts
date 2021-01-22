@@ -81,7 +81,7 @@ const options: InitOptions = {
       ];
 
       if (profile.email && authorizedEmailAddresses.includes(profile.email)) {
-        console.log(`authorizing user with email: ${profile.email}`);
+        console.log(`authorizing email: ${profile.email}`);
         return Promise.resolve(true);
       }
       return Promise.resolve(false);
