@@ -76,10 +76,12 @@ const options: InitOptions = {
       const authorizedEmailAddresses = [
         "brad@gibbs-photography.com",
         "boyd@gibbs-photography.com",
-        "scott@gibbs-photography.com"
+        "scott@gibbs-photography.com",
+        "ivalbrecht@gmail.com"
       ];
 
       if (profile.email && authorizedEmailAddresses.includes(profile.email)) {
+        console.log(`authorizing user with email: ${profile.email}`);
         return Promise.resolve(true);
       }
       return Promise.resolve(false);
@@ -99,9 +101,9 @@ const options: InitOptions = {
         };
 
         const apiToken = await getApiToken(signinArgs);
-        // console.log(`received API token: ${JSON.stringify(apiToken, null, 2)}`);
+        console.log(`received API token: ${JSON.stringify(apiToken, null, 2)}`);
         token = { ...token, accessToken: apiToken };
-        // console.log(`set token to ${JSON.stringify(token, null, 2)}`);
+        console.log(`set token to ${JSON.stringify(token, null, 2)}`);
       }
       return Promise.resolve(token);
     },
