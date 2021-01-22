@@ -1,0 +1,44 @@
+query photoCountBySubject {
+  photoCountBySubject {
+    itemCountList {
+      name
+      count
+    }
+  }
+}
+
+query photoCountByTag {
+  photoCountByTag {
+    itemCountList {
+      name
+      count
+    }
+  }
+}
+
+query photoCountByCollection {
+  photoCountByCollection {
+    itemCountList {
+      name
+      count
+    }
+  }
+}
+
+query photoCountByLocation {
+  photoCountByLocation {
+    itemCountList {
+      name
+      count
+    }
+  }
+}
+
+query photoCountByPhotographer {
+  photoCountByPhotographer {
+    itemCountList {
+      name
+      count
+    }
+  }
+}

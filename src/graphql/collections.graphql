@@ -1,0 +1,44 @@
+fragment CollectionInfo on Collection {
+  id
+  name
+  tag
+  description
+  countOfPhotos
+  coverImage {
+    ...ImageInfo
+  }
+  __typename
+  createdAt
+  updatedAt
+}
+
+query searchCollections($input: SearchCollectionsInput!) {
+  searchCollections(input: $input) {
+    __typename
+    datalist {
+      ...CollectionInfo
+    }
+  }
+}
+
+query collection($id: Int!) {
+  collection(id: $id) {
+    ...CollectionInfo
+  }
+}
+
+mutation addCollection($input: CollectionInput!) {
+  addCollection(input: $input) {
+    ...CollectionInfo
+  }
+}
+
+mutation updateCollection($id: Int!, $input: CollectionUpdateInput!) {
+  updateCollection(id: $id, input: $input) {
+    ...CollectionInfo
+  }
+}
+
+mutation deleteCollection($id: Int!) {
+  deleteCollection(id: $id)
+}

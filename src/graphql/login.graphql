@@ -1,0 +1,3 @@
+mutation getApiToken($input: GetApiTokenInput!) {
+  getApiToken(input: $input)
+}

@@ -1,0 +1,44 @@
+fragment LocationInfo on Location {
+  id
+  name
+  tag
+  description
+  countOfPhotos
+  coverImage {
+    ...ImageInfo
+  }
+  __typename
+  createdAt
+  updatedAt
+}
+
+query searchLocations($input: SearchLocationsInput!) {
+  searchLocations(input: $input) {
+    __typename
+    datalist {
+      ...LocationInfo
+    }
+  }
+}
+
+query location($id: Int!) {
+  location(id: $id) {
+    ...LocationInfo
+  }
+}
+
+mutation addLocation($input: LocationInput!) {
+  addLocation(input: $input) {
+    ...LocationInfo
+  }
+}
+
+mutation updateLocation($id: Int!, $input: LocationUpdateInput!) {
+  updateLocation(id: $id, input: $input) {
+    ...LocationInfo
+  }
+}
+
+mutation deleteLocation($id: Int!) {
+  deleteLocation(id: $id)
+}

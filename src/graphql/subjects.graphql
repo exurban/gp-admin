@@ -1,0 +1,42 @@
+fragment SubjectInfo on Subject {
+  id
+  name
+  description
+  countOfPhotos
+  coverImage {
+    ...ImageInfo
+  }
+  createdAt
+  updatedAt
+}
+
+query searchSubjects($input: SearchSubjectsInput!) {
+  searchSubjects(input: $input) {
+    __typename
+    datalist {
+      ...SubjectInfo
+    }
+  }
+}
+
+query subject($id: Int!) {
+  subject(id: $id) {
+    ...SubjectInfo
+  }
+}
+
+mutation addSubject($input: SubjectInput!) {
+  addSubject(input: $input) {
+    ...SubjectInfo
+  }
+}
+
+mutation updateSubject($id: Int!, $input: SubjectUpdateInput!) {
+  updateSubject(id: $id, input: $input) {
+    ...SubjectInfo
+  }
+}
+
+mutation deleteSubject($id: Int!) {
+  deleteSubject(id: $id)
+}

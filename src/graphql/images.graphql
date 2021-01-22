@@ -1,0 +1,28 @@
+fragment ImageInfo on Image {
+  id
+  imageName
+  fileExtension
+  imageUrl
+  altText
+  size
+  width
+  height
+  createdAt
+  updatedAt
+}
+
+mutation addImage($input: ImageInput!) {
+  addImage(input: $input) {
+    ...ImageInfo
+  }
+}
+
+mutation updateImage($id: Int!, $input: ImageUpdateInput!) {
+  updateImage(id: $id, input: $input) {
+    ...ImageInfo
+  }
+}
+
+mutation deleteImage($id: Int!) {
+  deleteImage(id: $id)
+}

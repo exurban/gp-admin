@@ -1,0 +1,45 @@
+fragment PhotographerInfo on Photographer {
+  id
+  name
+  firstName
+  lastName
+  email
+  bio
+  countOfPhotos
+  coverImage {
+    ...ImageInfo
+  }
+  createdAt
+  updatedAt
+}
+
+query searchPhotographers($input: SearchPhotographersInput!) {
+  searchPhotographers(input: $input) {
+    __typename
+    datalist {
+      ...PhotographerInfo
+    }
+  }
+}
+
+query photographer($id: Int!) {
+  photographer(id: $id) {
+    ...PhotographerInfo
+  }
+}
+
+mutation addPhotographer($input: PhotographerInput!) {
+  addPhotographer(input: $input) {
+    ...PhotographerInfo
+  }
+}
+
+mutation updatePhotographer($id: Int!, $input: PhotographerUpdateInput!) {
+  updatePhotographer(id: $id, input: $input) {
+    ...PhotographerInfo
+  }
+}
+
+mutation deletePhotographer($id: Int!) {
+  deletePhotographer(id: $id)
+}

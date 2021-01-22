@@ -1,0 +1,142 @@
+fragment PhotoInfo on Photo {
+  id
+  rating
+  sku
+  skuGenerator
+  sortIndex
+  title
+  description
+  isFeatured
+  isLimitedEdition
+  rating
+  basePrice
+  priceModifier
+  images {
+    ...ImageInfo
+  }
+  photographer {
+    id
+    name
+  }
+  location {
+    id
+    name
+  }
+  subjectsInPhoto {
+    subject {
+      id
+      name
+    }
+  }
+  tagsForPhoto {
+    tag {
+      id
+      name
+    }
+  }
+  collectionsForPhoto {
+    collection {
+      id
+      name
+    }
+  }
+  finishesForPhoto {
+    finish {
+      id
+      name
+    }
+  }
+  isDiscontinued
+  createdAt
+  updatedAt
+}
+
+query paginatedPhotos($input: PaginatedPhotosInput!) {
+  paginatedPhotos(input: $input) {
+    pageInfo {
+      startCursor
+      endCursor
+      total
+    }
+    photos {
+      ...PhotoInfo
+    }
+  }
+}
+
+query searchPhotos($input: SearchPhotosInput!) {
+  searchPhotos(input: $input) {
+    __typename
+    datalist {
+      ...PhotoInfo
+    }
+  }
+}
+
+query photo($id: Int!) {
+  photo(id: $id) {
+    ...PhotoInfo
+  }
+}
+
+query photoWithSku($sku: Int!) {
+  photoWithSku(sku: $sku) {
+    ...PhotoInfo
+  }
+}
+
+query photoEditOptions {
+  photoEditOptions {
+    photographers {
+      id
+      name
+    }
+    locations {
+      id
+      name
+    }
+    subjects {
+      id
+      name
+    }
+    tags {
+      id
+      name
+    }
+    collections {
+      id
+      name
+    }
+    finishes {
+      id
+      name
+    }
+  }
+}
+
+mutation addPhoto($input: PhotoInput!) {
+  addPhoto(input: $input) {
+    ...PhotoInfo
+  }
+}
+
+mutation updatePhoto($id: Int!, $input: PhotoUpdateInput!) {
+  updatePhoto(id: $id, input: $input) {
+    success
+    message
+    photo {
+      title
+      description
+      basePrice
+      priceModifier
+      isFeatured
+      isLimitedEdition
+      isDiscontinued
+      rating
+    }
+  }
+}
+
+mutation deletePhoto($id: Int!) {
+  deletePhoto(id: $id)
+}

@@ -1,0 +1,42 @@
+fragment TagInfo on Tag {
+  id
+  name
+  description
+  countOfPhotos
+  coverImage {
+    ...ImageInfo
+  }
+  createdAt
+  updatedAt
+}
+
+query searchTags($input: SearchTagsInput!) {
+  searchTags(input: $input) {
+    __typename
+    datalist {
+      ...TagInfo
+    }
+  }
+}
+
+query tag($id: Int!) {
+  tag(id: $id) {
+    ...TagInfo
+  }
+}
+
+mutation addTag($input: TagInput!) {
+  addTag(input: $input) {
+    ...TagInfo
+  }
+}
+
+mutation updateTag($id: Int!, $input: TagUpdateInput!) {
+  updateTag(id: $id, input: $input) {
+    ...TagInfo
+  }
+}
+
+mutation deleteTag($id: Int!) {
+  deleteTag(id: $id)
+}

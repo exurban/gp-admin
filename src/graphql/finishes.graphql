@@ -1,0 +1,52 @@
+fragment FinishInfo on Finish {
+  id
+  name
+  description
+  finSku
+  finishSku
+  width
+  height
+  depth
+  weight
+  shippingWeight
+  basePrice
+  priceModifier
+  countOfPhotos
+  coverImage {
+    ...ImageInfo
+  }
+  __typename
+  createdAt
+  updatedAt
+}
+
+query searchFinishes($input: SearchFinishesInput!) {
+  searchFinishes(input: $input) {
+    __typename
+    datalist {
+      ...FinishInfo
+    }
+  }
+}
+
+query finish($id: Int!) {
+  finish(id: $id) {
+    ...FinishInfo
+  }
+}
+
+mutation addFinish($input: FinishInput!) {
+  addFinish(input: $input) {
+    ...FinishInfo
+  }
+}
+
+mutation updateFinish($id: Int!, $input: FinishUpdateInput!) {
+  updateFinish(id: $id, input: $input) {
+    ...FinishInfo
+  }
+}
+
+mutation deleteFinish($id: Int!) {
+  deleteFinish(id: $id)
+}
