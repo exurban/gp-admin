@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useQuery, useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
 import {
   SearchPhotosDocument,
-  Photo,
+  PhotoInfoFragment,
   AddPhotoDocument,
   AddPhotoMutationVariables
 } from "../graphql-operations";
@@ -13,14 +13,14 @@ import Search from "./Search";
 import { orderBy } from "lodash";
 
 type Props = {
-  selectedItem: Photo | undefined;
-  setSelectedItem: Dispatch<SetStateAction<Photo | undefined>>;
+  selectedItem: PhotoInfoFragment | undefined;
+  setSelectedItem: Dispatch<SetStateAction<PhotoInfoFragment | undefined>>;
 };
 
 const PhotosTable: React.FC<Props> = () => {
   const client = useApolloClient();
   const [searchString, setSearchString] = useState("");
-  const [selectedItem, setSelectedItem] = useState<Photo | undefined>(undefined);
+  const [selectedItem, setSelectedItem] = useState<PhotoInfoFragment | undefined>(undefined);
   const [selectedColumn, setSelectedColumn] = useState(0);
   const [sortAscending, setSortAscending] = useState(false);
   const router = useRouter();
@@ -174,9 +174,14 @@ const PhotosTable: React.FC<Props> = () => {
     sort(columns[selectedColumn].attr, sortAscending);
   };
 
-  const handleRowClick = (p: Photo) => {
-    console.log(`clicked row: ${p.sku}`);
-    setSelectedItem(p);
+  const handleRowClick = (sku: number) => {
+    console.log(`clicked row: ${sku}`);
+
+    const selectedRows = photos?.datalist.filter(p => p.sku === sku);
+
+    if (selectedRows && selectedRows.length > 0) {
+      setSelectedItem(selectedRows[0]);
+    }
   };
 
   const handleRowDoubleClick = (sku: number) => {
@@ -207,7 +212,7 @@ const PhotosTable: React.FC<Props> = () => {
         borderRadius="6px"
         _hover={{ cursor: "default" }}
       >
-        <Table isHoverable hasDividers overflow="unset">
+        <Table hasDividers overflow="unset">
           <Table.Head>
             <Table.Row>
               {columns.map((col, idx) => (
@@ -234,14 +239,13 @@ const PhotosTable: React.FC<Props> = () => {
             </Table.Row>
           </Table.Head>
           <Table.Body>
-            {photos?.datalist?.map(p => (
+            {photos?.datalist.map(p => (
               <Table.Row
                 key={p.sku}
-                // @ts-ignore
-                onClick={() => handleRowClick(p)}
+                onClick={() => handleRowClick(p.sku)}
                 onDoubleClick={() => handleRowDoubleClick(p.sku)}
-                background={p.id === selectedItem?.id ? "rgba(158, 70, 215, 0.7)" : undefined}
-                color={p.id === selectedItem?.id ? "white" : "text"}
+                background={p.sku === selectedItem?.sku ? "rgba(158, 70, 215, 0.7)" : undefined}
+                color={p.sku === selectedItem?.sku ? "white" : "text"}
               >
                 <Table.Cell>{p.sku}</Table.Cell>
                 <Table.Cell>{p.rating}</Table.Cell>

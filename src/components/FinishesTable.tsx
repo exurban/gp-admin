@@ -111,7 +111,7 @@ const FinishesTable: React.FC<Props> = ({
   if (error) return <p>Error loading finishes</p>;
   if (loading) return <p>Loading...</p>;
 
-  const locations = searchData ? searchData.searchFinishes : data?.searchFinishes;
+  const finishes = searchData ? searchData.searchFinishes : data?.searchFinishes;
 
   /**
    * In-cache sorting.
@@ -205,7 +205,7 @@ const FinishesTable: React.FC<Props> = ({
             </Table.Row>
           </Table.Head>
           <Table.Body>
-            {locations?.datalist?.map(fin => (
+            {finishes?.datalist?.map(fin => (
               <Table.Row
                 key={fin.id}
                 // @ts-ignore
