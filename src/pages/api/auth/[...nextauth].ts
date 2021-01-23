@@ -37,11 +37,11 @@ const options: InitOptions = {
   // * remote DB config
   database: {
     type: "postgres",
-    host: "ec2-54-164-134-207.compute-1.amazonaws.com",
+    host: "ec2-3-226-231-4.compute-1.amazonaws.com",
     port: 5432,
-    username: "fmeyzsfzceclie",
-    password: "f5ec6615aae00fea125d47cda8f0e1d198bbf7da33513fffcaa8952aa8afb8ee",
-    database: "dc9mj4aesbuoo3",
+    username: "smaqklhexnqisi",
+    password: "eeb692a6e5b34dfbbc35e2ef63eebe9d24f70d98d50d0869e3b25aa640c7522d",
+    database: "d7f7men5b2olvh",
     ssl: true,
     extra: {
       ssl: {
