@@ -68,8 +68,7 @@ const options: InitOptions = {
   pages: {
     signIn: "/auth/signIn",
     signOut: "/auth/signOut",
-    error: "/auth/error",
-    verifyRequest: "/auth/verify-email"
+    error: "/auth/error"
   },
   callbacks: {
     signIn: async profile => {
