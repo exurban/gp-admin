@@ -35,30 +35,30 @@ const options: InitOptions = {
     })
   ],
   // * remote DB config
-  // database: {
-  //   type: "postgres",
-  //   host: "ec2-54-164-134-207.compute-1.amazonaws.com",
-  //   port: 5432,
-  //   username: "fmeyzsfzceclie",
-  //   password: "f5ec6615aae00fea125d47cda8f0e1d198bbf7da33513fffcaa8952aa8afb8ee",
-  //   database: "dc9mj4aesbuoo3",
-  //   ssl: true,
-  //   extra: {
-  //     ssl: {
-  //       rejectUnauthorized: false
-  //     }
-  //   }
-  // },
-
-  // * Local DB Config
   database: {
     type: "postgres",
-    host: "localhost",
+    host: "ec2-54-164-134-207.compute-1.amazonaws.com",
     port: 5432,
-    username: "postgres",
-    password: "postgres",
-    database: "photos"
+    username: "fmeyzsfzceclie",
+    password: "f5ec6615aae00fea125d47cda8f0e1d198bbf7da33513fffcaa8952aa8afb8ee",
+    database: "dc9mj4aesbuoo3",
+    ssl: true,
+    extra: {
+      ssl: {
+        rejectUnauthorized: false
+      }
+    }
   },
+
+  // * Local DB Config
+  // database: {
+  //   type: "postgres",
+  //   host: "localhost",
+  //   port: 5432,
+  //   username: "postgres",
+  //   password: "postgres",
+  //   database: "photos"
+  // },
   session: {
     jwt: true
   },
