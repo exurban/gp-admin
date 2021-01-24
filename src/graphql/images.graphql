@@ -19,7 +19,11 @@ mutation addImage($input: ImageInput!) {
 
 mutation updateImage($id: Int!, $input: ImageUpdateInput!) {
   updateImage(id: $id, input: $input) {
-    ...ImageInfo
+    success
+    message
+    image {
+      ...ImageInfo
+    }
   }
 }
 

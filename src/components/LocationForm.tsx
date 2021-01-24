@@ -91,8 +91,8 @@ const LocationForm: React.FC<Props> = ({
         };
 
   const validationObject = {
-    name: Yup.string().max(30, "Must be 30 characters or fewer.").required("Required"),
-    tag: Yup.string().max(10, "Must be 10 characters or fewer.").required("Required"),
+    name: Yup.string().max(50, "Must be 50 characters or fewer.").required("Required"),
+    tag: Yup.string().max(20, "Must be 20 characters or fewer.").required("Required"),
     description: Yup.string().required("Required")
   };
 

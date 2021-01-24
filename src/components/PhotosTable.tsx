@@ -1,9 +1,8 @@
-import { useState, useMemo, Dispatch, SetStateAction } from "react";
+import { useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import { useQuery, useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
 import {
   SearchPhotosDocument,
-  PhotoInfoFragment,
   AddPhotoDocument,
   AddPhotoMutationVariables
 } from "../graphql-operations";
@@ -12,15 +11,10 @@ import { Box, Flex, Icon, Button, Table, Text } from "bumbag";
 import Search from "./Search";
 import { orderBy } from "lodash";
 
-type Props = {
-  selectedItem: PhotoInfoFragment | undefined;
-  setSelectedItem: Dispatch<SetStateAction<PhotoInfoFragment | undefined>>;
-};
-
-const PhotosTable: React.FC<Props> = () => {
+const PhotosTable: React.FC = () => {
   const client = useApolloClient();
   const [searchString, setSearchString] = useState("");
-  const [selectedItem, setSelectedItem] = useState<PhotoInfoFragment | undefined>(undefined);
+
   const [selectedColumn, setSelectedColumn] = useState(0);
   const [sortAscending, setSortAscending] = useState(false);
   const router = useRouter();
@@ -174,15 +168,15 @@ const PhotosTable: React.FC<Props> = () => {
     sort(columns[selectedColumn].attr, sortAscending);
   };
 
-  const handleRowClick = (sku: number) => {
-    console.log(`clicked row: ${sku}`);
+  // const handleRowClick = (sku: number) => {
+  //   console.log(`clicked row: ${sku}`);
 
-    const selectedRows = photos?.datalist.filter(p => p.sku === sku);
+  //   const selectedRows = photos?.datalist.filter(p => p.sku === sku);
 
-    if (selectedRows && selectedRows.length > 0) {
-      setSelectedItem(selectedRows[0]);
-    }
-  };
+  //   if (selectedRows && selectedRows.length > 0) {
+  //     setSelectedItem(selectedRows[0]);
+  //   }
+  // };
 
   const handleRowDoubleClick = (sku: number) => {
     // <Link href={`/gallery/collection/${encodeURIComponent(sku)}`}></Link>
@@ -212,7 +206,7 @@ const PhotosTable: React.FC<Props> = () => {
         borderRadius="6px"
         _hover={{ cursor: "default" }}
       >
-        <Table hasDividers overflow="unset">
+        <Table hasDividers isHoverable overflow="unset">
           <Table.Head>
             <Table.Row>
               {columns.map((col, idx) => (
@@ -242,10 +236,10 @@ const PhotosTable: React.FC<Props> = () => {
             {photos?.datalist.map(p => (
               <Table.Row
                 key={p.sku}
-                onClick={() => handleRowClick(p.sku)}
+                // onClick={() => handleRowClick(p.sku)}
                 onDoubleClick={() => handleRowDoubleClick(p.sku)}
-                background={p.sku === selectedItem?.sku ? "rgba(158, 70, 215, 0.7)" : undefined}
-                color={p.sku === selectedItem?.sku ? "white" : "text"}
+                // background={p.sku === selectedItem?.sku ? "rgba(158, 70, 215, 0.7)" : undefined}
+                // color={p.sku === selectedItem?.sku ? "white" : "text"}
               >
                 <Table.Cell>{p.sku}</Table.Cell>
                 <Table.Cell>{p.rating}</Table.Cell>

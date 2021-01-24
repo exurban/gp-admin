@@ -1,8 +1,15 @@
-import { useState, useCallback, useEffect, ChangeEvent, Dispatch, SetStateAction } from "react";
-import { Image } from "../graphql-operations";
+import { useState, useCallback, ChangeEvent } from "react";
+import { useMutation } from "@apollo/client";
+import {
+  Image,
+  UpdateImageMutationVariables,
+  UpdateImageDocument,
+  ImageUpdateInput
+} from "../graphql-operations";
 import { useDropzone } from "react-dropzone";
-import { Box, Text, Flex, Label, styled } from "bumbag";
+import { Box, Text, Flex, Label, styled, useToasts, Button } from "bumbag";
 import Resizer from "react-image-file-resizer";
+import Upload from "./Upload";
 
 /**
  * File requirements:
@@ -31,20 +38,181 @@ import Resizer from "react-image-file-resizer";
 // this begins as a copy of the image in the cache.
 type Props = {
   image: Image;
-  setImageHasChanges: Dispatch<SetStateAction<boolean>>;
+  photoId: string;
+  photoSku: number;
+  photoTitle: string;
 };
 
-const PhotoImage: React.FC<Props> = ({ image, setImageHasChanges }) => {
+const PhotoImage: React.FC<Props> = ({ image, photoId, photoSku, photoTitle }) => {
+  const [imageHasChanges, setImageHasChanges] = useState(false);
   const [imageUrl, setImageUrl] = useState(image.imageUrl);
 
-  useEffect(() => {
-    const img = document.getElementById("image") as HTMLImageElement;
-
-    if (img) {
-      image.height = img.naturalHeight;
-      image.width = img.naturalWidth;
+  const toasts = useToasts();
+  /**
+   * on submit, upload image, if upload to S3 successful, update mutation for image, then photo
+   */
+  const [updateImage] = useMutation(UpdateImageDocument, {
+    onCompleted(data) {
+      console.log(`Updated Image: ${JSON.stringify(data, null, 2)}`);
+      if (data.updateImage.success) {
+        toasts.success({
+          title: `Successfully updated`,
+          message: `${data.updateImage.message}`
+        });
+      } else {
+        toasts.danger({
+          title: `Updates failed`,
+          message: `${data.updateImage.message}`
+        });
+      }
     }
-  }, [image, imageUrl]);
+  });
+
+  /**
+   * Convert a dataUrl to a Blob so we can make a file to name and upload.
+   */
+  const dataURLtoBlob = (dataUrl: string) => {
+    if (!dataUrl) {
+      console.error(`dataURLtoBlob called without providing a dataUrl argument.`);
+      return null;
+    }
+
+    const arr = dataUrl.split(",");
+
+    if (!arr) {
+      console.error(`Failed to parse dataUrl: ${dataUrl}`);
+    }
+
+    const mime = arr[0].match(/:(.*?);/)?.[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new Blob([u8arr], { type: mime });
+  };
+
+  type ImageResponse = {
+    success: boolean;
+    message: string;
+    url?: string | undefined;
+  };
+
+  const uploadNewImage = async (): Promise<ImageResponse> => {
+    if (imageUrl && typeof imageUrl === "string") {
+      const result = dataURLtoBlob(imageUrl);
+
+      if (!result) {
+        console.error(`Failed to convert dataUrl to Blob`);
+        const failedResponse = {
+          success: false,
+          message: "Failed to convert dataUrl to Blob."
+        };
+        return failedResponse;
+      }
+
+      const blob: Blob = result;
+      const mimetype = blob.type.replace("image/", ".");
+      const filename = photoSku ? `photo_${photoSku}${mimetype}` : "Untitled";
+
+      if (!filename) {
+        console.error(`Failed to generate filename.`);
+        const failedResponse: ImageResponse = {
+          success: false,
+          message: "Failed to generate filename."
+        };
+        return failedResponse;
+      }
+      const toUpload = new File([blob], filename, {
+        lastModified: Date.now()
+      });
+      console.log(`Uploading: ${JSON.stringify(toUpload, null, 2)}`);
+      return await Upload(toUpload);
+    } else {
+      const failedResponse = {
+        success: false,
+        message: "Image value is not a string."
+      };
+      return failedResponse;
+    }
+  };
+
+  type SaveImageResponse = {
+    success: boolean;
+    message: string;
+    image?: Image | undefined;
+  };
+
+  const onSaveImage = async (): Promise<SaveImageResponse> => {
+    if (!imageHasChanges) {
+      const noChanges = {
+        success: true,
+        message: "No changes to image."
+      };
+      return noChanges;
+    }
+
+    const imageUploadResponse = await uploadNewImage();
+
+    if (imageUploadResponse && imageUploadResponse.success) {
+      if (!imageUploadResponse.url) {
+        const uploadFailed = {
+          success: false,
+          message: "Image upload failed."
+        };
+        return uploadFailed;
+      }
+
+      // send image update mutation
+      const newImage = { ...image };
+      newImage.altText = photoTitle ? photoTitle : "Untitled";
+      newImage.imageUrl = imageUploadResponse.url;
+
+      const str = imageUploadResponse.url;
+      const parts = str.split("/");
+      const lastPart = parts[4];
+      console.log(`last part: ${lastPart}`);
+      const nameParts = lastPart.split(".");
+      const name = nameParts[0];
+      const ext = nameParts[1];
+
+      const img = document.getElementById("image") as HTMLImageElement;
+
+      const input: ImageUpdateInput = {
+        imageName: name,
+        fileExtension: ext,
+        imageUrl: newImage.imageUrl,
+        altText: photoTitle,
+        size: "XL",
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+        photoId: parseInt(photoId)
+      };
+
+      console.log(`image update input: ${JSON.stringify(input, null, 2)}`);
+
+      const editImageVariables: UpdateImageMutationVariables = {
+        id: parseInt(newImage.id),
+        input
+      };
+      updateImage({
+        variables: editImageVariables
+      });
+      setImageHasChanges(false);
+      const success = {
+        success: true,
+        message: "Uploaded new image.",
+        image: newImage
+      };
+      return success;
+    }
+    const uploadFailed = {
+      success: false,
+      message: "Image upload failed."
+    };
+    return uploadFailed;
+  };
 
   /**
    * https://github.com/onurzorluer/react-image-file-resizer#readme
@@ -74,35 +242,9 @@ const PhotoImage: React.FC<Props> = ({ image, setImageHasChanges }) => {
     setImageHasChanges(true);
 
     if (typeof dataUrl === "string") {
-      // image.imageUrl = dataUrl;
       setImageUrl(dataUrl);
-      image.imageUrl = dataUrl;
-
-      console.log(`set new imageUrl.`);
     }
-
-    const img = document.getElementById("image") as HTMLImageElement;
-
-    image.height = img.naturalHeight;
-    image.width = img.naturalHeight;
-
-    console.log(`Temp Image data is now: ${JSON.stringify(image, null, 2)}`);
   };
-
-  // function loadImagePreview(file: File) {
-  //   const reader = new FileReader();
-  //   console.log(`loading image ${file}`);
-
-  //   reader.onloadend = () => {
-  //     setFile(file);
-  //     if (reader.result && typeof reader.result === "string") {
-  //       setImageUrl(reader.result);
-  //     }
-  //     console.log(`imageUrl: ${imageUrl}`);
-  //     console.log(`file: ${file}`);
-  //   };
-  //   reader.readAsDataURL(file);
-  // }
 
   /**
    * Used when user clicks `replace image`
@@ -122,7 +264,6 @@ const PhotoImage: React.FC<Props> = ({ image, setImageHasChanges }) => {
     async acceptedFiles => {
       const file = acceptedFiles[0];
       console.log(`dropped file: ${file} ${file.name} ${file.type} ${file.size}`);
-      // loadImagePreview(file);
       resizeAndLoadPreview(file);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -142,7 +283,7 @@ const PhotoImage: React.FC<Props> = ({ image, setImageHasChanges }) => {
   return (
     <Flex className="image-data-wrapper" flexDirection="row" width="900">
       <Flex className="output" flexDirection="column" width="720px" height="500px">
-        {imageUrl ? (
+        {imageUrl && imageUrl.length > 0 ? (
           <Box>
             <StyledImage id="image" className="image" width="700px" height="468px" src={imageUrl} />
           </Box>
@@ -159,7 +300,7 @@ const PhotoImage: React.FC<Props> = ({ image, setImageHasChanges }) => {
               borderColor={isDragActive ? "blue" : "gray100"}
               backgroundColor="#fcfcfc"
             >
-              <Text textAlign="center" padding="major-2">
+              <Text textAlign="center" padding="major-2" color="gray800">
                 Drop image here or click to select an image.
               </Text>
             </Box>
@@ -167,10 +308,15 @@ const PhotoImage: React.FC<Props> = ({ image, setImageHasChanges }) => {
         )}
         {imageUrl && (
           <Flex marginRight="major-1" marginLeft="auto" marginY="major-1">
-            <Label htmlFor="fileUpload" fontSize="100" color="info500">
-              Replace Image
-            </Label>
-            <input type="file" id="fileUpload" onChange={onFileChange} accept="image/*" hidden />
+            <Button variant="ghost" size="small" palette="info500" onClick={() => onSaveImage()}>
+              Save
+            </Button>
+            <form>
+              <Label htmlFor="fileUpload" fontSize="100" color="info500">
+                Replace Image
+              </Label>
+              <input type="file" id="fileUpload" onChange={onFileChange} accept="image/*" hidden />
+            </form>
           </Flex>
         )}
       </Flex>

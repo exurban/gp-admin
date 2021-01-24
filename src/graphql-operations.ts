@@ -268,6 +268,13 @@ export type PaginatedPhotosWithFinishResponse = {
   finishInfo: Finish;
 };
 
+export type UpdateImageResponse = {
+  __typename?: "UpdateImageResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  image?: Maybe<Image>;
+};
+
 export type SearchLocationsResponse = {
   __typename?: "SearchLocationsResponse";
   datalist: Array<Location>;
@@ -560,13 +567,13 @@ export type PaginatedPhotosWithFinishInput = {
 };
 
 export type ImageInput = {
-  imageName: Scalars["String"];
-  fileExtension: Scalars["String"];
-  imageUrl: Scalars["String"];
-  altText: Scalars["String"];
-  size: Scalars["String"];
-  width: Scalars["Int"];
-  height: Scalars["Int"];
+  imageName?: Maybe<Scalars["String"]>;
+  fileExtension?: Maybe<Scalars["String"]>;
+  imageUrl?: Maybe<Scalars["String"]>;
+  altText?: Maybe<Scalars["String"]>;
+  size?: Maybe<Scalars["String"]>;
+  width?: Maybe<Scalars["Int"]>;
+  height?: Maybe<Scalars["Int"]>;
   photoId?: Maybe<Scalars["Float"]>;
 };
 
@@ -1054,7 +1061,7 @@ export type Mutation = {
   updateFinish?: Maybe<Finish>;
   deleteFinish: Scalars["Boolean"];
   addImage: Image;
-  updateImage: Image;
+  updateImage: UpdateImageResponse;
   deleteImage: Scalars["Boolean"];
   addImageToPhoto: Image;
   addLocation: Location;
@@ -1367,7 +1374,10 @@ export type UpdateImageMutationVariables = Exact<{
 }>;
 
 export type UpdateImageMutation = { __typename?: "Mutation" } & {
-  updateImage: { __typename?: "Image" } & ImageInfoFragment;
+  updateImage: { __typename?: "UpdateImageResponse" } & Pick<
+    UpdateImageResponse,
+    "success" | "message"
+  > & { image?: Maybe<{ __typename?: "Image" } & ImageInfoFragment> };
 };
 
 export type DeleteImageMutationVariables = Exact<{
@@ -2896,9 +2906,20 @@ export const UpdateImageDocument: DocumentNode<
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "ImageInfo" }
+                  kind: "Field",
+                  name: { kind: "Name", value: "image" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "ImageInfo" }
+                      }
+                    ]
+                  }
                 }
               ]
             }
@@ -5261,6 +5282,17 @@ export type PaginatedPhotosWithFinishResponseFieldPolicy = {
   pageInfo?: FieldPolicy<any> | FieldReadFunction<any>;
   finishInfo?: FieldPolicy<any> | FieldReadFunction<any>;
 };
+export type UpdateImageResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "image"
+  | UpdateImageResponseKeySpecifier
+)[];
+export type UpdateImageResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  image?: FieldPolicy<any> | FieldReadFunction<any>;
+};
 export type SearchLocationsResponseKeySpecifier = (
   | "datalist"
   | SearchLocationsResponseKeySpecifier
@@ -5921,6 +5953,16 @@ export type TypedTypePolicies = TypePolicies & {
     mutationType?: true;
     subscriptionType?: true;
     fields?: PaginatedPhotosWithFinishResponseFieldPolicy;
+  };
+  UpdateImageResponse?: {
+    keyFields?:
+      | false
+      | UpdateImageResponseKeySpecifier
+      | (() => undefined | UpdateImageResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: UpdateImageResponseFieldPolicy;
   };
   SearchLocationsResponse?: {
     keyFields?:

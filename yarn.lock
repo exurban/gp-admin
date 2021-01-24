@@ -887,7 +887,12 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@fortawesome/fontawesome-common-types@0.2.32", "@fortawesome/fontawesome-common-types@^0.2.32":
+"@fortawesome/fontawesome-common-types@0.2.34", "@fortawesome/fontawesome-common-types@^0.2.34":
+  version "0.2.34"
+  resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-0.2.34.tgz#0a8c348bb23b7b760030f5b1d912e582be4ec915"
+  integrity sha512-XcIn3iYbTEzGIxD0/dY5+4f019jIcEIWBiHc3KrmK/ROahwxmZ/s+tdj97p/5K0klz4zZUiMfUlYP0ajhSJjmA==
+
+"@fortawesome/fontawesome-common-types@^0.2.32":
   version "0.2.32"
   resolved "https://registry.yarnpkg.com/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-0.2.32.tgz#3436795d5684f22742989bfa08f46f50f516f259"
   integrity sha512-ux2EDjKMpcdHBVLi/eWZynnPxs0BtFVXJkgHIxXRl+9ZFaHPvYamAfCzeeQFqHRjuJtX90wVnMRaMQAAlctz3w==
@@ -906,7 +911,14 @@
   dependencies:
     "@fortawesome/fontawesome-common-types" "^0.2.32"
 
-"@fortawesome/free-solid-svg-icons@5.15.1", "@fortawesome/free-solid-svg-icons@^5.15.1":
+"@fortawesome/free-solid-svg-icons@5.15.2":
+  version "5.15.2"
+  resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-5.15.2.tgz#25bb035de57cf85aee8072965732368ccc8e8943"
+  integrity sha512-ZfCU+QjaFsdNZmOGmfqEWhzI3JOe37x5dF4kz9GeXvKn/sTxhqMtZ7mh3lBf76SvcYY5/GKFuyG7p1r4iWMQqw==
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.2.34"
+
+"@fortawesome/free-solid-svg-icons@^5.15.1":
   version "5.15.1"
   resolved "https://registry.yarnpkg.com/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-5.15.1.tgz#e1432676ddd43108b41197fee9f86d910ad458ef"
   integrity sha512-EFMuKtzRMNbvjab/SvJBaOOpaqJfdSap/Nl6hst7CgrJxwfORR1drdTV6q1Ib/JVzq4xObdTDcT6sqTaXMqfdg==
@@ -2513,23 +2525,23 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-bumbag-server@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/bumbag-server/-/bumbag-server-1.5.1.tgz#251841a102a9efe8b0dd91a22a2d4b46cc255d2e"
-  integrity sha512-8CUfydnRxb0Y3NLVEhr+WjsMzibSk75zJ9J4FqdvQPpHuKzacZktNo78XKAWryXaguPt4V4T8z4T8cHPjVeL+g==
+bumbag-server@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/bumbag-server/-/bumbag-server-1.7.0.tgz#406179991b3ed7fcff13c2061c8b5cf389f9c40a"
+  integrity sha512-OBzAWGI0JFCjwyJKf5vdoVHEy2ASULsHSn1edPTRA9o/XYX9ja7NvF94iD7YEhcMnSMWDU9s/wsl6vI80AEbSA==
   dependencies:
     emotion-server "10.0.27"
 
-bumbag@^1.6.8:
-  version "1.6.8"
-  resolved "https://registry.yarnpkg.com/bumbag/-/bumbag-1.6.8.tgz#e306b572cf5e4e943a7dd33a8a9b27146921080b"
-  integrity sha512-W0IZQ1SnXSBpxAxXm0j171+5zQG50pJJeHFgSRriSQ+RuuTIvRflcQx6wnUlD1/88dH7HrF0SwNwfJgBg0W2Eg==
+bumbag@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/bumbag/-/bumbag-1.7.1.tgz#9573627fb60928528bc58b68a431311bb1dcc686"
+  integrity sha512-C1YPPEpFvDEM0pPtD1vTsDwkJrHlicR06r+xHVRaNpdYb4H1/HWQcMgGUZzjTYJp/wT7YSfIJOgFZMMlP+TI+w==
   dependencies:
     "@emotion/core" "10.1.1"
     "@emotion/is-prop-valid" "0.8.2"
     "@emotion/styled" "10.0.27"
-    "@fortawesome/fontawesome-common-types" "0.2.32"
-    "@fortawesome/free-solid-svg-icons" "5.15.1"
+    "@fortawesome/fontawesome-common-types" "0.2.34"
+    "@fortawesome/free-solid-svg-icons" "5.15.2"
     "@types/classnames" "2.2.11"
     capsize "1.1.0"
     classnames "2.2.6"
@@ -7365,11 +7377,6 @@ react-refresh@0.8.3:
   resolved "https://registry.yarnpkg.com/react-refresh/-/react-refresh-0.8.3.tgz#721d4657672d400c5e3c75d063c4a85fb2d5d68f"
   integrity sha512-X8jZHc7nCMjaCqoU+V2I0cOhNW+QMBwSUkeXnTi8IPe6zaRWfn60ZzvFDZqWPfmSJfjub7dDW1SP0jaHWLu/hg==
 
-react-table@^7.6.2:
-  version "7.6.2"
-  resolved "https://registry.yarnpkg.com/react-table/-/react-table-7.6.2.tgz#b60932fa6d457c2bca0da49815cd6a8fe9451f77"
-  integrity sha512-urwNZTieb+xg/+BITUIrqdH5jZfJlw7rKVAAq25iXpBPwbQojLCEKJuGycLbVwn8fzU+Ovly3y8HHNaLNrPCvQ==
-
 react@17.0.1:
   version "17.0.1"
   resolved "https://registry.yarnpkg.com/react/-/react-17.0.1.tgz#6e0600416bd57574e3f86d92edba3d9008726127"
@@ -9035,11 +9042,6 @@ url@^0.11.0:
   dependencies:
     punycode "1.3.2"
     querystring "0.2.0"
-
-use-keyboard-shortcut@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/use-keyboard-shortcut/-/use-keyboard-shortcut-1.0.6.tgz#0b67160dd0ef192a9c8262f5068609db4d9806dc"
-  integrity sha512-xdH5+XZ6fpey4Cvuh/T0q0tBYu9RGlhg1Xf2W6THtGi5CnI/M90kVaCpfy/Ew8ZDyJnUEwSh4gYolVI2QtgciQ==
 
 use-subscription@1.5.1:
   version "1.5.1"

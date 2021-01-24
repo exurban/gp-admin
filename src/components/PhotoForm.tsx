@@ -3,9 +3,6 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import {
   Image,
-  UpdateImageDocument,
-  UpdateImageMutationVariables,
-  ImageUpdateInput,
   PhotoWithSkuDocument,
   PhotoEditOptionsDocument,
   UpdatePhotoDocument,
@@ -16,7 +13,6 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 
 import PhotoImage from "./PhotoImage";
-import Upload from "./Upload";
 
 import {
   Box,
@@ -28,11 +24,8 @@ import {
   FieldStack,
   InputField,
   Switch,
-  Tag,
   TextareaField,
   SelectMenuField,
-  Divider,
-  Text,
   RadioGroupField,
   Tabs,
   useToasts
@@ -47,8 +40,8 @@ type MenuOption = {
 const PhotoForm: React.FC = () => {
   const router = useRouter();
   const { sku } = router.query;
-
-  const [imageHasChanges, setImageHasChanges] = useState(false);
+  const [photoTitle, setPhotoTitle] = useState("");
+  // const formRef = useRef<FormikProps<PhotoInfoFragment>>();
 
   // * BUILD MENUS
   const { error, loading, data } = useQuery(PhotoEditOptionsDocument, { ssr: false });
@@ -116,23 +109,6 @@ const PhotoForm: React.FC = () => {
     return menuOption;
   });
 
-  // * Load Photo with SKU
-  const { data: photoData, refetch } = useQuery(PhotoWithSkuDocument, {
-    variables: { sku: parseInt(sku as string) },
-    ssr: false
-  });
-
-  const toasts = useToasts();
-
-  /**
-   * on submit, upload image, if upload to S3 successful, update mutation for image, then photo
-   */
-  const [updateImage] = useMutation(UpdateImageDocument, {
-    onCompleted(data) {
-      console.log(`Updated Image: ${JSON.stringify(data, null, 2)}`);
-    }
-  });
-
   const [updatePhoto] = useMutation(UpdatePhotoDocument, {
     onCompleted(data) {
       console.log(JSON.stringify(data, null, 2));
@@ -151,6 +127,14 @@ const PhotoForm: React.FC = () => {
       router.push(`/photos`);
     }
   });
+
+  // * Load Photo with SKU
+  const { data: photoData, refetch } = useQuery(PhotoWithSkuDocument, {
+    variables: { sku: parseInt(sku as string) },
+    ssr: false
+  });
+
+  const toasts = useToasts();
 
   if (error) return <p>Error loading photos</p>;
   if (loading) return <p>Loading...</p>;
@@ -211,65 +195,6 @@ const PhotoForm: React.FC = () => {
     router.push(`/photos`);
   };
 
-  /**
-   * Convert a dataUrl to a Blob so we can make a file to name and upload.
-   */
-  const dataURLtoBlob = (dataUrl: string) => {
-    const arr = dataUrl.split(",");
-
-    if (!arr) {
-      console.error(`Failed to parse dataUrl: ${dataUrl}`);
-    }
-
-    const mime = arr[0].match(/:(.*?);/)?.[1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new Blob([u8arr], { type: mime });
-  };
-
-  type ImageResponse = {
-    success: boolean;
-    message: string;
-    url?: string | undefined;
-  };
-
-  const uploadNewImage = async (): Promise<ImageResponse> => {
-    if (tempImage && typeof tempImage.imageUrl === "string") {
-      const blob: Blob = dataURLtoBlob(tempImage.imageUrl);
-
-      const mimetype = blob.type.replace("image/", ".");
-
-      const filename = photo.sku ? `photo_${photo.sku}${mimetype}` : "Untitled";
-
-      if (!filename) {
-        console.error(`Failed to generate filename.`);
-        const failedResponse: ImageResponse = {
-          success: false,
-          message: "Failed to generate filename."
-        };
-        return failedResponse;
-      }
-      const toUpload = new File([blob], filename, {
-        lastModified: Date.now()
-      });
-      console.log(toUpload);
-      return await Upload(toUpload);
-    } else {
-      const failedResponse = {
-        success: false,
-        message: "Image value is not a string."
-      };
-      return failedResponse;
-    }
-  };
-
-  // the image in the local cache is immutable, so copy its properties and pass it to the image component
-  const tempImage = { ...photo?.images?.[0] };
-
   const initialValues: {
     image: Image | undefined;
     photographer: MenuOption | undefined;
@@ -286,7 +211,7 @@ const PhotoForm: React.FC = () => {
     collections: MenuOption[];
     finishes: MenuOption[];
   } = {
-    image: tempImage,
+    image: photo?.images?.[0] || null,
     photographer: initialPhotographer,
     location: initialLocation,
     title: photo?.title || "Untitled",
@@ -303,7 +228,7 @@ const PhotoForm: React.FC = () => {
   };
 
   const validationObject = {
-    title: Yup.string().max(30, "Must be 30 characters or fewer.").required("Required"),
+    title: Yup.string().max(50, "Must be 50 characters or fewer.").required("Required"),
     description: Yup.string().required("Required"),
     rating: Yup.number()
       .min(1, "Rating must be 1-10.")
@@ -318,51 +243,75 @@ const PhotoForm: React.FC = () => {
 
   return (
     <Flex className="page-wrapper" flexDirection="column">
+      <Flex flex="row wrap">
+        <Flex className="image-wrapper" marginLeft="auto" marginRight="major-2" marginY="major-4">
+          {initialValues.image && (
+            <PhotoImage
+              image={initialValues.image}
+              photoId={photo.id}
+              photoSku={photo.sku}
+              photoTitle={photoTitle}
+            />
+          )}
+        </Flex>
+        <Flex
+          className="info-card-wrapper"
+          width="450px"
+          height="300px"
+          border="2px solid"
+          borderColor="white800"
+          borderRadius="10px"
+          marginY="auto"
+          marginLeft="major-2"
+          marginRight="auto"
+        >
+          <Box margin="major-3">
+            {/* {console.log(formRef.current)}
+            {formRef.current && (
+              <>
+                <Heading use="h5">{formRef.current.values.title}</Heading>
+                <Heading use="h6" color="info500">
+                  {formRef.current.values.photographer?.label}
+                </Heading>
+                <Text>{formRef.current.values.location?.label}</Text>
+                <Box width="100%" height="80px">
+                  <Text fontSize="150">{formRef.current.values.description}</Text>
+                </Box>
+
+                {values.subjects && <Divider marginY="major-1" />}
+                {values.subjects &&
+                  values.subjects?.map(s => (
+                    <Tag key={s.key} palette="primary" marginX="minor-1">
+                      {s.label}
+                    </Tag>
+                  ))}
+                {values.tags &&
+                  values.tags?.map(t => (
+                    <Tag key={t.key} palette="secondary" marginX="minor-1">
+                      {t.label}
+                    </Tag>
+                  ))}
+                {values.collections && <Divider marginY="major-1" />}
+                {values.collections && (
+                  <Text.Block fontVariant="small-caps">Collections</Text.Block>
+                )}
+                {values.collections &&
+                  values.collections?.map(c => (
+                    <Text.Block marginY="major-1" fontSize="150" key={c.key}>
+                      {c.label}
+                    </Text.Block>
+                  ))}
+              </>
+            )} */}
+          </Box>
+        </Flex>
+      </Flex>
       <Formik
         initialValues={initialValues}
         validationSchema={Yup.object(validationObject)}
+        // innerRef={formRef}
         onSubmit={async values => {
-          if (imageHasChanges) {
-            console.log(`image has changes.`);
-            const imageUploadResponse = await uploadNewImage();
-            console.log(`imageUploadResponse: ${JSON.stringify(imageUploadResponse, null, 2)}`);
-            if (imageUploadResponse && imageUploadResponse.success) {
-              // send image update mutation
-              tempImage.altText = photo.title ? photo.title : "Untitled";
-              tempImage.imageUrl = imageUploadResponse.url as string;
-              if (!imageUploadResponse.url) {
-                return;
-              }
-              const str = imageUploadResponse.url;
-              const parts = str.split("/");
-              const lastPart = parts[4];
-              console.log(`last part: ${lastPart}`);
-              const nameParts = lastPart.split(".");
-              const name = nameParts[0];
-              const ext = nameParts[1];
-
-              const input: ImageUpdateInput = {
-                imageName: name,
-                fileExtension: ext,
-                imageUrl: tempImage.imageUrl,
-                altText: tempImage.altText,
-                size: tempImage.size,
-                width: tempImage.width,
-                height: tempImage.height,
-                photoId: parseInt(photo.id)
-              };
-
-              console.log(`image update input: ${JSON.stringify(input, null, 2)}`);
-
-              const editImageVariables: UpdateImageMutationVariables = {
-                id: parseInt(tempImage.id),
-                input
-              };
-              updateImage({
-                variables: editImageVariables
-              });
-            }
-          }
+          setPhotoTitle(values.title);
 
           const input: PhotoUpdateInput = {
             title: values.title,
@@ -397,65 +346,6 @@ const PhotoForm: React.FC = () => {
       >
         {({ values }) => (
           <Form autoComplete="off">
-            <Flex flex="row wrap">
-              <Flex
-                className="image-wrapper"
-                marginLeft="auto"
-                marginRight="major-2"
-                marginY="major-4"
-              >
-                {initialValues.image && (
-                  <PhotoImage image={initialValues.image} setImageHasChanges={setImageHasChanges} />
-                )}
-              </Flex>
-              <Flex
-                className="info-card-wrapper"
-                width="450px"
-                height="300px"
-                border="2px solid"
-                borderColor="white800"
-                borderRadius="10px"
-                marginY="auto"
-                marginLeft="major-2"
-                marginRight="auto"
-              >
-                <Box margin="major-3">
-                  <Heading use="h5">{values.title}</Heading>
-                  <Heading use="h6" color="info500">
-                    {values.photographer?.label}
-                  </Heading>
-                  <Text>{values.location?.label}</Text>
-                  <Box width="100%" height="80px">
-                    <Text fontSize="150">{values.description}</Text>
-                  </Box>
-
-                  {values.subjects && <Divider marginY="major-1" />}
-                  {values.subjects &&
-                    values.subjects?.map(s => (
-                      <Tag key={s.key} palette="primary" marginX="minor-1">
-                        {s.label}
-                      </Tag>
-                    ))}
-                  {values.tags &&
-                    values.tags?.map(t => (
-                      <Tag key={t.key} palette="secondary" marginX="minor-1">
-                        {t.label}
-                      </Tag>
-                    ))}
-                  {values.collections && <Divider marginY="major-1" />}
-                  {values.collections && (
-                    <Text.Block fontVariant="small-caps">Collections</Text.Block>
-                  )}
-                  {values.collections &&
-                    values.collections?.map(c => (
-                      <Text.Block marginY="major-1" fontSize="150" key={c.key}>
-                        {c.label}
-                      </Text.Block>
-                    ))}
-                </Box>
-              </Flex>
-            </Flex>
-
             <Flex
               className="form-wrapper"
               padding="major-2"
