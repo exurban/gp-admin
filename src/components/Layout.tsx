@@ -10,13 +10,12 @@ import {
   PageWithSidebar,
   useBreakpoint,
   Hide,
-  Level,
   TopNav,
   SideNav,
   Icon,
   Divider,
   Button,
-  Input
+  Flex
 } from "bumbag";
 
 const Layout: React.FC<{ title?: string }> = ({
@@ -86,13 +85,6 @@ const Layout: React.FC<{ title?: string }> = ({
               </TopNav.Section>
 
               <TopNav.Section marginRight="major-4">
-                <Hide below="desktop">
-                  <TopNav.Item>
-                    <Button variant="ghost">
-                      <Icon aria-label="Search" icon="solid-search" fontSize="300" />
-                    </Button>
-                  </TopNav.Item>
-                </Hide>
                 <TopNav.Item>
                   {session && (
                     <Button variant="ghost" palette="secondary" onClick={() => signOut()}>
@@ -130,16 +122,21 @@ const Layout: React.FC<{ title?: string }> = ({
           minHeight="calc(100vh - 180px)"
           sidebar={
             <SideNav.Level>
-              <Level paddingX="major-2">
-                <Icon aria-label="logo" icon="gpLogo" fontSize="800" />
-                <Button variant="ghost">
-                  <Icon aria-label="light/dark" icon="solid-sun" alignY="center" />
+              <Flex justifyContent="space-between">
+                <Icon aria-label="logo" icon="gpLogo" fontSize="800" margin="major-2" />
+                <Button
+                  variant="ghost"
+                  margin="major-2"
+                  onClick={() => setColorMode(colorMode != "default" ? "default" : "dark")}
+                >
+                  {colorMode == "default" ? (
+                    <Icon color="#dbe29c" icon="solid-moon" fontSize="300" />
+                  ) : (
+                    <Icon color="#fee61e" icon="solid-sun" fontSize="300" />
+                  )}
                 </Button>
-              </Level>
-              <Divider />
-              <SideNav.Item navId="search" paddingY="major-2">
-                <Input placeholder="Search" />
-              </SideNav.Item>
+              </Flex>
+
               <Divider />
               {menuItems.map(item => (
                 <Link href={`/${item.toLowerCase()}`} passHref={true} key={item}>
