@@ -2,7 +2,6 @@ import { Tag, SearchTagsDocument, DeleteTagDocument } from "../graphql-operation
 import { useMutation } from "@apollo/client";
 import { Box, Flex, Heading, Paragraph, Text, Button, useToasts } from "bumbag";
 import { Dispatch, SetStateAction } from "react";
-import CoverImageEditor from "./CoverImageEditor";
 
 // * name
 // * description
@@ -65,7 +64,30 @@ const TagView: React.FC<Props> = ({ selectedItem: tag, setSelectedItem, setIsEdi
         alignItems="flex-end"
         padding="major-2"
       >
-        <CoverImageEditor coverImage={tag.coverImage} isEditing={false} />
+        {tag.coverImage && tag.coverImage.imageUrl.length > 0 ? (
+          <img
+            key={Date.now()}
+            src={tag.coverImage.imageUrl}
+            width="200px"
+            height="300px"
+            style={{
+              borderRadius: "6px"
+            }}
+          />
+        ) : (
+          <Box
+            width="200px"
+            height="300px"
+            backgroundColor="default"
+            border="1px solid"
+            borderColor="grey800"
+            borderRadius="6px"
+            alignX="center"
+            alignY="center"
+          >
+            No Cover Image
+          </Box>
+        )}
       </Flex>
       <Flex className="fields-wrapper" flexDirection="column" margin="major-3" flex="2 1 50%">
         <Flex flexDirection="row" alignX="right" justifyContent="space-between">
@@ -73,7 +95,7 @@ const TagView: React.FC<Props> = ({ selectedItem: tag, setSelectedItem, setIsEdi
             {tag?.name}
           </Heading>
         </Flex>
-        <Paragraph marginTop="major-3">
+        <Paragraph marginTop="major-3" marginBottom="major-2">
           <Text>{tag.description}</Text>
         </Paragraph>
       </Flex>

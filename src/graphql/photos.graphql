@@ -114,25 +114,22 @@ query photoEditOptions {
   }
 }
 
-mutation addPhoto($input: PhotoInput!) {
+mutation addPhoto($input: AddPhotoInput!) {
   addPhoto(input: $input) {
-    ...PhotoInfo
+    success
+    message
+    newPhoto {
+      ...PhotoInfo
+    }
   }
 }
 
-mutation updatePhoto($id: Int!, $input: PhotoUpdateInput!) {
+mutation updatePhoto($id: Int!, $input: UpdatePhotoInput!) {
   updatePhoto(id: $id, input: $input) {
     success
     message
-    photo {
-      title
-      description
-      basePrice
-      priceModifier
-      isFeatured
-      isLimitedEdition
-      isDiscontinued
-      rating
+    updatedPhoto {
+      ...PhotoInfo
     }
   }
 }

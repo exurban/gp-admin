@@ -161,9 +161,17 @@ const FinishesTable: React.FC<Props> = ({
     sort(columns[selectedColumn].attr, sortAscending);
   };
 
-  const handleRowClick = (fin: Finish) => {
-    console.log(`clicked row: ${fin.name}`);
-    setSelectedItem(fin);
+  const handleAddClick = () => {
+    setSelectedItem(undefined);
+    setIsAdding(true);
+  };
+
+  const handleRowClick = (fn: Finish) => {
+    if (isAddingOrEditing) {
+      return;
+    }
+
+    setSelectedItem(fn);
   };
 
   return (
@@ -229,7 +237,7 @@ const FinishesTable: React.FC<Props> = ({
         </Table>
       </Box>
       <Button
-        onClick={() => setIsAdding(true)}
+        onClick={() => handleAddClick()}
         width="80px"
         palette="primary"
         marginLeft="auto"

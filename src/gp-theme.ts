@@ -41,6 +41,23 @@ const gpTheme: ThemeConfig = {
       "https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&display=swap"
     ]
   },
+  Button: {
+    variants: {
+      "small-text": {
+        styles: {
+          base: {
+            fontSize: "14px",
+            palette: "primary",
+            variant: "ghost",
+            size: "small",
+            _focus: {
+              boxShadow: "none"
+            }
+          }
+        }
+      }
+    }
+  },
   TopNav: {
     Item: {
       variants: {

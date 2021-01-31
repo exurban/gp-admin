@@ -119,8 +119,16 @@ const CollectionsTable: React.FC<Props> = ({
     sort(columns[selectedColumn].attr, sortAscending);
   };
 
+  const handleAddClick = () => {
+    setSelectedItem(undefined);
+    setIsAdding(true);
+  };
+
   const handleRowClick = (col: Collection) => {
-    console.log(`clicked row: ${col.name}`);
+    if (isAddingOrEditing) {
+      return;
+    }
+
     setSelectedItem(col);
   };
 
@@ -180,7 +188,7 @@ const CollectionsTable: React.FC<Props> = ({
         </Table>
       </Box>
       <Button
-        onClick={() => setIsAdding(true)}
+        onClick={() => handleAddClick()}
         width="80px"
         palette="primary"
         marginLeft="auto"

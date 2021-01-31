@@ -27,15 +27,23 @@ query collection($id: Int!) {
   }
 }
 
-mutation addCollection($input: CollectionInput!) {
+mutation addCollection($input: AddCollectionInput!) {
   addCollection(input: $input) {
-    ...CollectionInfo
+    success
+    message
+    newCollection {
+      ...CollectionInfo
+    }
   }
 }
 
-mutation updateCollection($id: Int!, $input: CollectionUpdateInput!) {
+mutation updateCollection($id: Int!, $input: UpdateCollectionInput!) {
   updateCollection(id: $id, input: $input) {
-    ...CollectionInfo
+    success
+    message
+    updatedCollection {
+      ...CollectionInfo
+    }
   }
 }
 

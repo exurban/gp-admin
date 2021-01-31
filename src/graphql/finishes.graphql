@@ -35,15 +35,23 @@ query finish($id: Int!) {
   }
 }
 
-mutation addFinish($input: FinishInput!) {
+mutation addFinish($input: AddFinishInput!) {
   addFinish(input: $input) {
-    ...FinishInfo
+    success
+    message
+    newFinish {
+      ...FinishInfo
+    }
   }
 }
 
-mutation updateFinish($id: Int!, $input: FinishUpdateInput!) {
+mutation updateFinish($id: Int!, $input: UpdateFinishInput!) {
   updateFinish(id: $id, input: $input) {
-    ...FinishInfo
+    success
+    message
+    updatedFinish {
+      ...FinishInfo
+    }
   }
 }
 

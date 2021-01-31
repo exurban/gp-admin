@@ -28,15 +28,23 @@ query photographer($id: Int!) {
   }
 }
 
-mutation addPhotographer($input: PhotographerInput!) {
+mutation addPhotographer($input: AddPhotographerInput!) {
   addPhotographer(input: $input) {
-    ...PhotographerInfo
+    success
+    message
+    newPhotographer {
+      ...PhotographerInfo
+    }
   }
 }
 
-mutation updatePhotographer($id: Int!, $input: PhotographerUpdateInput!) {
+mutation updatePhotographer($id: Int!, $input: UpdatePhotographerInput!) {
   updatePhotographer(id: $id, input: $input) {
-    ...PhotographerInfo
+    success
+    message
+    updatedPhotographer {
+      ...PhotographerInfo
+    }
   }
 }
 

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useMutation } from "@apollo/client";
@@ -10,18 +11,22 @@ import {
   TextareaField,
   ActionButtons,
   Text,
-  useToasts
+  useToasts,
+  Box
 } from "bumbag";
 import {
-  AddFinishDocument,
-  AddFinishMutationVariables,
+  Image,
   Finish,
   SearchFinishesDocument,
+  AddFinishDocument,
+  AddFinishInput,
+  AddFinishMutationVariables,
   UpdateFinishDocument,
+  UpdateFinishInput,
   UpdateFinishMutationVariables
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
-import CoverImageEditor from "./CoverImageEditor";
+import CoverImageModal from "./CoverImageModal";
 
 // * name
 // * description
@@ -42,6 +47,7 @@ import CoverImageEditor from "./CoverImageEditor";
 
 type Props = {
   item: Finish | undefined;
+  setSelectedItem: Dispatch<SetStateAction<Finish | undefined>>;
   isAdding: boolean;
   setIsAdding: Dispatch<SetStateAction<boolean>>;
   isEditing: boolean;
@@ -50,28 +56,53 @@ type Props = {
 
 const FinishForm: React.FC<Props> = ({
   item: fn,
+  setSelectedItem,
   isAdding,
   setIsAdding,
   isEditing,
   setIsEditing
 }) => {
+  const [imageUrl, setImageUrl] = useState(fn?.coverImage?.imageUrl);
+  const [coverImage, setCoverImage] = useState<Image | null | undefined>(fn?.coverImage);
+
   const toasts = useToasts();
   const [addFinish] = useMutation(AddFinishDocument, {
+    refetchQueries: [
+      {
+        query: SearchFinishesDocument,
+        variables: {
+          input: {
+            searchString: ""
+          }
+        }
+      }
+    ],
     onCompleted(data) {
       console.log(`data.addFinish: ${JSON.stringify(data.addFinish, null, 2)}`);
       clearForm();
       toasts.success({
         title: `Succeessfully added`,
-        message: `Added ${data.addFinish.name}.`
+        message: `Added ${data.addFinish.newFinish?.name}.`
       });
     }
   });
+
   const [updateFinish] = useMutation(UpdateFinishDocument, {
+    refetchQueries: [
+      {
+        query: SearchFinishesDocument,
+        variables: {
+          input: {
+            searchString: ""
+          }
+        }
+      }
+    ],
     onCompleted(data) {
       clearForm();
       toasts.success({
         title: `Successfully updated`,
-        message: `Updated ${data.updateFinish?.name}`
+        message: `Updated ${data.updateFinish.updatedFinish?.name}`
       });
     }
   });
@@ -81,38 +112,82 @@ const FinishForm: React.FC<Props> = ({
     setIsEditing(false);
   };
 
-  const initialValues =
-    isEditing && fn
-      ? {
-          name: fn.name,
-          description: fn.description,
-          finSku: fn.finSku,
-          width: fn.width,
-          height: fn.height,
-          depth: fn.depth,
-          weight: fn.weight,
-          shippingWeight: fn.shippingWeight,
-          basePrice: fn.basePrice,
-          priceModifier: fn.priceModifier
-          // coverImageId: parseInt(pg.coverImage?.id) || undefined
-        }
-      : {
-          name: "",
-          description: "",
-          finSku: "",
-          width: 0,
-          height: 0,
-          depth: 0,
-          weight: 0,
-          shippingWeight: 0,
-          basePrice: 0,
-          priceModifier: 0,
-          coverImageId: undefined
-        };
+  const initialValues = {
+    name: fn?.name || "",
+    description: fn?.description || "",
+    finSku: fn?.finSku || "",
+    width: fn?.width || 0,
+    height: fn?.height || 0,
+    depth: fn?.depth || 0,
+    weight: fn?.weight || 0,
+    shippingWeight: fn?.shippingWeight || 0,
+    basePrice: fn?.basePrice || 0,
+    priceModifier: fn?.priceModifier || 0
+  };
 
   const validationObject = {
     name: Yup.string().max(30, "Must be 30 characters or fewer.").required("Required"),
     description: Yup.string().required("Required")
+  };
+
+  const handleAdd = (values: AddFinishInput) => {
+    setSelectedItem(undefined);
+
+    // if coverImage is set, add to input
+    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
+
+    const input = { ...values, coverImageId };
+    console.log(`Adding Finish with input: ${JSON.stringify(input, null, 2)}`);
+
+    if (isAdding) {
+      const addVariables: AddFinishMutationVariables = {
+        input
+      };
+      addFinish({
+        variables: addVariables,
+        refetchQueries: [
+          {
+            query: SearchFinishesDocument,
+            variables: {
+              input: {
+                searchString: ""
+              }
+            }
+          }
+        ]
+      });
+    }
+    clearForm();
+  };
+
+  const handleUpdate = (values: UpdateFinishInput) => {
+    setSelectedItem(undefined);
+
+    // if coverImage is set, add to input
+    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
+
+    const input = { ...values, coverImageId };
+
+    if (isEditing && fn) {
+      const editVariables: UpdateFinishMutationVariables = {
+        id: parseInt(fn.id),
+        input
+      };
+      updateFinish({
+        variables: editVariables,
+        refetchQueries: [
+          {
+            query: SearchFinishesDocument,
+            variables: {
+              input: {
+                searchString: ""
+              }
+            }
+          }
+        ]
+      });
+    }
+    clearForm();
   };
 
   return (
@@ -126,52 +201,44 @@ const FinishForm: React.FC<Props> = ({
         alignItems="flex-end"
         padding="major-2"
       >
-        {fn && <CoverImageEditor coverImage={fn.coverImage} isEditing={true} />}
+        {imageUrl && imageUrl.length > 0 ? (
+          <img
+            key={Date.now()}
+            src={imageUrl}
+            width="200px"
+            height="300px"
+            style={{ borderRadius: "6px" }}
+          />
+        ) : (
+          <Box
+            width="200px"
+            height="300px"
+            backgroundColor="default"
+            border="1px solid"
+            borderColor="grey800"
+            borderRadius="6px"
+            alignX="center"
+            alignY="center"
+          >
+            No Cover Image
+          </Box>
+        )}
+        {(isAdding || isEditing) && (
+          <CoverImageModal
+            coverImage={coverImage}
+            setCoverImage={setCoverImage}
+            name={fn?.name || ""}
+            imageUrl={imageUrl}
+            setImageUrl={setImageUrl}
+          />
+        )}
       </Flex>
       <Flex className="fields-wrapper" flexDirection="column" margin="major-3" flex="2 1 50%">
         <Formik
           initialValues={initialValues}
           validationSchema={Yup.object(validationObject)}
           onSubmit={values => {
-            const input = { ...values };
-
-            if (isAdding) {
-              const addVariables: AddFinishMutationVariables = {
-                input
-              };
-              addFinish({
-                variables: addVariables,
-                refetchQueries: [
-                  {
-                    query: SearchFinishesDocument,
-                    variables: {
-                      input: {
-                        searchString: ""
-                      }
-                    }
-                  }
-                ]
-              });
-            }
-            if (isEditing && fn) {
-              const editVariables: UpdateFinishMutationVariables = {
-                id: parseInt(fn.id),
-                input
-              };
-              updateFinish({
-                variables: editVariables,
-                refetchQueries: [
-                  {
-                    query: SearchFinishesDocument,
-                    variables: {
-                      input: {
-                        searchString: ""
-                      }
-                    }
-                  }
-                ]
-              });
-            }
+            isAdding ? handleAdd(values) : handleUpdate(values);
           }}
         >
           <Form autoComplete="off" style={{ margin: 0, width: "100%" }}>

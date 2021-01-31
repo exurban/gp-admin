@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box, Flex, Divider } from "bumbag";
-import { Collection } from "../graphql-operations";
 import CollectionsTable from "../components/CollectionsTable";
 import CollectionPreview from "../components/CollectionPreview";
 import CollectionForm from "../components/CollectionForm";
+import { Collection } from "../graphql-operations";
 
 const Collections: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<Collection | undefined>(undefined);
@@ -11,12 +11,6 @@ const Collections: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const isAddingOrEditing = isAdding || isEditing;
-
-  useEffect(() => {
-    if (isAdding) {
-      setSelectedItem(undefined);
-    }
-  }, [selectedItem, isAdding]);
 
   // * if isAddingOrEditing then show Form
   // * if selectedItem but !isAddingOrEditing, show preview
@@ -36,6 +30,7 @@ const Collections: React.FC = () => {
         {isAddingOrEditing && (
           <CollectionForm
             item={selectedItem}
+            setSelectedItem={setSelectedItem}
             isAdding={isAdding}
             isEditing={isEditing}
             setIsAdding={setIsAdding}

@@ -1,11 +1,17 @@
 import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
-import { FieldPolicy, FieldReadFunction, TypePolicies } from "@apollo/client/cache";
+import {
+  FieldPolicy,
+  FieldReadFunction,
+  TypePolicies,
+} from "@apollo/client/cache";
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  { [SubKey in K]: Maybe<T[SubKey]> };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: string;
@@ -14,7 +20,7 @@ export type Scalars = {
   Int: number;
   Float: number;
   /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
-  DateTime: string;
+  DateTime: any;
 };
 
 export type Image = {
@@ -57,7 +63,8 @@ export type Collection = {
   id: Scalars["ID"];
   name: Scalars["String"];
   tag: Scalars["String"];
-  description: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
+  /** Optional. An image of the tag used in connection with the vignetter at the top of the Tag's photos page. */
   coverImage?: Maybe<Image>;
   photosInCollection?: Maybe<Array<PhotoCollection>>;
   /** Count of photos in the collection. */
@@ -160,7 +167,7 @@ export type Finish = {
   /** The name of the finish. */
   name: Scalars["String"];
   /** Optional. A description of the tag used in connection with the vignette for the finish. */
-  description: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
   /** Optional. An image of the finish. */
   coverImage?: Maybe<Image>;
   /** SKU for the type of finish. Combined with width & height to create FinishSKU, which is auto-generated as a Field Resolver. ProductSKU = sku-finSku-heightxwidth */
@@ -238,9 +245,29 @@ export type User = {
   updatedAt: Scalars["DateTime"];
 };
 
+export type SuccessMessageResponse = {
+  __typename?: "SuccessMessageResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+};
+
 export type SearchCollectionsResponse = {
   __typename?: "SearchCollectionsResponse";
   datalist: Array<Collection>;
+};
+
+export type AddCollectionResponse = {
+  __typename?: "AddCollectionResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  newCollection?: Maybe<Collection>;
+};
+
+export type UpdateCollectionResponse = {
+  __typename?: "UpdateCollectionResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  updatedCollection?: Maybe<Collection>;
 };
 
 export type PaginatedResponse = {
@@ -268,11 +295,32 @@ export type PaginatedPhotosWithFinishResponse = {
   finishInfo: Finish;
 };
 
+export type AddFinishResponse = {
+  __typename?: "AddFinishResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  newFinish?: Maybe<Finish>;
+};
+
+export type UpdateFinishResponse = {
+  __typename?: "UpdateFinishResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  updatedFinish?: Maybe<Finish>;
+};
+
+export type AddImageResponse = {
+  __typename?: "AddImageResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  newImage?: Maybe<Image>;
+};
+
 export type UpdateImageResponse = {
   __typename?: "UpdateImageResponse";
   success: Scalars["Boolean"];
   message: Scalars["String"];
-  image?: Maybe<Image>;
+  updatedImage?: Maybe<Image>;
 };
 
 export type SearchLocationsResponse = {
@@ -296,6 +344,20 @@ export type PaginatedPhotosAtLocationResponse = {
   photos: Array<Photo>;
   pageInfo: PaginatedResponse;
   locationInfo: Location;
+};
+
+export type AddLocationResponse = {
+  __typename?: "AddLocationResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  newLocation?: Maybe<Location>;
+};
+
+export type UpdateLocationResponse = {
+  __typename?: "UpdateLocationResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  updatedLocation?: Maybe<Location>;
 };
 
 export type ItemCountList = {
@@ -332,6 +394,20 @@ export type PaginatedPhotosByPhotographerResponse = {
   photographerInfo: Photographer;
 };
 
+export type AddPhotographerResponse = {
+  __typename?: "AddPhotographerResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  newPhotographer?: Maybe<Photographer>;
+};
+
+export type UpdatePhotographerResponse = {
+  __typename?: "UpdatePhotographerResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  updatedPhotographer?: Maybe<Photographer>;
+};
+
 export type SelectionOption = {
   __typename?: "SelectionOption";
   id: Scalars["Int"];
@@ -341,13 +417,6 @@ export type SelectionOption = {
 export type PhotosResponse = {
   __typename?: "PhotosResponse";
   photos: Array<Photo>;
-};
-
-export type UpdatePhotoResponse = {
-  __typename?: "UpdatePhotoResponse";
-  success: Scalars["Boolean"];
-  message: Scalars["String"];
-  photo?: Maybe<Photo>;
 };
 
 export type PhotographerSelectionOption = {
@@ -413,6 +482,20 @@ export type PaginatedFeaturedPhotosResponse = {
   pageInfo: PaginatedResponse;
 };
 
+export type AddPhotoResponse = {
+  __typename?: "AddPhotoResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  newPhoto?: Maybe<Photo>;
+};
+
+export type UpdatePhotoResponse = {
+  __typename?: "UpdatePhotoResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  updatedPhoto?: Maybe<Photo>;
+};
+
 export type SubjectsResponse = {
   __typename?: "SubjectsResponse";
   subjects: Array<Subject>;
@@ -436,10 +519,18 @@ export type PaginatedPhotosOfSubjectResponse = {
   subjectInfo: Subject;
 };
 
-export type SuccessMessageResponse = {
-  __typename?: "SuccessMessageResponse";
+export type AddSubjectResponse = {
+  __typename?: "AddSubjectResponse";
   success: Scalars["Boolean"];
   message: Scalars["String"];
+  newSubject?: Maybe<Subject>;
+};
+
+export type UpdateSubjectResponse = {
+  __typename?: "UpdateSubjectResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  updatedSubject?: Maybe<Subject>;
 };
 
 export type SearchTagsResponse = {
@@ -458,6 +549,20 @@ export type PaginatedPhotosWithTagResponse = {
   photos: Array<Photo>;
   pageInfo: PaginatedResponse;
   tagInfo: Tag;
+};
+
+export type AddTagResponse = {
+  __typename?: "AddTagResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  newTag?: Maybe<Tag>;
+};
+
+export type UpdateTagResponse = {
+  __typename?: "UpdateTagResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  updatedTag?: Maybe<Tag>;
 };
 
 export type FavoritesResponse = {
@@ -506,23 +611,34 @@ export type UserPreferencesResponse = {
   shoppingBagItems?: Maybe<Array<UserShoppingBagItem>>;
 };
 
-export type CollectionInput = {
+/** Inputs to create a new Collection. */
+export type AddCollectionInput = {
+  /** Name of the collection. Used in Photo Info links. */
   name: Scalars["String"];
   tag: Scalars["String"];
-  description: Scalars["String"];
+  /** A vignette used to introduce the subject. */
+  description?: Maybe<Scalars["String"]>;
+  /** A cover image to be displayed next to the opening vignette. */
+  coverImageId?: Maybe<Scalars["Int"]>;
 };
 
-export type CollectionUpdateInput = {
+/** Optional inputs to be used to update the Collection Info. */
+export type UpdateCollectionInput = {
+  /** Optional. Name of the collection. Used in Photo Info links. */
   name?: Maybe<Scalars["String"]>;
+  /** An optional tag for the collection. */
   tag?: Maybe<Scalars["String"]>;
+  /** Optional. A vignette used to introduce the subject. */
   description?: Maybe<Scalars["String"]>;
+  /** Optional. A cover image to be displayed next to the opening vignette. */
+  coverImageId?: Maybe<Scalars["Float"]>;
 };
 
 export type SearchCollectionsInput = {
   searchString: Scalars["String"];
 };
 
-export type FinishInput = {
+export type AddFinishInput = {
   name: Scalars["String"];
   description: Scalars["String"];
   coverImageId?: Maybe<Scalars["Float"]>;
@@ -536,7 +652,7 @@ export type FinishInput = {
   priceModifier: Scalars["Float"];
 };
 
-export type FinishUpdateInput = {
+export type UpdateFinishInput = {
   name?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   coverImageId?: Maybe<Scalars["Float"]>;
@@ -566,7 +682,7 @@ export type PaginatedPhotosWithFinishInput = {
   take: Scalars["Int"];
 };
 
-export type ImageInput = {
+export type AddImageInput = {
   imageName?: Maybe<Scalars["String"]>;
   fileExtension?: Maybe<Scalars["String"]>;
   imageUrl?: Maybe<Scalars["String"]>;
@@ -577,7 +693,7 @@ export type ImageInput = {
   photoId?: Maybe<Scalars["Float"]>;
 };
 
-export type ImageUpdateInput = {
+export type UpdateImageInput = {
   imageName?: Maybe<Scalars["String"]>;
   fileExtension?: Maybe<Scalars["String"]>;
   imageUrl?: Maybe<Scalars["String"]>;
@@ -589,19 +705,19 @@ export type ImageUpdateInput = {
 };
 
 /** Inputs to create a new Location entity. */
-export type LocationInput = {
+export type AddLocationInput = {
   /** Name of the location. */
   name: Scalars["String"];
   /** Tag used to ID the location in Photo Info links. */
   tag: Scalars["String"];
   /** Vignette describing the location. */
   description?: Maybe<Scalars["String"]>;
-  /** Map of the location. Used at the top of the Location's Photo Gallery. Used to look up the Map and add it to the One-to-One relationship. */
-  coverImageId?: Maybe<Scalars["Float"]>;
+  /** id for cover image. */
+  coverImageId?: Maybe<Scalars["Int"]>;
 };
 
 /** Optional inputs to be used to update the Location Info. */
-export type LocationUpdateInput = {
+export type UpdateLocationInput = {
   /** Optional. Name of the Location. */
   name?: Maybe<Scalars["String"]>;
   /** Optional. Tag used to identify the Location. */
@@ -625,7 +741,7 @@ export type LocationSearchSortInput = {
 /** Sort direction */
 export enum SortDirection {
   Asc = "ASC",
-  Desc = "DESC"
+  Desc = "DESC",
 }
 
 export type GroupedPhotosAtLocationInput = {
@@ -651,7 +767,7 @@ export type PhotoFinishInput = {
 };
 
 /** Inputs to create a new Photographer entity. */
-export type PhotographerInput = {
+export type AddPhotographerInput = {
   /** Photographer's full name. */
   name: Scalars["String"];
   /** Photographer's first name. */
@@ -662,12 +778,12 @@ export type PhotographerInput = {
   email: Scalars["String"];
   /** Short biography for Photographer. Displayed at the top of the Photographer's photo gallery. */
   bio: Scalars["String"];
-  /** ID of the image for the Photographer's portrait. */
-  coverImageId?: Maybe<Scalars["Float"]>;
+  /** id for cover image. */
+  coverImageId?: Maybe<Scalars["Int"]>;
 };
 
 /** Inputs to update a Photographer entity. */
-export type PhotographerUpdateInput = {
+export type UpdatePhotographerInput = {
   /** Optional: Photographer's full name. */
   name?: Maybe<Scalars["String"]>;
   /** Optional: Photographer's first name. */
@@ -678,8 +794,8 @@ export type PhotographerUpdateInput = {
   email?: Maybe<Scalars["String"]>;
   /** Optional: Short biography for Photographer. Displayed at the top of the Photographer's photo gallery. */
   bio?: Maybe<Scalars["String"]>;
-  /** Inputs to update a Photographer entity. */
-  coverImageId?: Maybe<Scalars["Float"]>;
+  /** id for cover image. */
+  coverImageId?: Maybe<Scalars["Int"]>;
 };
 
 export type SearchPhotographersInput = {
@@ -698,7 +814,7 @@ export type PaginatedPhotosByPhotographerInput = {
   take: Scalars["Int"];
 };
 
-export type PhotoInput = {
+export type AddPhotoInput = {
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   isFeatured?: Maybe<Scalars["Boolean"]>;
@@ -708,10 +824,14 @@ export type PhotoInput = {
   priceModifier?: Maybe<Scalars["Float"]>;
   photographerId?: Maybe<Scalars["Int"]>;
   locationId?: Maybe<Scalars["Int"]>;
+  subjectIds?: Maybe<Array<Scalars["Int"]>>;
+  tagIds?: Maybe<Array<Scalars["Int"]>>;
+  collectionIds?: Maybe<Array<Scalars["Int"]>>;
+  finishIds?: Maybe<Array<Scalars["Int"]>>;
   imageId?: Maybe<Scalars["Int"]>;
 };
 
-export type PhotoUpdateInput = {
+export type UpdatePhotoInput = {
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   isDiscontinued?: Maybe<Scalars["Boolean"]>;
@@ -720,8 +840,9 @@ export type PhotoUpdateInput = {
   rating?: Maybe<Scalars["Int"]>;
   basePrice?: Maybe<Scalars["Float"]>;
   priceModifier?: Maybe<Scalars["Float"]>;
-  photographerId?: Maybe<Scalars["Float"]>;
-  locationId?: Maybe<Scalars["Float"]>;
+  imageId?: Maybe<Scalars["Int"]>;
+  photographerId?: Maybe<Scalars["Int"]>;
+  locationId?: Maybe<Scalars["Int"]>;
   subjectIds?: Maybe<Array<Scalars["Int"]>>;
   tagIds?: Maybe<Array<Scalars["Int"]>>;
   collectionIds?: Maybe<Array<Scalars["Int"]>>;
@@ -744,17 +865,17 @@ export type PaginatedPhotosInput = {
 };
 
 /** Inputs to create a new Subject entity. */
-export type SubjectInput = {
+export type AddSubjectInput = {
   /** Name of the subject. Used in Photo Info links. */
   name: Scalars["String"];
   /** A vignette used to introduce the subject. */
   description?: Maybe<Scalars["String"]>;
   /** A cover image to be displayed next to the opening vignette. */
-  coverImageId?: Maybe<Scalars["Float"]>;
+  coverImageId?: Maybe<Scalars["Int"]>;
 };
 
 /** Optional inputs to be used to update the Subject Info. */
-export type SubjectUpdateInput = {
+export type UpdateSubjectInput = {
   /** Optional. Name of the subject. Used in Photo Info links. */
   name?: Maybe<Scalars["String"]>;
   /** Optional. A vignette used to introduce the subject. */
@@ -785,15 +906,23 @@ export type PaginatedPhotosOfSubjectInput = {
   take: Scalars["Int"];
 };
 
-export type TagInput = {
+/** Inputs to create a new Tag entity. */
+export type AddTagInput = {
+  /** Name of the tag. Used in Photo Info links. */
   name: Scalars["String"];
+  /** A vignette used to introduce the tag. */
   description?: Maybe<Scalars["String"]>;
-  coverImageId?: Maybe<Scalars["Float"]>;
+  /** A cover image to be displayed nest to the opening vignette. */
+  coverImageId?: Maybe<Scalars["Int"]>;
 };
 
-export type TagUpdateInput = {
+/** Optional inputs to be used to update the Tag Info. */
+export type UpdateTagInput = {
+  /** Optional. Name of the tag. Used in Photo Info links. */
   name?: Maybe<Scalars["String"]>;
+  /** Optional. A vignette used to introduce the subject. */
   description?: Maybe<Scalars["String"]>;
+  /** Optional. A cover image to be displayed next to the opening vignette. */
   coverImageId?: Maybe<Scalars["Float"]>;
 };
 
@@ -859,7 +988,7 @@ export type Query = {
   paginatedPhotosByPhotographer: PaginatedPhotosByPhotographerResponse;
   /** Returns all Photos + all relations. Sortable and filterable. */
   photos: PhotosResponse;
-  /** Returns all Photos + all relations. Sortable and filterable. */
+  /** Returns all Photos + all relations. Searchable. */
   searchPhotos: SearchPhotosResponse;
   paginatedPhotos: PaginatedAllPhotosResponse;
   paginatedFeaturedPhotos: PaginatedFeaturedPhotosResponse;
@@ -1054,36 +1183,36 @@ export type UserSearchResult = Subject | Tag | Location;
 
 export type Mutation = {
   __typename?: "Mutation";
-  addCollection: Collection;
-  updateCollection: Collection;
+  addCollection: AddCollectionResponse;
+  updateCollection: UpdateCollectionResponse;
   deleteCollection: Scalars["Boolean"];
-  addFinish: Finish;
-  updateFinish?: Maybe<Finish>;
+  addFinish: AddFinishResponse;
+  updateFinish: UpdateFinishResponse;
   deleteFinish: Scalars["Boolean"];
-  addImage: Image;
+  addImage: AddImageResponse;
   updateImage: UpdateImageResponse;
   deleteImage: Scalars["Boolean"];
   addImageToPhoto: Image;
-  addLocation: Location;
-  updateLocation?: Maybe<Location>;
+  addLocation: AddLocationResponse;
+  updateLocation: UpdateLocationResponse;
   deleteLocation: Scalars["Boolean"];
   addPhotoToCollection: Scalars["Boolean"];
   removePhotoFromCollection: Scalars["Boolean"];
   addFinishToPhoto: Scalars["Boolean"];
   removeFinishFromPhoto: Scalars["Boolean"];
-  addPhotographer: Photographer;
-  updatePhotographer?: Maybe<Photographer>;
+  addPhotographer: AddPhotographerResponse;
+  updatePhotographer: UpdatePhotographerResponse;
   deletePhotographer: Scalars["Boolean"];
-  addPhoto: Photo;
+  addPhoto: AddPhotoResponse;
   updatePhoto: UpdatePhotoResponse;
   deletePhoto: Scalars["Boolean"];
-  addSubject: Subject;
-  updateSubject: Subject;
+  addSubject: AddSubjectResponse;
+  updateSubject: UpdateSubjectResponse;
   deleteSubject: Scalars["Boolean"];
   subscribeToNewsletter: SuccessMessageResponse;
   unsubscribeFromNewsletter: SuccessMessageResponse;
-  addTag: Tag;
-  updateTag: Tag;
+  addTag: AddTagResponse;
+  updateTag: UpdateTagResponse;
   deleteTag: Scalars["Boolean"];
   addPhotoToFavorites: AddPhotoToFavoritesResponse;
   removePhotoFromFavorites: RemovePhotoFromFavoritesResponse;
@@ -1093,11 +1222,11 @@ export type Mutation = {
 };
 
 export type MutationAddCollectionArgs = {
-  input: CollectionInput;
+  input: AddCollectionInput;
 };
 
 export type MutationUpdateCollectionArgs = {
-  input: CollectionUpdateInput;
+  input: UpdateCollectionInput;
   id: Scalars["Int"];
 };
 
@@ -1106,11 +1235,11 @@ export type MutationDeleteCollectionArgs = {
 };
 
 export type MutationAddFinishArgs = {
-  input: FinishInput;
+  input: AddFinishInput;
 };
 
 export type MutationUpdateFinishArgs = {
-  input: FinishUpdateInput;
+  input: UpdateFinishInput;
   id: Scalars["Int"];
 };
 
@@ -1119,11 +1248,11 @@ export type MutationDeleteFinishArgs = {
 };
 
 export type MutationAddImageArgs = {
-  input: ImageInput;
+  input: AddImageInput;
 };
 
 export type MutationUpdateImageArgs = {
-  input: ImageUpdateInput;
+  input: UpdateImageInput;
   id: Scalars["Int"];
 };
 
@@ -1137,11 +1266,11 @@ export type MutationAddImageToPhotoArgs = {
 };
 
 export type MutationAddLocationArgs = {
-  input: LocationInput;
+  input: AddLocationInput;
 };
 
 export type MutationUpdateLocationArgs = {
-  input: LocationUpdateInput;
+  input: UpdateLocationInput;
   id: Scalars["Int"];
 };
 
@@ -1166,11 +1295,11 @@ export type MutationRemoveFinishFromPhotoArgs = {
 };
 
 export type MutationAddPhotographerArgs = {
-  input: PhotographerInput;
+  input: AddPhotographerInput;
 };
 
 export type MutationUpdatePhotographerArgs = {
-  input: PhotographerUpdateInput;
+  input: UpdatePhotographerInput;
   id: Scalars["Int"];
 };
 
@@ -1179,11 +1308,11 @@ export type MutationDeletePhotographerArgs = {
 };
 
 export type MutationAddPhotoArgs = {
-  input: PhotoInput;
+  input: AddPhotoInput;
 };
 
 export type MutationUpdatePhotoArgs = {
-  input: PhotoUpdateInput;
+  input: UpdatePhotoInput;
   id: Scalars["Int"];
 };
 
@@ -1192,11 +1321,11 @@ export type MutationDeletePhotoArgs = {
 };
 
 export type MutationAddSubjectArgs = {
-  input: SubjectInput;
+  input: AddSubjectInput;
 };
 
 export type MutationUpdateSubjectArgs = {
-  input: SubjectUpdateInput;
+  input: UpdateSubjectInput;
   id: Scalars["Int"];
 };
 
@@ -1205,11 +1334,11 @@ export type MutationDeleteSubjectArgs = {
 };
 
 export type MutationAddTagArgs = {
-  input: TagInput;
+  input: AddTagInput;
 };
 
 export type MutationUpdateTagArgs = {
-  input: TagUpdateInput;
+  input: UpdateTagInput;
   id: Scalars["Int"];
 };
 
@@ -1239,7 +1368,13 @@ export type MutationGetApiTokenArgs = {
 
 export type CollectionInfoFragment = { __typename: "Collection" } & Pick<
   Collection,
-  "id" | "name" | "tag" | "description" | "countOfPhotos" | "createdAt" | "updatedAt"
+  | "id"
+  | "name"
+  | "tag"
+  | "description"
+  | "countOfPhotos"
+  | "createdAt"
+  | "updatedAt"
 > & { coverImage?: Maybe<{ __typename?: "Image" } & ImageInfoFragment> };
 
 export type SearchCollectionsQueryVariables = Exact<{
@@ -1261,20 +1396,34 @@ export type CollectionQuery = { __typename?: "Query" } & {
 };
 
 export type AddCollectionMutationVariables = Exact<{
-  input: CollectionInput;
+  input: AddCollectionInput;
 }>;
 
 export type AddCollectionMutation = { __typename?: "Mutation" } & {
-  addCollection: { __typename?: "Collection" } & CollectionInfoFragment;
+  addCollection: { __typename?: "AddCollectionResponse" } & Pick<
+    AddCollectionResponse,
+    "success" | "message"
+  > & {
+      newCollection?: Maybe<
+        { __typename?: "Collection" } & CollectionInfoFragment
+      >;
+    };
 };
 
 export type UpdateCollectionMutationVariables = Exact<{
   id: Scalars["Int"];
-  input: CollectionUpdateInput;
+  input: UpdateCollectionInput;
 }>;
 
 export type UpdateCollectionMutation = { __typename?: "Mutation" } & {
-  updateCollection: { __typename?: "Collection" } & CollectionInfoFragment;
+  updateCollection: { __typename?: "UpdateCollectionResponse" } & Pick<
+    UpdateCollectionResponse,
+    "success" | "message"
+  > & {
+      updatedCollection?: Maybe<
+        { __typename?: "Collection" } & CollectionInfoFragment
+      >;
+    };
 };
 
 export type DeleteCollectionMutationVariables = Exact<{
@@ -1324,27 +1473,36 @@ export type FinishQuery = { __typename?: "Query" } & {
 };
 
 export type AddFinishMutationVariables = Exact<{
-  input: FinishInput;
+  input: AddFinishInput;
 }>;
 
 export type AddFinishMutation = { __typename?: "Mutation" } & {
-  addFinish: { __typename?: "Finish" } & FinishInfoFragment;
+  addFinish: { __typename?: "AddFinishResponse" } & Pick<
+    AddFinishResponse,
+    "success" | "message"
+  > & { newFinish?: Maybe<{ __typename?: "Finish" } & FinishInfoFragment> };
 };
 
 export type UpdateFinishMutationVariables = Exact<{
   id: Scalars["Int"];
-  input: FinishUpdateInput;
+  input: UpdateFinishInput;
 }>;
 
 export type UpdateFinishMutation = { __typename?: "Mutation" } & {
-  updateFinish?: Maybe<{ __typename?: "Finish" } & FinishInfoFragment>;
+  updateFinish: { __typename?: "UpdateFinishResponse" } & Pick<
+    UpdateFinishResponse,
+    "success" | "message"
+  > & { updatedFinish?: Maybe<{ __typename?: "Finish" } & FinishInfoFragment> };
 };
 
 export type DeleteFinishMutationVariables = Exact<{
   id: Scalars["Int"];
 }>;
 
-export type DeleteFinishMutation = { __typename?: "Mutation" } & Pick<Mutation, "deleteFinish">;
+export type DeleteFinishMutation = { __typename?: "Mutation" } & Pick<
+  Mutation,
+  "deleteFinish"
+>;
 
 export type ImageInfoFragment = { __typename?: "Image" } & Pick<
   Image,
@@ -1360,35 +1518,55 @@ export type ImageInfoFragment = { __typename?: "Image" } & Pick<
   | "updatedAt"
 >;
 
+export type ImageQueryVariables = Exact<{
+  id: Scalars["Int"];
+}>;
+
+export type ImageQuery = { __typename?: "Query" } & {
+  image: { __typename?: "Image" } & ImageInfoFragment;
+};
+
 export type AddImageMutationVariables = Exact<{
-  input: ImageInput;
+  input: AddImageInput;
 }>;
 
 export type AddImageMutation = { __typename?: "Mutation" } & {
-  addImage: { __typename?: "Image" } & ImageInfoFragment;
+  addImage: { __typename?: "AddImageResponse" } & Pick<
+    AddImageResponse,
+    "success" | "message"
+  > & { newImage?: Maybe<{ __typename?: "Image" } & ImageInfoFragment> };
 };
 
 export type UpdateImageMutationVariables = Exact<{
   id: Scalars["Int"];
-  input: ImageUpdateInput;
+  input: UpdateImageInput;
 }>;
 
 export type UpdateImageMutation = { __typename?: "Mutation" } & {
   updateImage: { __typename?: "UpdateImageResponse" } & Pick<
     UpdateImageResponse,
     "success" | "message"
-  > & { image?: Maybe<{ __typename?: "Image" } & ImageInfoFragment> };
+  > & { updatedImage?: Maybe<{ __typename?: "Image" } & ImageInfoFragment> };
 };
 
 export type DeleteImageMutationVariables = Exact<{
   id: Scalars["Int"];
 }>;
 
-export type DeleteImageMutation = { __typename?: "Mutation" } & Pick<Mutation, "deleteImage">;
+export type DeleteImageMutation = { __typename?: "Mutation" } & Pick<
+  Mutation,
+  "deleteImage"
+>;
 
 export type LocationInfoFragment = { __typename: "Location" } & Pick<
   Location,
-  "id" | "name" | "tag" | "description" | "countOfPhotos" | "createdAt" | "updatedAt"
+  | "id"
+  | "name"
+  | "tag"
+  | "description"
+  | "countOfPhotos"
+  | "createdAt"
+  | "updatedAt"
 > & { coverImage?: Maybe<{ __typename?: "Image" } & ImageInfoFragment> };
 
 export type SearchLocationsQueryVariables = Exact<{
@@ -1410,39 +1588,59 @@ export type LocationQuery = { __typename?: "Query" } & {
 };
 
 export type AddLocationMutationVariables = Exact<{
-  input: LocationInput;
+  input: AddLocationInput;
 }>;
 
 export type AddLocationMutation = { __typename?: "Mutation" } & {
-  addLocation: { __typename?: "Location" } & LocationInfoFragment;
+  addLocation: { __typename?: "AddLocationResponse" } & Pick<
+    AddLocationResponse,
+    "success" | "message"
+  > & {
+      newLocation?: Maybe<{ __typename?: "Location" } & LocationInfoFragment>;
+    };
 };
 
 export type UpdateLocationMutationVariables = Exact<{
   id: Scalars["Int"];
-  input: LocationUpdateInput;
+  input: UpdateLocationInput;
 }>;
 
 export type UpdateLocationMutation = { __typename?: "Mutation" } & {
-  updateLocation?: Maybe<{ __typename?: "Location" } & LocationInfoFragment>;
+  updateLocation: { __typename?: "UpdateLocationResponse" } & Pick<
+    UpdateLocationResponse,
+    "success" | "message"
+  > & {
+      updatedLocation?: Maybe<
+        { __typename?: "Location" } & LocationInfoFragment
+      >;
+    };
 };
 
 export type DeleteLocationMutationVariables = Exact<{
   id: Scalars["Int"];
 }>;
 
-export type DeleteLocationMutation = { __typename?: "Mutation" } & Pick<Mutation, "deleteLocation">;
+export type DeleteLocationMutation = { __typename?: "Mutation" } & Pick<
+  Mutation,
+  "deleteLocation"
+>;
 
 export type GetApiTokenMutationVariables = Exact<{
   input: GetApiTokenInput;
 }>;
 
-export type GetApiTokenMutation = { __typename?: "Mutation" } & Pick<Mutation, "getApiToken">;
+export type GetApiTokenMutation = { __typename?: "Mutation" } & Pick<
+  Mutation,
+  "getApiToken"
+>;
 
 export type PhotoCountBySubjectQueryVariables = Exact<{ [key: string]: never }>;
 
 export type PhotoCountBySubjectQuery = { __typename?: "Query" } & {
   photoCountBySubject: { __typename?: "ItemCountList" } & {
-    itemCountList: Array<{ __typename?: "ItemCount" } & Pick<ItemCount, "name" | "count">>;
+    itemCountList: Array<
+      { __typename?: "ItemCount" } & Pick<ItemCount, "name" | "count">
+    >;
   };
 };
 
@@ -1450,7 +1648,9 @@ export type PhotoCountByTagQueryVariables = Exact<{ [key: string]: never }>;
 
 export type PhotoCountByTagQuery = { __typename?: "Query" } & {
   photoCountByTag: { __typename?: "ItemCountList" } & {
-    itemCountList: Array<{ __typename?: "ItemCount" } & Pick<ItemCount, "name" | "count">>;
+    itemCountList: Array<
+      { __typename?: "ItemCount" } & Pick<ItemCount, "name" | "count">
+    >;
   };
 };
 
@@ -1460,7 +1660,9 @@ export type PhotoCountByCollectionQueryVariables = Exact<{
 
 export type PhotoCountByCollectionQuery = { __typename?: "Query" } & {
   photoCountByCollection: { __typename?: "ItemCountList" } & {
-    itemCountList: Array<{ __typename?: "ItemCount" } & Pick<ItemCount, "name" | "count">>;
+    itemCountList: Array<
+      { __typename?: "ItemCount" } & Pick<ItemCount, "name" | "count">
+    >;
   };
 };
 
@@ -1470,7 +1672,9 @@ export type PhotoCountByLocationQueryVariables = Exact<{
 
 export type PhotoCountByLocationQuery = { __typename?: "Query" } & {
   photoCountByLocation: { __typename?: "ItemCountList" } & {
-    itemCountList: Array<{ __typename?: "ItemCount" } & Pick<ItemCount, "name" | "count">>;
+    itemCountList: Array<
+      { __typename?: "ItemCount" } & Pick<ItemCount, "name" | "count">
+    >;
   };
 };
 
@@ -1480,7 +1684,9 @@ export type PhotoCountByPhotographerQueryVariables = Exact<{
 
 export type PhotoCountByPhotographerQuery = { __typename?: "Query" } & {
   photoCountByPhotographer: { __typename?: "ItemCountList" } & {
-    itemCountList: Array<{ __typename?: "ItemCount" } & Pick<ItemCount, "name" | "count">>;
+    itemCountList: Array<
+      { __typename?: "ItemCount" } & Pick<ItemCount, "name" | "count">
+    >;
   };
 };
 
@@ -1512,24 +1718,40 @@ export type PhotographerQueryVariables = Exact<{
 }>;
 
 export type PhotographerQuery = { __typename?: "Query" } & {
-  photographer?: Maybe<{ __typename?: "Photographer" } & PhotographerInfoFragment>;
+  photographer?: Maybe<
+    { __typename?: "Photographer" } & PhotographerInfoFragment
+  >;
 };
 
 export type AddPhotographerMutationVariables = Exact<{
-  input: PhotographerInput;
+  input: AddPhotographerInput;
 }>;
 
 export type AddPhotographerMutation = { __typename?: "Mutation" } & {
-  addPhotographer: { __typename?: "Photographer" } & PhotographerInfoFragment;
+  addPhotographer: { __typename?: "AddPhotographerResponse" } & Pick<
+    AddPhotographerResponse,
+    "success" | "message"
+  > & {
+      newPhotographer?: Maybe<
+        { __typename?: "Photographer" } & PhotographerInfoFragment
+      >;
+    };
 };
 
 export type UpdatePhotographerMutationVariables = Exact<{
   id: Scalars["Int"];
-  input: PhotographerUpdateInput;
+  input: UpdatePhotographerInput;
 }>;
 
 export type UpdatePhotographerMutation = { __typename?: "Mutation" } & {
-  updatePhotographer?: Maybe<{ __typename?: "Photographer" } & PhotographerInfoFragment>;
+  updatePhotographer: { __typename?: "UpdatePhotographerResponse" } & Pick<
+    UpdatePhotographerResponse,
+    "success" | "message"
+  > & {
+      updatedPhotographer?: Maybe<
+        { __typename?: "Photographer" } & PhotographerInfoFragment
+      >;
+    };
 };
 
 export type DeletePhotographerMutationVariables = Exact<{
@@ -1559,8 +1781,12 @@ export type PhotoInfoFragment = { __typename?: "Photo" } & Pick<
   | "updatedAt"
 > & {
     images: Array<{ __typename?: "Image" } & ImageInfoFragment>;
-    photographer?: Maybe<{ __typename?: "Photographer" } & Pick<Photographer, "id" | "name">>;
-    location?: Maybe<{ __typename?: "Location" } & Pick<Location, "id" | "name">>;
+    photographer?: Maybe<
+      { __typename?: "Photographer" } & Pick<Photographer, "id" | "name">
+    >;
+    location?: Maybe<
+      { __typename?: "Location" } & Pick<Location, "id" | "name">
+    >;
     subjectsInPhoto?: Maybe<
       Array<
         { __typename?: "PhotoSubject" } & {
@@ -1578,7 +1804,10 @@ export type PhotoInfoFragment = { __typename?: "Photo" } & Pick<
     collectionsForPhoto?: Maybe<
       Array<
         { __typename?: "PhotoCollection" } & {
-          collection: { __typename?: "Collection" } & Pick<Collection, "id" | "name">;
+          collection: { __typename?: "Collection" } & Pick<
+            Collection,
+            "id" | "name"
+          >;
         }
       >
     >;
@@ -1642,60 +1871,69 @@ export type PhotoEditOptionsQuery = { __typename?: "Query" } & {
       >
     >;
     locations: Array<
-      { __typename?: "LocationSelectionOption" } & Pick<LocationSelectionOption, "id" | "name">
+      { __typename?: "LocationSelectionOption" } & Pick<
+        LocationSelectionOption,
+        "id" | "name"
+      >
     >;
     subjects: Array<
-      { __typename?: "SubjectSelectionOption" } & Pick<SubjectSelectionOption, "id" | "name">
+      { __typename?: "SubjectSelectionOption" } & Pick<
+        SubjectSelectionOption,
+        "id" | "name"
+      >
     >;
-    tags: Array<{ __typename?: "TagSelectionOption" } & Pick<TagSelectionOption, "id" | "name">>;
+    tags: Array<
+      { __typename?: "TagSelectionOption" } & Pick<
+        TagSelectionOption,
+        "id" | "name"
+      >
+    >;
     collections: Array<
-      { __typename?: "CollectionSelectionOption" } & Pick<CollectionSelectionOption, "id" | "name">
+      { __typename?: "CollectionSelectionOption" } & Pick<
+        CollectionSelectionOption,
+        "id" | "name"
+      >
     >;
     finishes: Array<
-      { __typename?: "FinishSelectionOption" } & Pick<FinishSelectionOption, "id" | "name">
+      { __typename?: "FinishSelectionOption" } & Pick<
+        FinishSelectionOption,
+        "id" | "name"
+      >
     >;
   };
 };
 
 export type AddPhotoMutationVariables = Exact<{
-  input: PhotoInput;
+  input: AddPhotoInput;
 }>;
 
 export type AddPhotoMutation = { __typename?: "Mutation" } & {
-  addPhoto: { __typename?: "Photo" } & PhotoInfoFragment;
+  addPhoto: { __typename?: "AddPhotoResponse" } & Pick<
+    AddPhotoResponse,
+    "success" | "message"
+  > & { newPhoto?: Maybe<{ __typename?: "Photo" } & PhotoInfoFragment> };
 };
 
 export type UpdatePhotoMutationVariables = Exact<{
   id: Scalars["Int"];
-  input: PhotoUpdateInput;
+  input: UpdatePhotoInput;
 }>;
 
 export type UpdatePhotoMutation = { __typename?: "Mutation" } & {
   updatePhoto: { __typename?: "UpdatePhotoResponse" } & Pick<
     UpdatePhotoResponse,
     "success" | "message"
-  > & {
-      photo?: Maybe<
-        { __typename?: "Photo" } & Pick<
-          Photo,
-          | "title"
-          | "description"
-          | "basePrice"
-          | "priceModifier"
-          | "isFeatured"
-          | "isLimitedEdition"
-          | "isDiscontinued"
-          | "rating"
-        >
-      >;
-    };
+  > & { updatedPhoto?: Maybe<{ __typename?: "Photo" } & PhotoInfoFragment> };
 };
 
 export type DeletePhotoMutationVariables = Exact<{
   id: Scalars["Int"];
 }>;
 
-export type DeletePhotoMutation = { __typename?: "Mutation" } & Pick<Mutation, "deletePhoto">;
+export type DeletePhotoMutation = { __typename?: "Mutation" } & Pick<
+  Mutation,
+  "deletePhoto"
+>;
 
 export type SubjectInfoFragment = { __typename?: "Subject" } & Pick<
   Subject,
@@ -1721,27 +1959,38 @@ export type SubjectQuery = { __typename?: "Query" } & {
 };
 
 export type AddSubjectMutationVariables = Exact<{
-  input: SubjectInput;
+  input: AddSubjectInput;
 }>;
 
 export type AddSubjectMutation = { __typename?: "Mutation" } & {
-  addSubject: { __typename?: "Subject" } & SubjectInfoFragment;
+  addSubject: { __typename?: "AddSubjectResponse" } & Pick<
+    AddSubjectResponse,
+    "success" | "message"
+  > & { newSubject?: Maybe<{ __typename?: "Subject" } & SubjectInfoFragment> };
 };
 
 export type UpdateSubjectMutationVariables = Exact<{
   id: Scalars["Int"];
-  input: SubjectUpdateInput;
+  input: UpdateSubjectInput;
 }>;
 
 export type UpdateSubjectMutation = { __typename?: "Mutation" } & {
-  updateSubject: { __typename?: "Subject" } & SubjectInfoFragment;
+  updateSubject: { __typename?: "UpdateSubjectResponse" } & Pick<
+    UpdateSubjectResponse,
+    "success" | "message"
+  > & {
+      updatedSubject?: Maybe<{ __typename?: "Subject" } & SubjectInfoFragment>;
+    };
 };
 
 export type DeleteSubjectMutationVariables = Exact<{
   id: Scalars["Int"];
 }>;
 
-export type DeleteSubjectMutation = { __typename?: "Mutation" } & Pick<Mutation, "deleteSubject">;
+export type DeleteSubjectMutation = { __typename?: "Mutation" } & Pick<
+  Mutation,
+  "deleteSubject"
+>;
 
 export type TagInfoFragment = { __typename?: "Tag" } & Pick<
   Tag,
@@ -1767,27 +2016,36 @@ export type TagQuery = { __typename?: "Query" } & {
 };
 
 export type AddTagMutationVariables = Exact<{
-  input: TagInput;
+  input: AddTagInput;
 }>;
 
 export type AddTagMutation = { __typename?: "Mutation" } & {
-  addTag: { __typename?: "Tag" } & TagInfoFragment;
+  addTag: { __typename?: "AddTagResponse" } & Pick<
+    AddTagResponse,
+    "success" | "message"
+  > & { newTag?: Maybe<{ __typename?: "Tag" } & TagInfoFragment> };
 };
 
 export type UpdateTagMutationVariables = Exact<{
   id: Scalars["Int"];
-  input: TagUpdateInput;
+  input: UpdateTagInput;
 }>;
 
 export type UpdateTagMutation = { __typename?: "Mutation" } & {
-  updateTag: { __typename?: "Tag" } & TagInfoFragment;
+  updateTag: { __typename?: "UpdateTagResponse" } & Pick<
+    UpdateTagResponse,
+    "message" | "success"
+  > & { updatedTag?: Maybe<{ __typename?: "Tag" } & TagInfoFragment> };
 };
 
 export type DeleteTagMutationVariables = Exact<{
   id: Scalars["Int"];
 }>;
 
-export type DeleteTagMutation = { __typename?: "Mutation" } & Pick<Mutation, "deleteTag">;
+export type DeleteTagMutation = { __typename?: "Mutation" } & Pick<
+  Mutation,
+  "deleteTag"
+>;
 
 export const ImageInfoFragmentDoc: DocumentNode<ImageInfoFragment, unknown> = {
   kind: "Document",
@@ -1797,7 +2055,7 @@ export const ImageInfoFragmentDoc: DocumentNode<ImageInfoFragment, unknown> = {
       name: { kind: "Name", value: "ImageInfo" },
       typeCondition: {
         kind: "NamedType",
-        name: { kind: "Name", value: "Image" }
+        name: { kind: "Name", value: "Image" },
       },
       selectionSet: {
         kind: "SelectionSet",
@@ -1811,13 +2069,16 @@ export const ImageInfoFragmentDoc: DocumentNode<ImageInfoFragment, unknown> = {
           { kind: "Field", name: { kind: "Name", value: "width" } },
           { kind: "Field", name: { kind: "Name", value: "height" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } }
-        ]
-      }
-    }
-  ]
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
+    },
+  ],
 };
-export const CollectionInfoFragmentDoc: DocumentNode<CollectionInfoFragment, unknown> = {
+export const CollectionInfoFragmentDoc: DocumentNode<
+  CollectionInfoFragment,
+  unknown
+> = {
   kind: "Document",
   definitions: [
     {
@@ -1825,7 +2086,7 @@ export const CollectionInfoFragmentDoc: DocumentNode<CollectionInfoFragment, unk
       name: { kind: "Name", value: "CollectionInfo" },
       typeCondition: {
         kind: "NamedType",
-        name: { kind: "Name", value: "Collection" }
+        name: { kind: "Name", value: "Collection" },
       },
       selectionSet: {
         kind: "SelectionSet",
@@ -1843,21 +2104,24 @@ export const CollectionInfoFragmentDoc: DocumentNode<CollectionInfoFragment, unk
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "ImageInfo" }
-                }
-              ]
-            }
+                  name: { kind: "Name", value: "ImageInfo" },
+                },
+              ],
+            },
           },
           { kind: "Field", name: { kind: "Name", value: "__typename" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } }
-        ]
-      }
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
     },
-    ...ImageInfoFragmentDoc.definitions
-  ]
+    ...ImageInfoFragmentDoc.definitions,
+  ],
 };
-export const FinishInfoFragmentDoc: DocumentNode<FinishInfoFragment, unknown> = {
+export const FinishInfoFragmentDoc: DocumentNode<
+  FinishInfoFragment,
+  unknown
+> = {
   kind: "Document",
   definitions: [
     {
@@ -1865,7 +2129,7 @@ export const FinishInfoFragmentDoc: DocumentNode<FinishInfoFragment, unknown> = 
       name: { kind: "Name", value: "FinishInfo" },
       typeCondition: {
         kind: "NamedType",
-        name: { kind: "Name", value: "Finish" }
+        name: { kind: "Name", value: "Finish" },
       },
       selectionSet: {
         kind: "SelectionSet",
@@ -1891,21 +2155,24 @@ export const FinishInfoFragmentDoc: DocumentNode<FinishInfoFragment, unknown> = 
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "ImageInfo" }
-                }
-              ]
-            }
+                  name: { kind: "Name", value: "ImageInfo" },
+                },
+              ],
+            },
           },
           { kind: "Field", name: { kind: "Name", value: "__typename" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } }
-        ]
-      }
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
     },
-    ...ImageInfoFragmentDoc.definitions
-  ]
+    ...ImageInfoFragmentDoc.definitions,
+  ],
 };
-export const LocationInfoFragmentDoc: DocumentNode<LocationInfoFragment, unknown> = {
+export const LocationInfoFragmentDoc: DocumentNode<
+  LocationInfoFragment,
+  unknown
+> = {
   kind: "Document",
   definitions: [
     {
@@ -1913,7 +2180,7 @@ export const LocationInfoFragmentDoc: DocumentNode<LocationInfoFragment, unknown
       name: { kind: "Name", value: "LocationInfo" },
       typeCondition: {
         kind: "NamedType",
-        name: { kind: "Name", value: "Location" }
+        name: { kind: "Name", value: "Location" },
       },
       selectionSet: {
         kind: "SelectionSet",
@@ -1931,21 +2198,24 @@ export const LocationInfoFragmentDoc: DocumentNode<LocationInfoFragment, unknown
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "ImageInfo" }
-                }
-              ]
-            }
+                  name: { kind: "Name", value: "ImageInfo" },
+                },
+              ],
+            },
           },
           { kind: "Field", name: { kind: "Name", value: "__typename" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } }
-        ]
-      }
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
     },
-    ...ImageInfoFragmentDoc.definitions
-  ]
+    ...ImageInfoFragmentDoc.definitions,
+  ],
 };
-export const PhotographerInfoFragmentDoc: DocumentNode<PhotographerInfoFragment, unknown> = {
+export const PhotographerInfoFragmentDoc: DocumentNode<
+  PhotographerInfoFragment,
+  unknown
+> = {
   kind: "Document",
   definitions: [
     {
@@ -1953,7 +2223,7 @@ export const PhotographerInfoFragmentDoc: DocumentNode<PhotographerInfoFragment,
       name: { kind: "Name", value: "PhotographerInfo" },
       typeCondition: {
         kind: "NamedType",
-        name: { kind: "Name", value: "Photographer" }
+        name: { kind: "Name", value: "Photographer" },
       },
       selectionSet: {
         kind: "SelectionSet",
@@ -1973,18 +2243,18 @@ export const PhotographerInfoFragmentDoc: DocumentNode<PhotographerInfoFragment,
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "ImageInfo" }
-                }
-              ]
-            }
+                  name: { kind: "Name", value: "ImageInfo" },
+                },
+              ],
+            },
           },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } }
-        ]
-      }
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
     },
-    ...ImageInfoFragmentDoc.definitions
-  ]
+    ...ImageInfoFragmentDoc.definitions,
+  ],
 };
 export const PhotoInfoFragmentDoc: DocumentNode<PhotoInfoFragment, unknown> = {
   kind: "Document",
@@ -1994,7 +2264,7 @@ export const PhotoInfoFragmentDoc: DocumentNode<PhotoInfoFragment, unknown> = {
       name: { kind: "Name", value: "PhotoInfo" },
       typeCondition: {
         kind: "NamedType",
-        name: { kind: "Name", value: "Photo" }
+        name: { kind: "Name", value: "Photo" },
       },
       selectionSet: {
         kind: "SelectionSet",
@@ -2019,10 +2289,10 @@ export const PhotoInfoFragmentDoc: DocumentNode<PhotoInfoFragment, unknown> = {
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "ImageInfo" }
-                }
-              ]
-            }
+                  name: { kind: "Name", value: "ImageInfo" },
+                },
+              ],
+            },
           },
           {
             kind: "Field",
@@ -2031,9 +2301,9 @@ export const PhotoInfoFragmentDoc: DocumentNode<PhotoInfoFragment, unknown> = {
               kind: "SelectionSet",
               selections: [
                 { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } }
-              ]
-            }
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
           },
           {
             kind: "Field",
@@ -2042,9 +2312,9 @@ export const PhotoInfoFragmentDoc: DocumentNode<PhotoInfoFragment, unknown> = {
               kind: "SelectionSet",
               selections: [
                 { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "name" } }
-              ]
-            }
+                { kind: "Field", name: { kind: "Name", value: "name" } },
+              ],
+            },
           },
           {
             kind: "Field",
@@ -2059,12 +2329,12 @@ export const PhotoInfoFragmentDoc: DocumentNode<PhotoInfoFragment, unknown> = {
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } }
-                    ]
-                  }
-                }
-              ]
-            }
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
+              ],
+            },
           },
           {
             kind: "Field",
@@ -2079,12 +2349,12 @@ export const PhotoInfoFragmentDoc: DocumentNode<PhotoInfoFragment, unknown> = {
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } }
-                    ]
-                  }
-                }
-              ]
-            }
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
+              ],
+            },
           },
           {
             kind: "Field",
@@ -2099,12 +2369,12 @@ export const PhotoInfoFragmentDoc: DocumentNode<PhotoInfoFragment, unknown> = {
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } }
-                    ]
-                  }
-                }
-              ]
-            }
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
+              ],
+            },
           },
           {
             kind: "Field",
@@ -2119,23 +2389,26 @@ export const PhotoInfoFragmentDoc: DocumentNode<PhotoInfoFragment, unknown> = {
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } }
-                    ]
-                  }
-                }
-              ]
-            }
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
+              ],
+            },
           },
           { kind: "Field", name: { kind: "Name", value: "isDiscontinued" } },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } }
-        ]
-      }
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
     },
-    ...ImageInfoFragmentDoc.definitions
-  ]
+    ...ImageInfoFragmentDoc.definitions,
+  ],
 };
-export const SubjectInfoFragmentDoc: DocumentNode<SubjectInfoFragment, unknown> = {
+export const SubjectInfoFragmentDoc: DocumentNode<
+  SubjectInfoFragment,
+  unknown
+> = {
   kind: "Document",
   definitions: [
     {
@@ -2143,7 +2416,7 @@ export const SubjectInfoFragmentDoc: DocumentNode<SubjectInfoFragment, unknown> 
       name: { kind: "Name", value: "SubjectInfo" },
       typeCondition: {
         kind: "NamedType",
-        name: { kind: "Name", value: "Subject" }
+        name: { kind: "Name", value: "Subject" },
       },
       selectionSet: {
         kind: "SelectionSet",
@@ -2160,18 +2433,18 @@ export const SubjectInfoFragmentDoc: DocumentNode<SubjectInfoFragment, unknown> 
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "ImageInfo" }
-                }
-              ]
-            }
+                  name: { kind: "Name", value: "ImageInfo" },
+                },
+              ],
+            },
           },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } }
-        ]
-      }
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
     },
-    ...ImageInfoFragmentDoc.definitions
-  ]
+    ...ImageInfoFragmentDoc.definitions,
+  ],
 };
 export const TagInfoFragmentDoc: DocumentNode<TagInfoFragment, unknown> = {
   kind: "Document",
@@ -2181,7 +2454,7 @@ export const TagInfoFragmentDoc: DocumentNode<TagInfoFragment, unknown> = {
       name: { kind: "Name", value: "TagInfo" },
       typeCondition: {
         kind: "NamedType",
-        name: { kind: "Name", value: "Tag" }
+        name: { kind: "Name", value: "Tag" },
       },
       selectionSet: {
         kind: "SelectionSet",
@@ -2198,18 +2471,18 @@ export const TagInfoFragmentDoc: DocumentNode<TagInfoFragment, unknown> = {
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "ImageInfo" }
-                }
-              ]
-            }
+                  name: { kind: "Name", value: "ImageInfo" },
+                },
+              ],
+            },
           },
           { kind: "Field", name: { kind: "Name", value: "createdAt" } },
-          { kind: "Field", name: { kind: "Name", value: "updatedAt" } }
-        ]
-      }
+          { kind: "Field", name: { kind: "Name", value: "updatedAt" } },
+        ],
+      },
     },
-    ...ImageInfoFragmentDoc.definitions
-  ]
+    ...ImageInfoFragmentDoc.definitions,
+  ],
 };
 export const SearchCollectionsDocument: DocumentNode<
   SearchCollectionsQuery,
@@ -2226,16 +2499,16 @@ export const SearchCollectionsDocument: DocumentNode<
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "SearchCollectionsInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "SearchCollectionsInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2249,9 +2522,9 @@ export const SearchCollectionsDocument: DocumentNode<
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -2265,21 +2538,24 @@ export const SearchCollectionsDocument: DocumentNode<
                     selections: [
                       {
                         kind: "FragmentSpread",
-                        name: { kind: "Name", value: "CollectionInfo" }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                        name: { kind: "Name", value: "CollectionInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...CollectionInfoFragmentDoc.definitions
-  ]
+    ...CollectionInfoFragmentDoc.definitions,
+  ],
 };
-export const CollectionDocument: DocumentNode<CollectionQuery, CollectionQueryVariables> = {
+export const CollectionDocument: DocumentNode<
+  CollectionQuery,
+  CollectionQueryVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -2292,9 +2568,9 @@ export const CollectionDocument: DocumentNode<CollectionQuery, CollectionQueryVa
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2308,25 +2584,25 @@ export const CollectionDocument: DocumentNode<CollectionQuery, CollectionQueryVa
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
+                  name: { kind: "Name", value: "id" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "CollectionInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  name: { kind: "Name", value: "CollectionInfo" },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...CollectionInfoFragmentDoc.definitions
-  ]
+    ...CollectionInfoFragmentDoc.definitions,
+  ],
 };
 export const AddCollectionDocument: DocumentNode<
   AddCollectionMutation,
@@ -2343,16 +2619,16 @@ export const AddCollectionDocument: DocumentNode<
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "CollectionInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "AddCollectionInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2366,25 +2642,36 @@ export const AddCollectionDocument: DocumentNode<
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "CollectionInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "newCollection" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "CollectionInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...CollectionInfoFragmentDoc.definitions
-  ]
+    ...CollectionInfoFragmentDoc.definitions,
+  ],
 };
 export const UpdateCollectionDocument: DocumentNode<
   UpdateCollectionMutation,
@@ -2402,23 +2689,23 @@ export const UpdateCollectionDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
         },
         {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "CollectionUpdateInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "UpdateCollectionInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2432,33 +2719,44 @@ export const UpdateCollectionDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
+                  name: { kind: "Name", value: "id" },
+                },
               },
               {
                 kind: "Argument",
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "CollectionInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "updatedCollection" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "CollectionInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...CollectionInfoFragmentDoc.definitions
-  ]
+    ...CollectionInfoFragmentDoc.definitions,
+  ],
 };
 export const DeleteCollectionDocument: DocumentNode<
   DeleteCollectionMutation,
@@ -2476,9 +2774,9 @@ export const DeleteCollectionDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2492,15 +2790,15 @@ export const DeleteCollectionDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };
 export const SearchFinishesDocument: DocumentNode<
   SearchFinishesQuery,
@@ -2517,16 +2815,16 @@ export const SearchFinishesDocument: DocumentNode<
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "SearchFinishesInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "SearchFinishesInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2540,9 +2838,9 @@ export const SearchFinishesDocument: DocumentNode<
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -2556,19 +2854,19 @@ export const SearchFinishesDocument: DocumentNode<
                     selections: [
                       {
                         kind: "FragmentSpread",
-                        name: { kind: "Name", value: "FinishInfo" }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                        name: { kind: "Name", value: "FinishInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...FinishInfoFragmentDoc.definitions
-  ]
+    ...FinishInfoFragmentDoc.definitions,
+  ],
 };
 export const FinishDocument: DocumentNode<FinishQuery, FinishQueryVariables> = {
   kind: "Document",
@@ -2583,9 +2881,9 @@ export const FinishDocument: DocumentNode<FinishQuery, FinishQueryVariables> = {
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2599,27 +2897,30 @@ export const FinishDocument: DocumentNode<FinishQuery, FinishQueryVariables> = {
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
+                  name: { kind: "Name", value: "id" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "FinishInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  name: { kind: "Name", value: "FinishInfo" },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...FinishInfoFragmentDoc.definitions
-  ]
+    ...FinishInfoFragmentDoc.definitions,
+  ],
 };
-export const AddFinishDocument: DocumentNode<AddFinishMutation, AddFinishMutationVariables> = {
+export const AddFinishDocument: DocumentNode<
+  AddFinishMutation,
+  AddFinishMutationVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -2631,16 +2932,16 @@ export const AddFinishDocument: DocumentNode<AddFinishMutation, AddFinishMutatio
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "FinishInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "AddFinishInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2654,25 +2955,36 @@ export const AddFinishDocument: DocumentNode<AddFinishMutation, AddFinishMutatio
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "FinishInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "newFinish" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "FinishInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...FinishInfoFragmentDoc.definitions
-  ]
+    ...FinishInfoFragmentDoc.definitions,
+  ],
 };
 export const UpdateFinishDocument: DocumentNode<
   UpdateFinishMutation,
@@ -2690,23 +3002,23 @@ export const UpdateFinishDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
         },
         {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "FinishUpdateInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "UpdateFinishInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2720,33 +3032,44 @@ export const UpdateFinishDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
+                  name: { kind: "Name", value: "id" },
+                },
               },
               {
                 kind: "Argument",
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "FinishInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "updatedFinish" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "FinishInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...FinishInfoFragmentDoc.definitions
-  ]
+    ...FinishInfoFragmentDoc.definitions,
+  ],
 };
 export const DeleteFinishDocument: DocumentNode<
   DeleteFinishMutation,
@@ -2764,9 +3087,9 @@ export const DeleteFinishDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2780,17 +3103,69 @@ export const DeleteFinishDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };
-export const AddImageDocument: DocumentNode<AddImageMutation, AddImageMutationVariables> = {
+export const ImageDocument: DocumentNode<ImageQuery, ImageQueryVariables> = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "query",
+      name: { kind: "Name", value: "image" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "image" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                {
+                  kind: "FragmentSpread",
+                  name: { kind: "Name", value: "ImageInfo" },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...ImageInfoFragmentDoc.definitions,
+  ],
+};
+export const AddImageDocument: DocumentNode<
+  AddImageMutation,
+  AddImageMutationVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -2802,16 +3177,16 @@ export const AddImageDocument: DocumentNode<AddImageMutation, AddImageMutationVa
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "ImageInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "AddImageInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2825,25 +3200,36 @@ export const AddImageDocument: DocumentNode<AddImageMutation, AddImageMutationVa
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "ImageInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "newImage" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "ImageInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...ImageInfoFragmentDoc.definitions
-  ]
+    ...ImageInfoFragmentDoc.definitions,
+  ],
 };
 export const UpdateImageDocument: DocumentNode<
   UpdateImageMutation,
@@ -2861,23 +3247,23 @@ export const UpdateImageDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
         },
         {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "ImageUpdateInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "UpdateImageInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2891,17 +3277,17 @@ export const UpdateImageDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
+                  name: { kind: "Name", value: "id" },
+                },
               },
               {
                 kind: "Argument",
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -2910,25 +3296,25 @@ export const UpdateImageDocument: DocumentNode<
                 { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
                   kind: "Field",
-                  name: { kind: "Name", value: "image" },
+                  name: { kind: "Name", value: "updatedImage" },
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
                       {
                         kind: "FragmentSpread",
-                        name: { kind: "Name", value: "ImageInfo" }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                        name: { kind: "Name", value: "ImageInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...ImageInfoFragmentDoc.definitions
-  ]
+    ...ImageInfoFragmentDoc.definitions,
+  ],
 };
 export const DeleteImageDocument: DocumentNode<
   DeleteImageMutation,
@@ -2946,9 +3332,9 @@ export const DeleteImageDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -2962,15 +3348,15 @@ export const DeleteImageDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };
 export const SearchLocationsDocument: DocumentNode<
   SearchLocationsQuery,
@@ -2987,16 +3373,16 @@ export const SearchLocationsDocument: DocumentNode<
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "SearchLocationsInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "SearchLocationsInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3010,9 +3396,9 @@ export const SearchLocationsDocument: DocumentNode<
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -3026,21 +3412,24 @@ export const SearchLocationsDocument: DocumentNode<
                     selections: [
                       {
                         kind: "FragmentSpread",
-                        name: { kind: "Name", value: "LocationInfo" }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                        name: { kind: "Name", value: "LocationInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...LocationInfoFragmentDoc.definitions
-  ]
+    ...LocationInfoFragmentDoc.definitions,
+  ],
 };
-export const LocationDocument: DocumentNode<LocationQuery, LocationQueryVariables> = {
+export const LocationDocument: DocumentNode<
+  LocationQuery,
+  LocationQueryVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -3053,9 +3442,9 @@ export const LocationDocument: DocumentNode<LocationQuery, LocationQueryVariable
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3069,25 +3458,25 @@ export const LocationDocument: DocumentNode<LocationQuery, LocationQueryVariable
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
+                  name: { kind: "Name", value: "id" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "LocationInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  name: { kind: "Name", value: "LocationInfo" },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...LocationInfoFragmentDoc.definitions
-  ]
+    ...LocationInfoFragmentDoc.definitions,
+  ],
 };
 export const AddLocationDocument: DocumentNode<
   AddLocationMutation,
@@ -3104,16 +3493,16 @@ export const AddLocationDocument: DocumentNode<
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "LocationInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "AddLocationInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3127,25 +3516,36 @@ export const AddLocationDocument: DocumentNode<
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "LocationInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "newLocation" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "LocationInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...LocationInfoFragmentDoc.definitions
-  ]
+    ...LocationInfoFragmentDoc.definitions,
+  ],
 };
 export const UpdateLocationDocument: DocumentNode<
   UpdateLocationMutation,
@@ -3163,23 +3563,23 @@ export const UpdateLocationDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
         },
         {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "LocationUpdateInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "UpdateLocationInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3193,33 +3593,44 @@ export const UpdateLocationDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
+                  name: { kind: "Name", value: "id" },
+                },
               },
               {
                 kind: "Argument",
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "LocationInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "updatedLocation" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "LocationInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...LocationInfoFragmentDoc.definitions
-  ]
+    ...LocationInfoFragmentDoc.definitions,
+  ],
 };
 export const DeleteLocationDocument: DocumentNode<
   DeleteLocationMutation,
@@ -3237,9 +3648,9 @@ export const DeleteLocationDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3253,15 +3664,15 @@ export const DeleteLocationDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };
 export const GetApiTokenDocument: DocumentNode<
   GetApiTokenMutation,
@@ -3278,16 +3689,16 @@ export const GetApiTokenDocument: DocumentNode<
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "GetApiTokenInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "GetApiTokenInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3301,15 +3712,15 @@ export const GetApiTokenDocument: DocumentNode<
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };
 export const PhotoCountBySubjectDocument: DocumentNode<
   PhotoCountBySubjectQuery,
@@ -3337,17 +3748,17 @@ export const PhotoCountBySubjectDocument: DocumentNode<
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "name" } },
-                      { kind: "Field", name: { kind: "Name", value: "count" } }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
+                      { kind: "Field", name: { kind: "Name", value: "count" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
 };
 export const PhotoCountByTagDocument: DocumentNode<
   PhotoCountByTagQuery,
@@ -3375,17 +3786,17 @@ export const PhotoCountByTagDocument: DocumentNode<
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "name" } },
-                      { kind: "Field", name: { kind: "Name", value: "count" } }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
+                      { kind: "Field", name: { kind: "Name", value: "count" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
 };
 export const PhotoCountByCollectionDocument: DocumentNode<
   PhotoCountByCollectionQuery,
@@ -3413,17 +3824,17 @@ export const PhotoCountByCollectionDocument: DocumentNode<
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "name" } },
-                      { kind: "Field", name: { kind: "Name", value: "count" } }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
+                      { kind: "Field", name: { kind: "Name", value: "count" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
 };
 export const PhotoCountByLocationDocument: DocumentNode<
   PhotoCountByLocationQuery,
@@ -3451,17 +3862,17 @@ export const PhotoCountByLocationDocument: DocumentNode<
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "name" } },
-                      { kind: "Field", name: { kind: "Name", value: "count" } }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
+                      { kind: "Field", name: { kind: "Name", value: "count" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
 };
 export const PhotoCountByPhotographerDocument: DocumentNode<
   PhotoCountByPhotographerQuery,
@@ -3489,17 +3900,17 @@ export const PhotoCountByPhotographerDocument: DocumentNode<
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "name" } },
-                      { kind: "Field", name: { kind: "Name", value: "count" } }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
+                      { kind: "Field", name: { kind: "Name", value: "count" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
 };
 export const SearchPhotographersDocument: DocumentNode<
   SearchPhotographersQuery,
@@ -3516,16 +3927,16 @@ export const SearchPhotographersDocument: DocumentNode<
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "SearchPhotographersInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "SearchPhotographersInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3539,9 +3950,9 @@ export const SearchPhotographersDocument: DocumentNode<
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -3555,21 +3966,24 @@ export const SearchPhotographersDocument: DocumentNode<
                     selections: [
                       {
                         kind: "FragmentSpread",
-                        name: { kind: "Name", value: "PhotographerInfo" }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                        name: { kind: "Name", value: "PhotographerInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...PhotographerInfoFragmentDoc.definitions
-  ]
+    ...PhotographerInfoFragmentDoc.definitions,
+  ],
 };
-export const PhotographerDocument: DocumentNode<PhotographerQuery, PhotographerQueryVariables> = {
+export const PhotographerDocument: DocumentNode<
+  PhotographerQuery,
+  PhotographerQueryVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -3582,9 +3996,9 @@ export const PhotographerDocument: DocumentNode<PhotographerQuery, PhotographerQ
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3598,25 +4012,25 @@ export const PhotographerDocument: DocumentNode<PhotographerQuery, PhotographerQ
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
+                  name: { kind: "Name", value: "id" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "PhotographerInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  name: { kind: "Name", value: "PhotographerInfo" },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...PhotographerInfoFragmentDoc.definitions
-  ]
+    ...PhotographerInfoFragmentDoc.definitions,
+  ],
 };
 export const AddPhotographerDocument: DocumentNode<
   AddPhotographerMutation,
@@ -3633,16 +4047,16 @@ export const AddPhotographerDocument: DocumentNode<
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "PhotographerInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "AddPhotographerInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3656,25 +4070,36 @@ export const AddPhotographerDocument: DocumentNode<
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "PhotographerInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "newPhotographer" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "PhotographerInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...PhotographerInfoFragmentDoc.definitions
-  ]
+    ...PhotographerInfoFragmentDoc.definitions,
+  ],
 };
 export const UpdatePhotographerDocument: DocumentNode<
   UpdatePhotographerMutation,
@@ -3692,23 +4117,23 @@ export const UpdatePhotographerDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
         },
         {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "PhotographerUpdateInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "UpdatePhotographerInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3722,33 +4147,44 @@ export const UpdatePhotographerDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
+                  name: { kind: "Name", value: "id" },
+                },
               },
               {
                 kind: "Argument",
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "PhotographerInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "updatedPhotographer" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "PhotographerInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...PhotographerInfoFragmentDoc.definitions
-  ]
+    ...PhotographerInfoFragmentDoc.definitions,
+  ],
 };
 export const DeletePhotographerDocument: DocumentNode<
   DeletePhotographerMutation,
@@ -3766,9 +4202,9 @@ export const DeletePhotographerDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3782,15 +4218,15 @@ export const DeletePhotographerDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };
 export const PaginatedPhotosDocument: DocumentNode<
   PaginatedPhotosQuery,
@@ -3807,16 +4243,16 @@ export const PaginatedPhotosDocument: DocumentNode<
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "PaginatedPhotosInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "PaginatedPhotosInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3830,9 +4266,9 @@ export const PaginatedPhotosDocument: DocumentNode<
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -3845,15 +4281,15 @@ export const PaginatedPhotosDocument: DocumentNode<
                     selections: [
                       {
                         kind: "Field",
-                        name: { kind: "Name", value: "startCursor" }
+                        name: { kind: "Name", value: "startCursor" },
                       },
                       {
                         kind: "Field",
-                        name: { kind: "Name", value: "endCursor" }
+                        name: { kind: "Name", value: "endCursor" },
                       },
-                      { kind: "Field", name: { kind: "Name", value: "total" } }
-                    ]
-                  }
+                      { kind: "Field", name: { kind: "Name", value: "total" } },
+                    ],
+                  },
                 },
                 {
                   kind: "Field",
@@ -3863,21 +4299,24 @@ export const PaginatedPhotosDocument: DocumentNode<
                     selections: [
                       {
                         kind: "FragmentSpread",
-                        name: { kind: "Name", value: "PhotoInfo" }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                        name: { kind: "Name", value: "PhotoInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...PhotoInfoFragmentDoc.definitions
-  ]
+    ...PhotoInfoFragmentDoc.definitions,
+  ],
 };
-export const SearchPhotosDocument: DocumentNode<SearchPhotosQuery, SearchPhotosQueryVariables> = {
+export const SearchPhotosDocument: DocumentNode<
+  SearchPhotosQuery,
+  SearchPhotosQueryVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -3889,16 +4328,16 @@ export const SearchPhotosDocument: DocumentNode<SearchPhotosQuery, SearchPhotosQ
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "SearchPhotosInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "SearchPhotosInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3912,9 +4351,9 @@ export const SearchPhotosDocument: DocumentNode<SearchPhotosQuery, SearchPhotosQ
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -3928,19 +4367,19 @@ export const SearchPhotosDocument: DocumentNode<SearchPhotosQuery, SearchPhotosQ
                     selections: [
                       {
                         kind: "FragmentSpread",
-                        name: { kind: "Name", value: "PhotoInfo" }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                        name: { kind: "Name", value: "PhotoInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...PhotoInfoFragmentDoc.definitions
-  ]
+    ...PhotoInfoFragmentDoc.definitions,
+  ],
 };
 export const PhotoDocument: DocumentNode<PhotoQuery, PhotoQueryVariables> = {
   kind: "Document",
@@ -3955,9 +4394,9 @@ export const PhotoDocument: DocumentNode<PhotoQuery, PhotoQueryVariables> = {
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -3971,27 +4410,30 @@ export const PhotoDocument: DocumentNode<PhotoQuery, PhotoQueryVariables> = {
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
+                  name: { kind: "Name", value: "id" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "PhotoInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  name: { kind: "Name", value: "PhotoInfo" },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...PhotoInfoFragmentDoc.definitions
-  ]
+    ...PhotoInfoFragmentDoc.definitions,
+  ],
 };
-export const PhotoWithSkuDocument: DocumentNode<PhotoWithSkuQuery, PhotoWithSkuQueryVariables> = {
+export const PhotoWithSkuDocument: DocumentNode<
+  PhotoWithSkuQuery,
+  PhotoWithSkuQueryVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -4004,9 +4446,9 @@ export const PhotoWithSkuDocument: DocumentNode<PhotoWithSkuQuery, PhotoWithSkuQ
           variable: { kind: "Variable", name: { kind: "Name", value: "sku" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4020,25 +4462,25 @@ export const PhotoWithSkuDocument: DocumentNode<PhotoWithSkuQuery, PhotoWithSkuQ
                 name: { kind: "Name", value: "sku" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "sku" }
-                }
-              }
+                  name: { kind: "Name", value: "sku" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "PhotoInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  name: { kind: "Name", value: "PhotoInfo" },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...PhotoInfoFragmentDoc.definitions
-  ]
+    ...PhotoInfoFragmentDoc.definitions,
+  ],
 };
 export const PhotoEditOptionsDocument: DocumentNode<
   PhotoEditOptionsQuery,
@@ -4066,9 +4508,9 @@ export const PhotoEditOptionsDocument: DocumentNode<
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } }
-                    ]
-                  }
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
                 },
                 {
                   kind: "Field",
@@ -4077,9 +4519,9 @@ export const PhotoEditOptionsDocument: DocumentNode<
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } }
-                    ]
-                  }
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
                 },
                 {
                   kind: "Field",
@@ -4088,9 +4530,9 @@ export const PhotoEditOptionsDocument: DocumentNode<
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } }
-                    ]
-                  }
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
                 },
                 {
                   kind: "Field",
@@ -4099,9 +4541,9 @@ export const PhotoEditOptionsDocument: DocumentNode<
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } }
-                    ]
-                  }
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
                 },
                 {
                   kind: "Field",
@@ -4110,9 +4552,9 @@ export const PhotoEditOptionsDocument: DocumentNode<
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } }
-                    ]
-                  }
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
                 },
                 {
                   kind: "Field",
@@ -4121,19 +4563,22 @@ export const PhotoEditOptionsDocument: DocumentNode<
                     kind: "SelectionSet",
                     selections: [
                       { kind: "Field", name: { kind: "Name", value: "id" } },
-                      { kind: "Field", name: { kind: "Name", value: "name" } }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
+                      { kind: "Field", name: { kind: "Name", value: "name" } },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
 };
-export const AddPhotoDocument: DocumentNode<AddPhotoMutation, AddPhotoMutationVariables> = {
+export const AddPhotoDocument: DocumentNode<
+  AddPhotoMutation,
+  AddPhotoMutationVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -4145,16 +4590,16 @@ export const AddPhotoDocument: DocumentNode<AddPhotoMutation, AddPhotoMutationVa
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "PhotoInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "AddPhotoInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4168,25 +4613,36 @@ export const AddPhotoDocument: DocumentNode<AddPhotoMutation, AddPhotoMutationVa
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "PhotoInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "newPhoto" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "PhotoInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...PhotoInfoFragmentDoc.definitions
-  ]
+    ...PhotoInfoFragmentDoc.definitions,
+  ],
 };
 export const UpdatePhotoDocument: DocumentNode<
   UpdatePhotoMutation,
@@ -4204,23 +4660,23 @@ export const UpdatePhotoDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
         },
         {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "PhotoUpdateInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "UpdatePhotoInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4234,17 +4690,17 @@ export const UpdatePhotoDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
+                  name: { kind: "Name", value: "id" },
+                },
               },
               {
                 kind: "Argument",
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -4253,49 +4709,25 @@ export const UpdatePhotoDocument: DocumentNode<
                 { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
                   kind: "Field",
-                  name: { kind: "Name", value: "photo" },
+                  name: { kind: "Name", value: "updatedPhoto" },
                   selectionSet: {
                     kind: "SelectionSet",
                     selections: [
-                      { kind: "Field", name: { kind: "Name", value: "title" } },
                       {
-                        kind: "Field",
-                        name: { kind: "Name", value: "description" }
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "PhotoInfo" },
                       },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "basePrice" }
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "priceModifier" }
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "isFeatured" }
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "isLimitedEdition" }
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "isDiscontinued" }
-                      },
-                      {
-                        kind: "Field",
-                        name: { kind: "Name", value: "rating" }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
-    }
-  ]
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+    ...PhotoInfoFragmentDoc.definitions,
+  ],
 };
 export const DeletePhotoDocument: DocumentNode<
   DeletePhotoMutation,
@@ -4313,9 +4745,9 @@ export const DeletePhotoDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4329,15 +4761,15 @@ export const DeletePhotoDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };
 export const SearchSubjectsDocument: DocumentNode<
   SearchSubjectsQuery,
@@ -4354,16 +4786,16 @@ export const SearchSubjectsDocument: DocumentNode<
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "SearchSubjectsInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "SearchSubjectsInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4377,9 +4809,9 @@ export const SearchSubjectsDocument: DocumentNode<
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -4393,21 +4825,24 @@ export const SearchSubjectsDocument: DocumentNode<
                     selections: [
                       {
                         kind: "FragmentSpread",
-                        name: { kind: "Name", value: "SubjectInfo" }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                        name: { kind: "Name", value: "SubjectInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...SubjectInfoFragmentDoc.definitions
-  ]
+    ...SubjectInfoFragmentDoc.definitions,
+  ],
 };
-export const SubjectDocument: DocumentNode<SubjectQuery, SubjectQueryVariables> = {
+export const SubjectDocument: DocumentNode<
+  SubjectQuery,
+  SubjectQueryVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -4420,9 +4855,9 @@ export const SubjectDocument: DocumentNode<SubjectQuery, SubjectQueryVariables> 
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4436,27 +4871,30 @@ export const SubjectDocument: DocumentNode<SubjectQuery, SubjectQueryVariables> 
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
+                  name: { kind: "Name", value: "id" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "SubjectInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  name: { kind: "Name", value: "SubjectInfo" },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...SubjectInfoFragmentDoc.definitions
-  ]
+    ...SubjectInfoFragmentDoc.definitions,
+  ],
 };
-export const AddSubjectDocument: DocumentNode<AddSubjectMutation, AddSubjectMutationVariables> = {
+export const AddSubjectDocument: DocumentNode<
+  AddSubjectMutation,
+  AddSubjectMutationVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -4468,16 +4906,16 @@ export const AddSubjectDocument: DocumentNode<AddSubjectMutation, AddSubjectMuta
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "SubjectInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "AddSubjectInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4491,25 +4929,36 @@ export const AddSubjectDocument: DocumentNode<AddSubjectMutation, AddSubjectMuta
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "SubjectInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "newSubject" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "SubjectInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...SubjectInfoFragmentDoc.definitions
-  ]
+    ...SubjectInfoFragmentDoc.definitions,
+  ],
 };
 export const UpdateSubjectDocument: DocumentNode<
   UpdateSubjectMutation,
@@ -4527,23 +4976,23 @@ export const UpdateSubjectDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
         },
         {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "SubjectUpdateInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "UpdateSubjectInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4557,33 +5006,44 @@ export const UpdateSubjectDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
+                  name: { kind: "Name", value: "id" },
+                },
               },
               {
                 kind: "Argument",
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "SubjectInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "updatedSubject" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "SubjectInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...SubjectInfoFragmentDoc.definitions
-  ]
+    ...SubjectInfoFragmentDoc.definitions,
+  ],
 };
 export const DeleteSubjectDocument: DocumentNode<
   DeleteSubjectMutation,
@@ -4601,9 +5061,9 @@ export const DeleteSubjectDocument: DocumentNode<
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4617,17 +5077,20 @@ export const DeleteSubjectDocument: DocumentNode<
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };
-export const SearchTagsDocument: DocumentNode<SearchTagsQuery, SearchTagsQueryVariables> = {
+export const SearchTagsDocument: DocumentNode<
+  SearchTagsQuery,
+  SearchTagsQueryVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -4639,16 +5102,16 @@ export const SearchTagsDocument: DocumentNode<SearchTagsQuery, SearchTagsQueryVa
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "SearchTagsInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "SearchTagsInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4662,9 +5125,9 @@ export const SearchTagsDocument: DocumentNode<SearchTagsQuery, SearchTagsQueryVa
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
@@ -4678,19 +5141,19 @@ export const SearchTagsDocument: DocumentNode<SearchTagsQuery, SearchTagsQueryVa
                     selections: [
                       {
                         kind: "FragmentSpread",
-                        name: { kind: "Name", value: "TagInfo" }
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                        name: { kind: "Name", value: "TagInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...TagInfoFragmentDoc.definitions
-  ]
+    ...TagInfoFragmentDoc.definitions,
+  ],
 };
 export const TagDocument: DocumentNode<TagQuery, TagQueryVariables> = {
   kind: "Document",
@@ -4705,9 +5168,9 @@ export const TagDocument: DocumentNode<TagQuery, TagQueryVariables> = {
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4721,27 +5184,30 @@ export const TagDocument: DocumentNode<TagQuery, TagQueryVariables> = {
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
+                  name: { kind: "Name", value: "id" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
                 {
                   kind: "FragmentSpread",
-                  name: { kind: "Name", value: "TagInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  name: { kind: "Name", value: "TagInfo" },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...TagInfoFragmentDoc.definitions
-  ]
+    ...TagInfoFragmentDoc.definitions,
+  ],
 };
-export const AddTagDocument: DocumentNode<AddTagMutation, AddTagMutationVariables> = {
+export const AddTagDocument: DocumentNode<
+  AddTagMutation,
+  AddTagMutationVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -4753,16 +5219,16 @@ export const AddTagDocument: DocumentNode<AddTagMutation, AddTagMutationVariable
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "TagInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "AddTagInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4776,27 +5242,41 @@ export const AddTagDocument: DocumentNode<AddTagMutation, AddTagMutationVariable
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "success" } },
+                { kind: "Field", name: { kind: "Name", value: "message" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "TagInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "newTag" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "TagInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...TagInfoFragmentDoc.definitions
-  ]
+    ...TagInfoFragmentDoc.definitions,
+  ],
 };
-export const UpdateTagDocument: DocumentNode<UpdateTagMutation, UpdateTagMutationVariables> = {
+export const UpdateTagDocument: DocumentNode<
+  UpdateTagMutation,
+  UpdateTagMutationVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -4809,23 +5289,23 @@ export const UpdateTagDocument: DocumentNode<UpdateTagMutation, UpdateTagMutatio
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
         },
         {
           kind: "VariableDefinition",
           variable: {
             kind: "Variable",
-            name: { kind: "Name", value: "input" }
+            name: { kind: "Name", value: "input" },
           },
           type: {
             kind: "NonNullType",
             type: {
               kind: "NamedType",
-              name: { kind: "Name", value: "TagUpdateInput" }
-            }
-          }
-        }
+              name: { kind: "Name", value: "UpdateTagInput" },
+            },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4839,35 +5319,49 @@ export const UpdateTagDocument: DocumentNode<UpdateTagMutation, UpdateTagMutatio
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
+                  name: { kind: "Name", value: "id" },
+                },
               },
               {
                 kind: "Argument",
                 name: { kind: "Name", value: "input" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "input" }
-                }
-              }
+                  name: { kind: "Name", value: "input" },
+                },
+              },
             ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [
+                { kind: "Field", name: { kind: "Name", value: "message" } },
+                { kind: "Field", name: { kind: "Name", value: "success" } },
                 {
-                  kind: "FragmentSpread",
-                  name: { kind: "Name", value: "TagInfo" }
-                }
-              ]
-            }
-          }
-        ]
-      }
+                  kind: "Field",
+                  name: { kind: "Name", value: "updatedTag" },
+                  selectionSet: {
+                    kind: "SelectionSet",
+                    selections: [
+                      {
+                        kind: "FragmentSpread",
+                        name: { kind: "Name", value: "TagInfo" },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
     },
-    ...TagInfoFragmentDoc.definitions
-  ]
+    ...TagInfoFragmentDoc.definitions,
+  ],
 };
-export const DeleteTagDocument: DocumentNode<DeleteTagMutation, DeleteTagMutationVariables> = {
+export const DeleteTagDocument: DocumentNode<
+  DeleteTagMutation,
+  DeleteTagMutationVariables
+> = {
   kind: "Document",
   definitions: [
     {
@@ -4880,9 +5374,9 @@ export const DeleteTagDocument: DocumentNode<DeleteTagMutation, DeleteTagMutatio
           variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
           type: {
             kind: "NonNullType",
-            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } }
-          }
-        }
+            type: { kind: "NamedType", name: { kind: "Name", value: "Int" } },
+          },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -4896,15 +5390,15 @@ export const DeleteTagDocument: DocumentNode<DeleteTagMutation, DeleteTagMutatio
                 name: { kind: "Name", value: "id" },
                 value: {
                   kind: "Variable",
-                  name: { kind: "Name", value: "id" }
-                }
-              }
-            ]
-          }
-        ]
-      }
-    }
-  ]
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
 };
 export type ImageKeySpecifier = (
   | "id"
@@ -5074,7 +5568,13 @@ export type TagFieldPolicy = {
   createdAt?: FieldPolicy<any> | FieldReadFunction<any>;
   updatedAt?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type PhotoTagKeySpecifier = ("tagId" | "tag" | "photoId" | "photo" | PhotoTagKeySpecifier)[];
+export type PhotoTagKeySpecifier = (
+  | "tagId"
+  | "tag"
+  | "photoId"
+  | "photo"
+  | PhotoTagKeySpecifier
+)[];
 export type PhotoTagFieldPolicy = {
   tagId?: FieldPolicy<any> | FieldReadFunction<any>;
   tag?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -5237,12 +5737,43 @@ export type UserFieldPolicy = {
   createdAt?: FieldPolicy<any> | FieldReadFunction<any>;
   updatedAt?: FieldPolicy<any> | FieldReadFunction<any>;
 };
+export type SuccessMessageResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | SuccessMessageResponseKeySpecifier
+)[];
+export type SuccessMessageResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+};
 export type SearchCollectionsResponseKeySpecifier = (
   | "datalist"
   | SearchCollectionsResponseKeySpecifier
 )[];
 export type SearchCollectionsResponseFieldPolicy = {
   datalist?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type AddCollectionResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "newCollection"
+  | AddCollectionResponseKeySpecifier
+)[];
+export type AddCollectionResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  newCollection?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type UpdateCollectionResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "updatedCollection"
+  | UpdateCollectionResponseKeySpecifier
+)[];
+export type UpdateCollectionResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  updatedCollection?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type PaginatedResponseKeySpecifier = (
   | "startCursor"
@@ -5282,16 +5813,49 @@ export type PaginatedPhotosWithFinishResponseFieldPolicy = {
   pageInfo?: FieldPolicy<any> | FieldReadFunction<any>;
   finishInfo?: FieldPolicy<any> | FieldReadFunction<any>;
 };
+export type AddFinishResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "newFinish"
+  | AddFinishResponseKeySpecifier
+)[];
+export type AddFinishResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  newFinish?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type UpdateFinishResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "updatedFinish"
+  | UpdateFinishResponseKeySpecifier
+)[];
+export type UpdateFinishResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  updatedFinish?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type AddImageResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "newImage"
+  | AddImageResponseKeySpecifier
+)[];
+export type AddImageResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  newImage?: FieldPolicy<any> | FieldReadFunction<any>;
+};
 export type UpdateImageResponseKeySpecifier = (
   | "success"
   | "message"
-  | "image"
+  | "updatedImage"
   | UpdateImageResponseKeySpecifier
 )[];
 export type UpdateImageResponseFieldPolicy = {
   success?: FieldPolicy<any> | FieldReadFunction<any>;
   message?: FieldPolicy<any> | FieldReadFunction<any>;
-  image?: FieldPolicy<any> | FieldReadFunction<any>;
+  updatedImage?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type SearchLocationsResponseKeySpecifier = (
   | "datalist"
@@ -5300,7 +5864,10 @@ export type SearchLocationsResponseKeySpecifier = (
 export type SearchLocationsResponseFieldPolicy = {
   datalist?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type LocationsResponseKeySpecifier = ("locations" | LocationsResponseKeySpecifier)[];
+export type LocationsResponseKeySpecifier = (
+  | "locations"
+  | LocationsResponseKeySpecifier
+)[];
 export type LocationsResponseFieldPolicy = {
   locations?: FieldPolicy<any> | FieldReadFunction<any>;
 };
@@ -5324,11 +5891,40 @@ export type PaginatedPhotosAtLocationResponseFieldPolicy = {
   pageInfo?: FieldPolicy<any> | FieldReadFunction<any>;
   locationInfo?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type ItemCountListKeySpecifier = ("itemCountList" | ItemCountListKeySpecifier)[];
+export type AddLocationResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "newLocation"
+  | AddLocationResponseKeySpecifier
+)[];
+export type AddLocationResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  newLocation?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type UpdateLocationResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "updatedLocation"
+  | UpdateLocationResponseKeySpecifier
+)[];
+export type UpdateLocationResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  updatedLocation?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type ItemCountListKeySpecifier = (
+  | "itemCountList"
+  | ItemCountListKeySpecifier
+)[];
 export type ItemCountListFieldPolicy = {
   itemCountList?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type ItemCountKeySpecifier = ("name" | "count" | ItemCountKeySpecifier)[];
+export type ItemCountKeySpecifier = (
+  | "name"
+  | "count"
+  | ItemCountKeySpecifier
+)[];
 export type ItemCountFieldPolicy = {
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   count?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -5367,25 +5963,43 @@ export type PaginatedPhotosByPhotographerResponseFieldPolicy = {
   pageInfo?: FieldPolicy<any> | FieldReadFunction<any>;
   photographerInfo?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type SelectionOptionKeySpecifier = ("id" | "name" | SelectionOptionKeySpecifier)[];
+export type AddPhotographerResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "newPhotographer"
+  | AddPhotographerResponseKeySpecifier
+)[];
+export type AddPhotographerResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  newPhotographer?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type UpdatePhotographerResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "updatedPhotographer"
+  | UpdatePhotographerResponseKeySpecifier
+)[];
+export type UpdatePhotographerResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  updatedPhotographer?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type SelectionOptionKeySpecifier = (
+  | "id"
+  | "name"
+  | SelectionOptionKeySpecifier
+)[];
 export type SelectionOptionFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type PhotosResponseKeySpecifier = ("photos" | PhotosResponseKeySpecifier)[];
+export type PhotosResponseKeySpecifier = (
+  | "photos"
+  | PhotosResponseKeySpecifier
+)[];
 export type PhotosResponseFieldPolicy = {
   photos?: FieldPolicy<any> | FieldReadFunction<any>;
-};
-export type UpdatePhotoResponseKeySpecifier = (
-  | "success"
-  | "message"
-  | "photo"
-  | UpdatePhotoResponseKeySpecifier
-)[];
-export type UpdatePhotoResponseFieldPolicy = {
-  success?: FieldPolicy<any> | FieldReadFunction<any>;
-  message?: FieldPolicy<any> | FieldReadFunction<any>;
-  photo?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type PhotographerSelectionOptionKeySpecifier = (
   | "id"
@@ -5414,7 +6028,11 @@ export type SubjectSelectionOptionFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type TagSelectionOptionKeySpecifier = ("id" | "name" | TagSelectionOptionKeySpecifier)[];
+export type TagSelectionOptionKeySpecifier = (
+  | "id"
+  | "name"
+  | TagSelectionOptionKeySpecifier
+)[];
 export type TagSelectionOptionFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -5454,7 +6072,10 @@ export type PhotoEditSelectionOptionsFieldPolicy = {
   collections?: FieldPolicy<any> | FieldReadFunction<any>;
   finishes?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type SearchPhotosResponseKeySpecifier = ("datalist" | SearchPhotosResponseKeySpecifier)[];
+export type SearchPhotosResponseKeySpecifier = (
+  | "datalist"
+  | SearchPhotosResponseKeySpecifier
+)[];
 export type SearchPhotosResponseFieldPolicy = {
   datalist?: FieldPolicy<any> | FieldReadFunction<any>;
 };
@@ -5476,7 +6097,32 @@ export type PaginatedFeaturedPhotosResponseFieldPolicy = {
   photos?: FieldPolicy<any> | FieldReadFunction<any>;
   pageInfo?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type SubjectsResponseKeySpecifier = ("subjects" | SubjectsResponseKeySpecifier)[];
+export type AddPhotoResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "newPhoto"
+  | AddPhotoResponseKeySpecifier
+)[];
+export type AddPhotoResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  newPhoto?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type UpdatePhotoResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "updatedPhoto"
+  | UpdatePhotoResponseKeySpecifier
+)[];
+export type UpdatePhotoResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  updatedPhoto?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type SubjectsResponseKeySpecifier = (
+  | "subjects"
+  | SubjectsResponseKeySpecifier
+)[];
 export type SubjectsResponseFieldPolicy = {
   subjects?: FieldPolicy<any> | FieldReadFunction<any>;
 };
@@ -5507,16 +6153,32 @@ export type PaginatedPhotosOfSubjectResponseFieldPolicy = {
   pageInfo?: FieldPolicy<any> | FieldReadFunction<any>;
   subjectInfo?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type SuccessMessageResponseKeySpecifier = (
+export type AddSubjectResponseKeySpecifier = (
   | "success"
   | "message"
-  | SuccessMessageResponseKeySpecifier
+  | "newSubject"
+  | AddSubjectResponseKeySpecifier
 )[];
-export type SuccessMessageResponseFieldPolicy = {
+export type AddSubjectResponseFieldPolicy = {
   success?: FieldPolicy<any> | FieldReadFunction<any>;
   message?: FieldPolicy<any> | FieldReadFunction<any>;
+  newSubject?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type SearchTagsResponseKeySpecifier = ("datalist" | SearchTagsResponseKeySpecifier)[];
+export type UpdateSubjectResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "updatedSubject"
+  | UpdateSubjectResponseKeySpecifier
+)[];
+export type UpdateSubjectResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  updatedSubject?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type SearchTagsResponseKeySpecifier = (
+  | "datalist"
+  | SearchTagsResponseKeySpecifier
+)[];
 export type SearchTagsResponseFieldPolicy = {
   datalist?: FieldPolicy<any> | FieldReadFunction<any>;
 };
@@ -5540,7 +6202,32 @@ export type PaginatedPhotosWithTagResponseFieldPolicy = {
   pageInfo?: FieldPolicy<any> | FieldReadFunction<any>;
   tagInfo?: FieldPolicy<any> | FieldReadFunction<any>;
 };
-export type FavoritesResponseKeySpecifier = ("photoList" | FavoritesResponseKeySpecifier)[];
+export type AddTagResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "newTag"
+  | AddTagResponseKeySpecifier
+)[];
+export type AddTagResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  newTag?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type UpdateTagResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "updatedTag"
+  | UpdateTagResponseKeySpecifier
+)[];
+export type UpdateTagResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  updatedTag?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type FavoritesResponseKeySpecifier = (
+  | "photoList"
+  | FavoritesResponseKeySpecifier
+)[];
 export type FavoritesResponseFieldPolicy = {
   photoList?: FieldPolicy<any> | FieldReadFunction<any>;
 };
@@ -5794,21 +6481,30 @@ export type MutationFieldPolicy = {
 };
 export type TypedTypePolicies = TypePolicies & {
   Image?: {
-    keyFields?: false | ImageKeySpecifier | (() => undefined | ImageKeySpecifier);
+    keyFields?:
+      | false
+      | ImageKeySpecifier
+      | (() => undefined | ImageKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
     fields?: ImageFieldPolicy;
   };
   Location?: {
-    keyFields?: false | LocationKeySpecifier | (() => undefined | LocationKeySpecifier);
+    keyFields?:
+      | false
+      | LocationKeySpecifier
+      | (() => undefined | LocationKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
     fields?: LocationFieldPolicy;
   };
   Collection?: {
-    keyFields?: false | CollectionKeySpecifier | (() => undefined | CollectionKeySpecifier);
+    keyFields?:
+      | false
+      | CollectionKeySpecifier
+      | (() => undefined | CollectionKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
@@ -5825,21 +6521,30 @@ export type TypedTypePolicies = TypePolicies & {
     fields?: PhotoCollectionFieldPolicy;
   };
   Photographer?: {
-    keyFields?: false | PhotographerKeySpecifier | (() => undefined | PhotographerKeySpecifier);
+    keyFields?:
+      | false
+      | PhotographerKeySpecifier
+      | (() => undefined | PhotographerKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
     fields?: PhotographerFieldPolicy;
   };
   Subject?: {
-    keyFields?: false | SubjectKeySpecifier | (() => undefined | SubjectKeySpecifier);
+    keyFields?:
+      | false
+      | SubjectKeySpecifier
+      | (() => undefined | SubjectKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
     fields?: SubjectFieldPolicy;
   };
   PhotoSubject?: {
-    keyFields?: false | PhotoSubjectKeySpecifier | (() => undefined | PhotoSubjectKeySpecifier);
+    keyFields?:
+      | false
+      | PhotoSubjectKeySpecifier
+      | (() => undefined | PhotoSubjectKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
@@ -5853,7 +6558,10 @@ export type TypedTypePolicies = TypePolicies & {
     fields?: TagFieldPolicy;
   };
   PhotoTag?: {
-    keyFields?: false | PhotoTagKeySpecifier | (() => undefined | PhotoTagKeySpecifier);
+    keyFields?:
+      | false
+      | PhotoTagKeySpecifier
+      | (() => undefined | PhotoTagKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
@@ -5870,28 +6578,40 @@ export type TypedTypePolicies = TypePolicies & {
     fields?: UserShoppingBagItemFieldPolicy;
   };
   Finish?: {
-    keyFields?: false | FinishKeySpecifier | (() => undefined | FinishKeySpecifier);
+    keyFields?:
+      | false
+      | FinishKeySpecifier
+      | (() => undefined | FinishKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
     fields?: FinishFieldPolicy;
   };
   PhotoFinish?: {
-    keyFields?: false | PhotoFinishKeySpecifier | (() => undefined | PhotoFinishKeySpecifier);
+    keyFields?:
+      | false
+      | PhotoFinishKeySpecifier
+      | (() => undefined | PhotoFinishKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
     fields?: PhotoFinishFieldPolicy;
   };
   Photo?: {
-    keyFields?: false | PhotoKeySpecifier | (() => undefined | PhotoKeySpecifier);
+    keyFields?:
+      | false
+      | PhotoKeySpecifier
+      | (() => undefined | PhotoKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
     fields?: PhotoFieldPolicy;
   };
   UserFavorite?: {
-    keyFields?: false | UserFavoriteKeySpecifier | (() => undefined | UserFavoriteKeySpecifier);
+    keyFields?:
+      | false
+      | UserFavoriteKeySpecifier
+      | (() => undefined | UserFavoriteKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
@@ -5904,6 +6624,16 @@ export type TypedTypePolicies = TypePolicies & {
     subscriptionType?: true;
     fields?: UserFieldPolicy;
   };
+  SuccessMessageResponse?: {
+    keyFields?:
+      | false
+      | SuccessMessageResponseKeySpecifier
+      | (() => undefined | SuccessMessageResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: SuccessMessageResponseFieldPolicy;
+  };
   SearchCollectionsResponse?: {
     keyFields?:
       | false
@@ -5913,6 +6643,26 @@ export type TypedTypePolicies = TypePolicies & {
     mutationType?: true;
     subscriptionType?: true;
     fields?: SearchCollectionsResponseFieldPolicy;
+  };
+  AddCollectionResponse?: {
+    keyFields?:
+      | false
+      | AddCollectionResponseKeySpecifier
+      | (() => undefined | AddCollectionResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: AddCollectionResponseFieldPolicy;
+  };
+  UpdateCollectionResponse?: {
+    keyFields?:
+      | false
+      | UpdateCollectionResponseKeySpecifier
+      | (() => undefined | UpdateCollectionResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: UpdateCollectionResponseFieldPolicy;
   };
   PaginatedResponse?: {
     keyFields?:
@@ -5953,6 +6703,36 @@ export type TypedTypePolicies = TypePolicies & {
     mutationType?: true;
     subscriptionType?: true;
     fields?: PaginatedPhotosWithFinishResponseFieldPolicy;
+  };
+  AddFinishResponse?: {
+    keyFields?:
+      | false
+      | AddFinishResponseKeySpecifier
+      | (() => undefined | AddFinishResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: AddFinishResponseFieldPolicy;
+  };
+  UpdateFinishResponse?: {
+    keyFields?:
+      | false
+      | UpdateFinishResponseKeySpecifier
+      | (() => undefined | UpdateFinishResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: UpdateFinishResponseFieldPolicy;
+  };
+  AddImageResponse?: {
+    keyFields?:
+      | false
+      | AddImageResponseKeySpecifier
+      | (() => undefined | AddImageResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: AddImageResponseFieldPolicy;
   };
   UpdateImageResponse?: {
     keyFields?:
@@ -6004,15 +6784,41 @@ export type TypedTypePolicies = TypePolicies & {
     subscriptionType?: true;
     fields?: PaginatedPhotosAtLocationResponseFieldPolicy;
   };
+  AddLocationResponse?: {
+    keyFields?:
+      | false
+      | AddLocationResponseKeySpecifier
+      | (() => undefined | AddLocationResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: AddLocationResponseFieldPolicy;
+  };
+  UpdateLocationResponse?: {
+    keyFields?:
+      | false
+      | UpdateLocationResponseKeySpecifier
+      | (() => undefined | UpdateLocationResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: UpdateLocationResponseFieldPolicy;
+  };
   ItemCountList?: {
-    keyFields?: false | ItemCountListKeySpecifier | (() => undefined | ItemCountListKeySpecifier);
+    keyFields?:
+      | false
+      | ItemCountListKeySpecifier
+      | (() => undefined | ItemCountListKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
     fields?: ItemCountListFieldPolicy;
   };
   ItemCount?: {
-    keyFields?: false | ItemCountKeySpecifier | (() => undefined | ItemCountKeySpecifier);
+    keyFields?:
+      | false
+      | ItemCountKeySpecifier
+      | (() => undefined | ItemCountKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
@@ -6058,6 +6864,26 @@ export type TypedTypePolicies = TypePolicies & {
     subscriptionType?: true;
     fields?: PaginatedPhotosByPhotographerResponseFieldPolicy;
   };
+  AddPhotographerResponse?: {
+    keyFields?:
+      | false
+      | AddPhotographerResponseKeySpecifier
+      | (() => undefined | AddPhotographerResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: AddPhotographerResponseFieldPolicy;
+  };
+  UpdatePhotographerResponse?: {
+    keyFields?:
+      | false
+      | UpdatePhotographerResponseKeySpecifier
+      | (() => undefined | UpdatePhotographerResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: UpdatePhotographerResponseFieldPolicy;
+  };
   SelectionOption?: {
     keyFields?:
       | false
@@ -6069,21 +6895,14 @@ export type TypedTypePolicies = TypePolicies & {
     fields?: SelectionOptionFieldPolicy;
   };
   PhotosResponse?: {
-    keyFields?: false | PhotosResponseKeySpecifier | (() => undefined | PhotosResponseKeySpecifier);
+    keyFields?:
+      | false
+      | PhotosResponseKeySpecifier
+      | (() => undefined | PhotosResponseKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
     fields?: PhotosResponseFieldPolicy;
-  };
-  UpdatePhotoResponse?: {
-    keyFields?:
-      | false
-      | UpdatePhotoResponseKeySpecifier
-      | (() => undefined | UpdatePhotoResponseKeySpecifier);
-    queryType?: true;
-    mutationType?: true;
-    subscriptionType?: true;
-    fields?: UpdatePhotoResponseFieldPolicy;
   };
   PhotographerSelectionOption?: {
     keyFields?:
@@ -6185,6 +7004,26 @@ export type TypedTypePolicies = TypePolicies & {
     subscriptionType?: true;
     fields?: PaginatedFeaturedPhotosResponseFieldPolicy;
   };
+  AddPhotoResponse?: {
+    keyFields?:
+      | false
+      | AddPhotoResponseKeySpecifier
+      | (() => undefined | AddPhotoResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: AddPhotoResponseFieldPolicy;
+  };
+  UpdatePhotoResponse?: {
+    keyFields?:
+      | false
+      | UpdatePhotoResponseKeySpecifier
+      | (() => undefined | UpdatePhotoResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: UpdatePhotoResponseFieldPolicy;
+  };
   SubjectsResponse?: {
     keyFields?:
       | false
@@ -6225,15 +7064,25 @@ export type TypedTypePolicies = TypePolicies & {
     subscriptionType?: true;
     fields?: PaginatedPhotosOfSubjectResponseFieldPolicy;
   };
-  SuccessMessageResponse?: {
+  AddSubjectResponse?: {
     keyFields?:
       | false
-      | SuccessMessageResponseKeySpecifier
-      | (() => undefined | SuccessMessageResponseKeySpecifier);
+      | AddSubjectResponseKeySpecifier
+      | (() => undefined | AddSubjectResponseKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
-    fields?: SuccessMessageResponseFieldPolicy;
+    fields?: AddSubjectResponseFieldPolicy;
+  };
+  UpdateSubjectResponse?: {
+    keyFields?:
+      | false
+      | UpdateSubjectResponseKeySpecifier
+      | (() => undefined | UpdateSubjectResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: UpdateSubjectResponseFieldPolicy;
   };
   SearchTagsResponse?: {
     keyFields?:
@@ -6264,6 +7113,26 @@ export type TypedTypePolicies = TypePolicies & {
     mutationType?: true;
     subscriptionType?: true;
     fields?: PaginatedPhotosWithTagResponseFieldPolicy;
+  };
+  AddTagResponse?: {
+    keyFields?:
+      | false
+      | AddTagResponseKeySpecifier
+      | (() => undefined | AddTagResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: AddTagResponseFieldPolicy;
+  };
+  UpdateTagResponse?: {
+    keyFields?:
+      | false
+      | UpdateTagResponseKeySpecifier
+      | (() => undefined | UpdateTagResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: UpdateTagResponseFieldPolicy;
   };
   FavoritesResponse?: {
     keyFields?:
@@ -6336,14 +7205,20 @@ export type TypedTypePolicies = TypePolicies & {
     fields?: UserPreferencesResponseFieldPolicy;
   };
   Query?: {
-    keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier);
+    keyFields?:
+      | false
+      | QueryKeySpecifier
+      | (() => undefined | QueryKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;
     fields?: QueryFieldPolicy;
   };
   Mutation?: {
-    keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier);
+    keyFields?:
+      | false
+      | MutationKeySpecifier
+      | (() => undefined | MutationKeySpecifier);
     queryType?: true;
     mutationType?: true;
     subscriptionType?: true;

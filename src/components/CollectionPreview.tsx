@@ -6,7 +6,6 @@ import {
 import { useMutation } from "@apollo/client";
 import { Box, Flex, Heading, Paragraph, Text, Button, useToasts } from "bumbag";
 import { Dispatch, SetStateAction } from "react";
-import CoverImageEditor from "./CoverImageEditor";
 
 // * name
 // * tag
@@ -70,13 +69,36 @@ const CollectionView: React.FC<Props> = ({ selectedItem: col, setSelectedItem, s
         alignItems="flex-end"
         padding="major-2"
       >
-        <CoverImageEditor coverImage={col.coverImage} isEditing={false} />
+        {col.coverImage && col.coverImage.imageUrl.length > 0 ? (
+          <img
+            key={Date.now()}
+            src={col.coverImage.imageUrl}
+            width="200px"
+            height="300px"
+            style={{
+              borderRadius: "6px"
+            }}
+          />
+        ) : (
+          <Box
+            width="200px"
+            height="300px"
+            backgroundColor="default"
+            border="1px solid"
+            borderColor="grey800"
+            borderRadius="6px"
+            alignX="center"
+            alignY="center"
+          >
+            No Cover Image
+          </Box>
+        )}
       </Flex>
       <Flex className="fields-wrapper" flexDirection="column" margin="major-3" flex="2 1 50%">
         <Heading use="h3" marginTop="major-4">
           {col?.name}
         </Heading>
-        <Heading use="h5" marginTop="major-3">
+        <Heading use="h6" marginTop="major-3" marginBottom="major-2">
           {col?.tag}
         </Heading>
 

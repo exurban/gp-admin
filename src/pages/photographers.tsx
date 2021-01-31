@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box, Flex, Divider } from "bumbag";
 import PhotographersTable from "../components/PhotographersTable";
-import PhotographerForm from "../components/PhotographerForm";
 import PhotographerPreview from "../components/PhotographerPreview";
+import PhotographerForm from "../components/PhotographerForm";
 import { Photographer } from "../graphql-operations";
 
 const Photographers: React.FC = () => {
@@ -12,16 +12,8 @@ const Photographers: React.FC = () => {
 
   const isAddingOrEditing = isAdding || isEditing;
 
-  useEffect(() => {
-    if (isAdding) {
-      setSelectedItem(undefined);
-    }
-  }, [selectedItem, setSelectedItem, isAdding, setIsAdding]);
-
   // * if isAddingOrEditing then show Form
-
   // * if !isAddingOrEditing but selectedPhotographer then show preview
-
   // * if !isAddingOrEditing AND !selectedPhotographer then show nothing
 
   return (
@@ -38,6 +30,7 @@ const Photographers: React.FC = () => {
         {isAddingOrEditing && (
           <PhotographerForm
             item={selectedItem}
+            setSelectedItem={setSelectedItem}
             isAdding={isAdding}
             isEditing={isEditing}
             setIsAdding={setIsAdding}

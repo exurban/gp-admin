@@ -11,17 +11,27 @@ fragment ImageInfo on Image {
   updatedAt
 }
 
-mutation addImage($input: ImageInput!) {
-  addImage(input: $input) {
+query image($id: Int!) {
+  image(id: $id) {
     ...ImageInfo
   }
 }
 
-mutation updateImage($id: Int!, $input: ImageUpdateInput!) {
+mutation addImage($input: AddImageInput!) {
+  addImage(input: $input) {
+    success
+    message
+    newImage {
+      ...ImageInfo
+    }
+  }
+}
+
+mutation updateImage($id: Int!, $input: UpdateImageInput!) {
   updateImage(id: $id, input: $input) {
     success
     message
-    image {
+    updatedImage {
       ...ImageInfo
     }
   }

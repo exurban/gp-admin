@@ -114,8 +114,16 @@ const TagsTable: React.FC<Props> = ({
     sort(columns[selectedColumn].attr, sortAscending);
   };
 
+  const handleAddClick = () => {
+    setSelectedItem(undefined);
+    setIsAdding(true);
+  };
+
   const handleRowClick = (tag: Tag) => {
-    console.log(`clicked row: ${tag.name}`);
+    if (isAddingOrEditing) {
+      return;
+    }
+
     setSelectedItem(tag);
   };
 
@@ -174,7 +182,7 @@ const TagsTable: React.FC<Props> = ({
         </Table>
       </Box>
       <Button
-        onClick={() => setIsAdding(true)}
+        onClick={() => handleAddClick()}
         width="80px"
         palette="primary"
         marginLeft="auto"

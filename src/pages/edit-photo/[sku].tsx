@@ -8,25 +8,23 @@ const EditPhoto: React.FC = () => {
   const router = useRouter();
   const { sku } = router.query;
   const { data: photoData } = useQuery(PhotoWithSkuDocument, {
-    variables: { sku: parseInt(sku as string) }
+    variables: { sku: parseInt(sku as string) },
+    ssr: false
   });
-
-  if (!photoData || !photoData.photoWithSku) {
-    console.error(`Failed to fetch photo with sku: ${sku}`);
-  }
 
   const photo = photoData?.photoWithSku;
 
-  // console.log(`photoData: ${JSON.stringify(photo, null, 2)}`);
-  if (photoData) {
-    console.log(`loaded photo data.`);
+  if (!photo) {
+    return null;
   }
 
-  if (!photo) return null;
+  // if (photo) {
+  //   console.log(`loaded photo data.`);
+  // }
 
   return (
     <Box height="90vh">
-      <PhotoForm />
+      <PhotoForm photo={photo} isEditing={true} />
     </Box>
   );
 };

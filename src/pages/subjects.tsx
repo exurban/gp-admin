@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box, Flex, Divider } from "bumbag";
-import { Subject } from "../graphql-operations";
 import SubjectsTable from "../components/SubjectsTable";
 import SubjectPreview from "../components/SubjectPreview";
 import SubjectForm from "../components/SubjectForm";
+import { Subject } from "../graphql-operations";
 
 const Subjects: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<Subject | undefined>(undefined);
@@ -11,12 +11,6 @@ const Subjects: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const isAddingOrEditing = isAdding || isEditing;
-
-  useEffect(() => {
-    if (isAdding) {
-      setSelectedItem(undefined);
-    }
-  }, [selectedItem, isAdding]);
 
   // * if isAddingOrEditing then show Form
   // * if selectedItem but !isAddingOrEditing, show preview
@@ -36,6 +30,7 @@ const Subjects: React.FC = () => {
         {isAddingOrEditing && (
           <SubjectForm
             item={selectedItem}
+            setSelectedItem={setSelectedItem}
             isAdding={isAdding}
             isEditing={isEditing}
             setIsAdding={setIsAdding}

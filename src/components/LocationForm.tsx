@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useMutation } from "@apollo/client";
@@ -10,18 +11,22 @@ import {
   TextareaField,
   ActionButtons,
   Text,
+  Box,
   useToasts
 } from "bumbag";
 import {
-  AddLocationDocument,
-  AddLocationMutationVariables,
+  Image,
   Location,
   SearchLocationsDocument,
+  AddLocationDocument,
+  AddLocationInput,
+  AddLocationMutationVariables,
   UpdateLocationDocument,
+  UpdateLocationInput,
   UpdateLocationMutationVariables
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
-import CoverImageEditor from "./CoverImageEditor";
+import CoverImageModal from "./CoverImageModal";
 
 // * name
 // * tag
@@ -36,6 +41,7 @@ import CoverImageEditor from "./CoverImageEditor";
 
 type Props = {
   item: Location | undefined;
+  setSelectedItem: Dispatch<SetStateAction<Location | undefined>>;
   isAdding: boolean;
   setIsAdding: Dispatch<SetStateAction<boolean>>;
   isEditing: boolean;
@@ -44,28 +50,53 @@ type Props = {
 
 const LocationForm: React.FC<Props> = ({
   item: loc,
+  setSelectedItem,
   isAdding,
   setIsAdding,
   isEditing,
   setIsEditing
 }) => {
+  const [imageUrl, setImageUrl] = useState(loc?.coverImage?.imageUrl);
+  const [coverImage, setCoverImage] = useState<Image | null | undefined>(loc?.coverImage);
+
   const toasts = useToasts();
   const [addLocation] = useMutation(AddLocationDocument, {
+    refetchQueries: [
+      {
+        query: SearchLocationsDocument,
+        variables: {
+          input: {
+            searchString: ""
+          }
+        }
+      }
+    ],
     onCompleted(data) {
       console.log(`data.addLocation: ${JSON.stringify(data.addLocation, null, 2)}`);
       clearForm();
       toasts.success({
         title: `Succeessfully added`,
-        message: `Added ${data.addLocation.name}.`
+        message: `Added ${data.addLocation.newLocation?.name}.`
       });
     }
   });
+
   const [updateLocation] = useMutation(UpdateLocationDocument, {
+    refetchQueries: [
+      {
+        query: SearchLocationsDocument,
+        variables: {
+          input: {
+            searchString: ""
+          }
+        }
+      }
+    ],
     onCompleted(data) {
       clearForm();
       toasts.success({
         title: `Successfully updated`,
-        message: `Updated ${data.updateLocation?.name}`
+        message: `Updated ${data.updateLocation?.updatedLocation?.name}`
       });
     }
   });
@@ -75,25 +106,77 @@ const LocationForm: React.FC<Props> = ({
     setIsEditing(false);
   };
 
-  const initialValues =
-    isEditing && loc
-      ? {
-          name: loc.name,
-          tag: loc.tag,
-          description: loc.description
-          // coverImageId: parseInt(pg.coverImage?.id) || undefined
-        }
-      : {
-          name: "",
-          tag: "",
-          description: "",
-          coverImageId: undefined
-        };
+  const initialValues = {
+    name: loc?.name || "",
+    tag: loc?.tag || "",
+    description: loc?.description || ""
+  };
 
   const validationObject = {
     name: Yup.string().max(50, "Must be 50 characters or fewer.").required("Required"),
     tag: Yup.string().max(20, "Must be 20 characters or fewer.").required("Required"),
     description: Yup.string().required("Required")
+  };
+
+  const handleAdd = (values: AddLocationInput) => {
+    setSelectedItem(undefined);
+
+    // if coverImage is set, add to input
+    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
+
+    const input = { ...values, coverImageId };
+    console.log(`Adding Location with input: ${JSON.stringify(input, null, 2)}`);
+
+    if (isAdding) {
+      const addVariables: AddLocationMutationVariables = {
+        input
+      };
+      addLocation({
+        variables: addVariables,
+        refetchQueries: [
+          {
+            query: SearchLocationsDocument,
+            variables: {
+              input: {
+                searchString: ""
+              }
+            }
+          }
+        ]
+      });
+    }
+    clearForm();
+  };
+
+  const handleUpdate = (values: UpdateLocationInput) => {
+    setSelectedItem(undefined);
+
+    // if coverImage is set, add to input
+    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
+
+    console.log(values);
+    const input = { ...values, coverImageId };
+
+    if (isEditing && loc) {
+      const editVariables: UpdateLocationMutationVariables = {
+        id: parseInt(loc.id),
+        input
+      };
+      updateLocation({
+        variables: editVariables,
+        refetchQueries: [
+          {
+            query: SearchLocationsDocument,
+            variables: {
+              input: {
+                searchString: ""
+              }
+            }
+          }
+        ]
+      });
+    }
+    clearForm();
   };
 
   return (
@@ -107,52 +190,44 @@ const LocationForm: React.FC<Props> = ({
         alignItems="flex-end"
         padding="major-2"
       >
-        {loc && <CoverImageEditor coverImage={loc.coverImage} isEditing={true} />}
+        {imageUrl && imageUrl.length > 0 ? (
+          <img
+            key={Date.now()}
+            src={imageUrl}
+            width="200px"
+            height="300px"
+            style={{ borderRadius: "6px" }}
+          />
+        ) : (
+          <Box
+            width="200px"
+            height="300px"
+            backgroundColor="default"
+            border="1px solid"
+            borderColor="grey800"
+            borderRadius="6px"
+            alignX="center"
+            alignY="center"
+          >
+            No Cover Image
+          </Box>
+        )}
+        {(isAdding || isEditing) && (
+          <CoverImageModal
+            coverImage={coverImage}
+            setCoverImage={setCoverImage}
+            name={loc?.name || ""}
+            imageUrl={imageUrl}
+            setImageUrl={setImageUrl}
+          />
+        )}
       </Flex>
       <Flex className="fields-wrapper" flexDirection="column" margin="major-3" flex="2 1 50%">
         <Formik
           initialValues={initialValues}
           validationSchema={Yup.object(validationObject)}
           onSubmit={values => {
-            const input = { ...values };
-
-            if (isAdding) {
-              const addVariables: AddLocationMutationVariables = {
-                input
-              };
-              addLocation({
-                variables: addVariables,
-                refetchQueries: [
-                  {
-                    query: SearchLocationsDocument,
-                    variables: {
-                      input: {
-                        searchString: ""
-                      }
-                    }
-                  }
-                ]
-              });
-            }
-            if (isEditing && loc) {
-              const editVariables: UpdateLocationMutationVariables = {
-                id: parseInt(loc.id),
-                input
-              };
-              updateLocation({
-                variables: editVariables,
-                refetchQueries: [
-                  {
-                    query: SearchLocationsDocument,
-                    variables: {
-                      input: {
-                        searchString: ""
-                      }
-                    }
-                  }
-                ]
-              });
-            }
+            isAdding ? handleAdd(values) : handleUpdate(values);
           }}
         >
           <Form autoComplete="off" style={{ margin: 0, width: "100%" }}>

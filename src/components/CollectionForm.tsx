@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useMutation } from "@apollo/client";
@@ -10,18 +11,22 @@ import {
   TextareaField,
   ActionButtons,
   Text,
-  useToasts
+  useToasts,
+  Box
 } from "bumbag";
 import {
-  AddCollectionDocument,
-  AddCollectionMutationVariables,
+  Image,
   Collection,
   SearchCollectionsDocument,
+  AddCollectionDocument,
+  AddCollectionInput,
+  AddCollectionMutationVariables,
   UpdateCollectionDocument,
+  UpdateCollectionInput,
   UpdateCollectionMutationVariables
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
-import CoverImageEditor from "./CoverImageEditor";
+import CoverImageModal from "./CoverImageModal";
 
 // * name
 // * tag
@@ -36,6 +41,7 @@ import CoverImageEditor from "./CoverImageEditor";
 
 type Props = {
   item: Collection | undefined;
+  setSelectedItem: Dispatch<SetStateAction<Collection | undefined>>;
   isAdding: boolean;
   setIsAdding: Dispatch<SetStateAction<boolean>>;
   isEditing: boolean;
@@ -44,28 +50,52 @@ type Props = {
 
 const CollectionForm: React.FC<Props> = ({
   item: col,
+  setSelectedItem,
   isAdding,
   setIsAdding,
   isEditing,
   setIsEditing
 }) => {
+  const [imageUrl, setImageUrl] = useState(col?.coverImage?.imageUrl);
+  const [coverImage, setCoverImage] = useState<Image | null | undefined>(col?.coverImage);
+
   const toasts = useToasts();
   const [addCollection] = useMutation(AddCollectionDocument, {
+    refetchQueries: [
+      {
+        query: SearchCollectionsDocument,
+        variables: {
+          input: {
+            searchString: ""
+          }
+        }
+      }
+    ],
     onCompleted(data) {
       console.log(`data.addCollection: ${JSON.stringify(data.addCollection, null, 2)}`);
       clearForm();
       toasts.success({
         title: `Succeessfully added`,
-        message: `Added ${data.addCollection.name}.`
+        message: `Added ${data.addCollection.newCollection?.name}.`
       });
     }
   });
   const [updateCollection] = useMutation(UpdateCollectionDocument, {
+    refetchQueries: [
+      {
+        query: SearchCollectionsDocument,
+        variables: {
+          input: {
+            searchString: ""
+          }
+        }
+      }
+    ],
     onCompleted(data) {
       clearForm();
       toasts.success({
         title: `Successfully updated`,
-        message: `Updated ${data.updateCollection?.name}`
+        message: `Updated ${data.updateCollection.updatedCollection?.name}`
       });
     }
   });
@@ -75,25 +105,76 @@ const CollectionForm: React.FC<Props> = ({
     setIsEditing(false);
   };
 
-  const initialValues =
-    isEditing && col
-      ? {
-          name: col.name,
-          tag: col.tag,
-          description: col.description
-          // coverImageId: parseInt(pg.coverImage?.id) || undefined
-        }
-      : {
-          name: "",
-          tag: "",
-          description: "",
-          coverImageId: undefined
-        };
+  const initialValues = {
+    name: col?.name || "",
+    tag: col?.tag || "",
+    description: col?.description || ""
+  };
 
   const validationObject = {
     name: Yup.string().max(30, "Must be 30 characters or fewer.").required("Required"),
     tag: Yup.string().max(10, "Must be 10 characters or fewer.").required("Required"),
     description: Yup.string().required("Required")
+  };
+
+  const handleAdd = (values: AddCollectionInput) => {
+    setSelectedItem(undefined);
+
+    // if coverImage is set, add to input
+    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
+
+    const input = { ...values, coverImageId };
+    console.log(`Adding Collection with input: ${JSON.stringify(input, null, 2)}`);
+
+    if (isAdding) {
+      const addVariables: AddCollectionMutationVariables = {
+        input
+      };
+      addCollection({
+        variables: addVariables,
+        refetchQueries: [
+          {
+            query: SearchCollectionsDocument,
+            variables: {
+              input: {
+                searchString: ""
+              }
+            }
+          }
+        ]
+      });
+    }
+    clearForm();
+  };
+
+  const handleUpdate = (values: UpdateCollectionInput) => {
+    setSelectedItem(undefined);
+
+    // if coverImage is set, add to input
+    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
+
+    const input = { ...values, coverImageId };
+
+    if (isEditing && col) {
+      const editVariables: UpdateCollectionMutationVariables = {
+        id: parseInt(col.id),
+        input
+      };
+      updateCollection({
+        variables: editVariables,
+        refetchQueries: [
+          {
+            query: SearchCollectionsDocument,
+            variables: {
+              input: {
+                searchString: ""
+              }
+            }
+          }
+        ]
+      });
+    }
+    clearForm();
   };
 
   return (
@@ -107,52 +188,44 @@ const CollectionForm: React.FC<Props> = ({
         alignItems="flex-end"
         padding="major-2"
       >
-        {col && <CoverImageEditor coverImage={col.coverImage} isEditing={true} />}
+        {imageUrl && imageUrl.length > 0 ? (
+          <img
+            key={Date.now()}
+            src={imageUrl}
+            width="200px"
+            height="300px"
+            style={{ borderRadius: "6px" }}
+          />
+        ) : (
+          <Box
+            width="200px"
+            height="300px"
+            backgroundColor="default"
+            border="1px solid"
+            borderColor="grey800"
+            borderRadius="6px"
+            alignX="center"
+            alignY="center"
+          >
+            No Cover Image
+          </Box>
+        )}
+        {(isAdding || isEditing) && (
+          <CoverImageModal
+            coverImage={coverImage}
+            setCoverImage={setCoverImage}
+            name={col?.name || ""}
+            imageUrl={imageUrl}
+            setImageUrl={setImageUrl}
+          />
+        )}
       </Flex>
       <Flex className="fields-wrapper" flexDirection="column" margin="major-3" flex="2 1 50%">
         <Formik
           initialValues={initialValues}
           validationSchema={Yup.object(validationObject)}
           onSubmit={values => {
-            const input = { ...values };
-
-            if (isAdding) {
-              const addVariables: AddCollectionMutationVariables = {
-                input
-              };
-              addCollection({
-                variables: addVariables,
-                refetchQueries: [
-                  {
-                    query: SearchCollectionsDocument,
-                    variables: {
-                      input: {
-                        searchString: ""
-                      }
-                    }
-                  }
-                ]
-              });
-            }
-            if (isEditing && col) {
-              const editVariables: UpdateCollectionMutationVariables = {
-                id: parseInt(col.id),
-                input
-              };
-              updateCollection({
-                variables: editVariables,
-                refetchQueries: [
-                  {
-                    query: SearchCollectionsDocument,
-                    variables: {
-                      input: {
-                        searchString: ""
-                      }
-                    }
-                  }
-                ]
-              });
-            }
+            isAdding ? handleAdd(values) : handleUpdate(values);
           }}
         >
           <Form autoComplete="off" style={{ margin: 0, width: "100%" }}>

@@ -118,8 +118,16 @@ const PhotographersTable: React.FC<Props> = ({
     sort(columns[selectedColumn].attr, sortAscending);
   };
 
+  const handleAddClick = () => {
+    setSelectedItem(undefined);
+    setIsAdding(true);
+  };
+
   const handleRowClick = (pg: Photographer) => {
-    console.log(`clicked row: ${pg.firstName}`);
+    if (isAddingOrEditing) {
+      return;
+    }
+
     setSelectedItem(pg);
   };
 
@@ -179,7 +187,7 @@ const PhotographersTable: React.FC<Props> = ({
         </Table>
       </Box>
       <Button
-        onClick={() => setIsAdding(true)}
+        onClick={() => handleAddClick()}
         width="80px"
         palette="primary"
         marginLeft="auto"

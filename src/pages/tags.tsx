@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Box, Flex, Divider } from "bumbag";
-import { Tag } from "../graphql-operations";
 import TagsTable from "../components/TagsTable";
 import TagPreview from "../components/TagPreview";
 import TagForm from "../components/TagForm";
+import { Tag } from "../graphql-operations";
 
 const Tags: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<Tag | undefined>(undefined);
@@ -11,12 +11,6 @@ const Tags: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const isAddingOrEditing = isAdding || isEditing;
-
-  useEffect(() => {
-    if (isAdding) {
-      setSelectedItem(undefined);
-    }
-  }, [selectedItem, isAdding]);
 
   // * if isAddingOrEditing then show Form
   // * if selectedItem but !isAddingOrEditing, show preview
@@ -36,6 +30,7 @@ const Tags: React.FC = () => {
         {isAddingOrEditing && (
           <TagForm
             item={selectedItem}
+            setSelectedItem={setSelectedItem}
             isAdding={isAdding}
             isEditing={isEditing}
             setIsAdding={setIsAdding}

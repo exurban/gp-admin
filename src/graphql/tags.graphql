@@ -25,15 +25,23 @@ query tag($id: Int!) {
   }
 }
 
-mutation addTag($input: TagInput!) {
+mutation addTag($input: AddTagInput!) {
   addTag(input: $input) {
-    ...TagInfo
+    success
+    message
+    newTag {
+      ...TagInfo
+    }
   }
 }
 
-mutation updateTag($id: Int!, $input: TagUpdateInput!) {
+mutation updateTag($id: Int!, $input: UpdateTagInput!) {
   updateTag(id: $id, input: $input) {
-    ...TagInfo
+    message
+    success
+    updatedTag {
+      ...TagInfo
+    }
   }
 }
 

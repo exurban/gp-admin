@@ -1,11 +1,7 @@
 import { useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import { useQuery, useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
-import {
-  SearchPhotosDocument,
-  AddPhotoDocument,
-  AddPhotoMutationVariables
-} from "../graphql-operations";
+import { SearchPhotosDocument, PhotoInfoFragment, AddPhotoDocument } from "../graphql-operations";
 
 import { Box, Flex, Icon, Button, Table, Text } from "bumbag";
 import Search from "./Search";
@@ -18,16 +14,17 @@ const PhotosTable: React.FC = () => {
   const [selectedColumn, setSelectedColumn] = useState(0);
   const [sortAscending, setSortAscending] = useState(false);
   const router = useRouter();
-
   const [addPhoto] = useMutation(AddPhotoDocument, {
     onCompleted(data) {
-      // once the photo has been added, use the new sku to route to the edit-photo page
-      const sku = data.addPhoto.sku;
-      router.push(`edit-photo/${encodeURIComponent(sku)}`);
+      if (data && data.addPhoto.newPhoto) {
+        console.log(`added new photo. Should re-direct to edit-photo/`);
+        const photo: PhotoInfoFragment = data.addPhoto.newPhoto;
+        router.push(`edit-photo/${encodeURIComponent(photo.sku)}`);
+      }
     }
   });
 
-  const [search, { data: searchData }] = useLazyQuery(SearchPhotosDocument, {
+  const [search] = useLazyQuery(SearchPhotosDocument, {
     variables: {
       input: {
         searchString: searchString
@@ -118,7 +115,13 @@ const PhotosTable: React.FC = () => {
     }
   });
 
-  const photos = searchData ? searchData.searchPhotos : data?.searchPhotos;
+  // const photos = searchData ? searchData.searchPhotos : data?.searchPhotos;
+
+  if (!data || !data.searchPhotos) {
+    return null;
+  }
+
+  const photos = data.searchPhotos.datalist;
 
   /**
    * In-cache sorting.
@@ -154,6 +157,14 @@ const PhotosTable: React.FC = () => {
     }
   };
 
+  const handleAddPhoto = () => {
+    addPhoto({
+      variables: {
+        input: {}
+      }
+    });
+  };
+
   const handleHeaderClick = (idx: number) => {
     if (columns[idx].sortable === false) {
       return;
@@ -168,28 +179,8 @@ const PhotosTable: React.FC = () => {
     sort(columns[selectedColumn].attr, sortAscending);
   };
 
-  // const handleRowClick = (sku: number) => {
-  //   console.log(`clicked row: ${sku}`);
-
-  //   const selectedRows = photos?.datalist.filter(p => p.sku === sku);
-
-  //   if (selectedRows && selectedRows.length > 0) {
-  //     setSelectedItem(selectedRows[0]);
-  //   }
-  // };
-
   const handleRowDoubleClick = (sku: number) => {
-    // <Link href={`/gallery/collection/${encodeURIComponent(sku)}`}></Link>
     router.push(`edit-photo/${encodeURIComponent(sku)}`);
-  };
-
-  const handleAddPhoto = () => {
-    const addVariables: AddPhotoMutationVariables = {
-      input: {}
-    };
-    addPhoto({
-      variables: addVariables
-    });
   };
 
   if (error) return <p>Error loading photos</p>;
@@ -233,13 +224,11 @@ const PhotosTable: React.FC = () => {
             </Table.Row>
           </Table.Head>
           <Table.Body>
-            {photos?.datalist.map(p => (
+            {photos.map(p => (
               <Table.Row
                 key={p.sku}
-                // onClick={() => handleRowClick(p.sku)}
                 onDoubleClick={() => handleRowDoubleClick(p.sku)}
-                // background={p.sku === selectedItem?.sku ? "rgba(158, 70, 215, 0.7)" : undefined}
-                // color={p.sku === selectedItem?.sku ? "white" : "text"}
+                fontSize="150"
               >
                 <Table.Cell>{p.sku}</Table.Cell>
                 <Table.Cell>{p.rating}</Table.Cell>

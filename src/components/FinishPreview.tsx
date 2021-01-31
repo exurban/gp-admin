@@ -2,7 +2,6 @@ import { Finish, SearchFinishesDocument, DeleteFinishDocument } from "../graphql
 import { useMutation } from "@apollo/client";
 import { Box, Flex, Columns, Heading, Paragraph, Text, Button, useToasts, Divider } from "bumbag";
 import { Dispatch, SetStateAction } from "react";
-import CoverImageEditor from "./CoverImageEditor";
 
 // * name
 // * description
@@ -73,7 +72,30 @@ const FinishView: React.FC<Props> = ({ selectedItem: fn, setSelectedItem, setIsE
         alignItems="flex-end"
         padding="major-2"
       >
-        <CoverImageEditor coverImage={fn.coverImage} isEditing={false} />
+        {fn.coverImage && fn.coverImage.imageUrl.length > 0 ? (
+          <img
+            key={Date.now()}
+            src={fn.coverImage.imageUrl}
+            width="200px"
+            height="300px"
+            style={{
+              borderRadius: "6px"
+            }}
+          />
+        ) : (
+          <Box
+            width="200px"
+            height="300px"
+            backgroundColor="default"
+            border="1px solid"
+            borderColor="grey800"
+            borderRadius="6px"
+            alignX="center"
+            alignY="center"
+          >
+            No Cover Image
+          </Box>
+        )}
       </Flex>
       <Flex className="fields-wrapper" flexDirection="column" margin="major-3" flex="2 1 50%">
         <Flex flexDirection="row" alignX="right" justifyContent="space-between">

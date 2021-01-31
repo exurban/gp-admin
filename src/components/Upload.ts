@@ -5,7 +5,6 @@ type ImageResponse = {
 };
 
 const Upload = async (file: File): Promise<ImageResponse> => {
-  console.log(`uploading file: ${file.name} ${file.size}`);
   const filename = encodeURIComponent(file.name);
   console.log(filename);
   const res = await fetch(`/api/upload-url?file=${filename}`);
@@ -13,8 +12,6 @@ const Upload = async (file: File): Promise<ImageResponse> => {
   const formData = new FormData();
 
   Object.entries({ ...fields, file }).forEach(([key, value]) => {
-    console.log(`key: ${key} value: ${value}`);
-
     // @ts-ignore
     formData.append(key, value);
   });

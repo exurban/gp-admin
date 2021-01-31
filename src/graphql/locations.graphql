@@ -27,15 +27,23 @@ query location($id: Int!) {
   }
 }
 
-mutation addLocation($input: LocationInput!) {
+mutation addLocation($input: AddLocationInput!) {
   addLocation(input: $input) {
-    ...LocationInfo
+    success
+    message
+    newLocation {
+      ...LocationInfo
+    }
   }
 }
 
-mutation updateLocation($id: Int!, $input: LocationUpdateInput!) {
+mutation updateLocation($id: Int!, $input: UpdateLocationInput!) {
   updateLocation(id: $id, input: $input) {
-    ...LocationInfo
+    success
+    message
+    updatedLocation {
+      ...LocationInfo
+    }
   }
 }
 

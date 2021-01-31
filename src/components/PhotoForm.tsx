@@ -1,13 +1,14 @@
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import {
+  SearchPhotosDocument,
   Image,
-  PhotoWithSkuDocument,
   PhotoEditOptionsDocument,
   UpdatePhotoDocument,
+  UpdatePhotoInput,
   UpdatePhotoMutationVariables,
-  PhotoUpdateInput
+  PhotoInfoFragment
 } from "../graphql-operations";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
@@ -15,7 +16,6 @@ import * as Yup from "yup";
 import PhotoImage from "./PhotoImage";
 
 import {
-  Box,
   Flex,
   Button,
   Stack,
@@ -31,20 +31,35 @@ import {
   useToasts
 } from "bumbag";
 
+type SaveImageResponse = {
+  success: boolean;
+  message: string;
+  image?: Image | undefined;
+};
+
+interface PhotoImageEditorRef {
+  saveImage: () => SaveImageResponse;
+}
+
 type MenuOption = {
   key: number;
   label: string;
   value: string;
 };
 
-const PhotoForm: React.FC = () => {
+type Props = {
+  photo: PhotoInfoFragment;
+  isEditing: boolean;
+};
+
+const PhotoForm: React.FC<Props> = ({ photo }) => {
   const router = useRouter();
-  const { sku } = router.query;
   const [photoTitle, setPhotoTitle] = useState("");
-  // const formRef = useRef<FormikProps<PhotoInfoFragment>>();
+  const imageEditorRef = useRef<PhotoImageEditorRef>();
+  const toasts = useToasts();
 
   // * BUILD MENUS
-  const { error, loading, data } = useQuery(PhotoEditOptionsDocument, { ssr: false });
+  const { data } = useQuery(PhotoEditOptionsDocument, { ssr: false });
 
   const photographerSelectionOptions = data?.photoEditOptions?.photographers?.map(pg => {
     const menuOption: MenuOption = {
@@ -110,6 +125,16 @@ const PhotoForm: React.FC = () => {
   });
 
   const [updatePhoto] = useMutation(UpdatePhotoDocument, {
+    refetchQueries: [
+      {
+        query: SearchPhotosDocument,
+        variables: {
+          input: {
+            searchString: ""
+          }
+        }
+      }
+    ],
     onCompleted(data) {
       console.log(JSON.stringify(data, null, 2));
       if (data.updatePhoto.success) {
@@ -123,33 +148,9 @@ const PhotoForm: React.FC = () => {
           message: `${data.updatePhoto.message}`
         });
       }
-      refetch();
       router.push(`/photos`);
     }
   });
-
-  // * Load Photo with SKU
-  const { data: photoData, refetch } = useQuery(PhotoWithSkuDocument, {
-    variables: { sku: parseInt(sku as string) },
-    ssr: false
-  });
-
-  const toasts = useToasts();
-
-  if (error) return <p>Error loading photos</p>;
-  if (loading) return <p>Loading...</p>;
-
-  if (!photoData || !photoData.photoWithSku) {
-    console.error(`Failed to fetch photo with sku: ${sku}`);
-    return null;
-  }
-
-  const photo = photoData.photoWithSku;
-
-  // console.log(`photoData: ${JSON.stringify(photo, null, 2)}`);
-  if (photoData) {
-    console.log(`loaded photo data.`);
-  }
 
   // * Set Initial Values
 
@@ -195,6 +196,49 @@ const PhotoForm: React.FC = () => {
     router.push(`/photos`);
   };
 
+  const updatePhotoWithInput = (input: UpdatePhotoMutationVariables) => {
+    // const test = Object.assign(input.input, photo);
+    // console.log(`TEST: ${JSON.stringify(test, null, 2)}`);
+    updatePhoto({
+      variables: input
+      // optimisticResponse: {
+      //   __typename: "Mutation",
+      //   updatePhoto: {
+      //     success: true,
+      //     message: `Successfully updated photo ${input.id}`,
+      //     updatedPhoto: {
+      //       ...photo,
+      //       ...input.input
+      //     },
+      //     __typename: "UpdatePhotoResponse"
+      //   }
+      // },
+      // update: (cache, { data: { ...updatePhoto } }) => {
+      //   const { ...existing } = cache.readQuery({
+      //     query: SearchPhotosDocument,
+      //     variables: {
+      //       input: {
+      //         searchString: ""
+      //       }
+      //     }
+      //   });
+      //   const existingPhotos = existing.searchPhotos?.datalist || [];
+      //   const newPhoto = updatePhoto?.updatePhoto.updatedPhoto;
+      //   console.log(`New Photo in update call: ${JSON.stringify(newPhoto, null, 2)}`);
+
+      //   cache.writeQuery({
+      //     query: SearchPhotosDocument,
+      //     data: {
+      //       searchPhotos: {
+      //         __typename: "SearchPhotosResponse",
+      //         datalist: newPhoto ? [newPhoto, ...existingPhotos] : [...existingPhotos]
+      //       }
+      //     }
+      //   });
+      // }
+    });
+  };
+
   const initialValues: {
     image: Image | undefined;
     photographer: MenuOption | undefined;
@@ -211,7 +255,7 @@ const PhotoForm: React.FC = () => {
     collections: MenuOption[];
     finishes: MenuOption[];
   } = {
-    image: photo?.images?.[0] || null,
+    image: photo?.images?.[0] || undefined,
     photographer: initialPhotographer,
     location: initialLocation,
     title: photo?.title || "Untitled",
@@ -245,27 +289,24 @@ const PhotoForm: React.FC = () => {
     <Flex className="page-wrapper" flexDirection="column">
       <Flex flex="row wrap">
         <Flex className="image-wrapper" marginLeft="auto" marginRight="major-2" marginY="major-4">
-          {initialValues.image && (
-            <PhotoImage
-              image={initialValues.image}
-              photoId={photo.id}
-              photoSku={photo.sku}
-              photoTitle={photoTitle}
-            />
-          )}
+          <PhotoImage
+            image={initialValues.image}
+            photoId={photo.id}
+            photoSku={photo.sku}
+            photoTitle={photoTitle}
+            // @ts-ignore
+            ref={imageEditorRef}
+          />
         </Flex>
         <Flex
           className="info-card-wrapper"
-          width="450px"
-          height="300px"
-          border="2px solid"
-          borderColor="white800"
-          borderRadius="10px"
+          flexDirection="column"
           marginY="auto"
           marginLeft="major-2"
           marginRight="auto"
         >
-          <Box margin="major-3">
+          <Heading use="h5">{photo.sku}</Heading>
+          <Card width="450px" height="300px" margin="major-3">
             {/* {console.log(formRef.current)}
             {formRef.current && (
               <>
@@ -303,7 +344,7 @@ const PhotoForm: React.FC = () => {
                   ))}
               </>
             )} */}
-          </Box>
+          </Card>
         </Flex>
       </Flex>
       <Formik
@@ -311,9 +352,18 @@ const PhotoForm: React.FC = () => {
         validationSchema={Yup.object(validationObject)}
         // innerRef={formRef}
         onSubmit={async values => {
+          const imageSaveResult = await imageEditorRef.current?.saveImage();
+
+          console.log(`PhotoForm Image save result: ${JSON.stringify(imageSaveResult, null, 2)}`);
+          if (!imageSaveResult) {
+            return;
+          }
+
+          // const imageId = imageSaveResult.image.id;
+
           setPhotoTitle(values.title);
 
-          const input: PhotoUpdateInput = {
+          const input: UpdatePhotoInput = {
             title: values.title,
             description: values.description,
             isFeatured: values.isFeatured,
@@ -321,6 +371,7 @@ const PhotoForm: React.FC = () => {
             rating: values.rating,
             basePrice: values.basePrice,
             priceModifier: values.priceModifier,
+            // imageId: parseInt(imageId),
             photographerId: values.photographer ? parseInt(values.photographer.value) : null,
             locationId: values.location ? parseInt(values.location.value) : null,
             subjectIds: values.subjects ? values.subjects.map(subj => parseInt(subj.value)) : null,
@@ -339,9 +390,7 @@ const PhotoForm: React.FC = () => {
             id: photo?.id ? parseInt(photo.id) : 0,
             input
           };
-          updatePhoto({
-            variables: editVariables
-          });
+          updatePhotoWithInput(editVariables);
         }}
       >
         {({ values }) => (
@@ -381,8 +430,8 @@ const PhotoForm: React.FC = () => {
                       placeholder="Select subjects..."
                       name="subjects"
                       options={subjectSelectionOptions}
-                      popoverProps={{ backgroundColor: "info300", color: "red" }}
-                      buttonProps={{ backgroundColor: "info500" }}
+                      // popoverProps={{ backgroundColor: "info300", color: "red" }}
+                      buttonProps={{ color: "info500" }}
                     />
                   )}
                   {tagSelectionOptions && (

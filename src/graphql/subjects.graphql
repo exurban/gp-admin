@@ -25,15 +25,23 @@ query subject($id: Int!) {
   }
 }
 
-mutation addSubject($input: SubjectInput!) {
+mutation addSubject($input: AddSubjectInput!) {
   addSubject(input: $input) {
-    ...SubjectInfo
+    success
+    message
+    newSubject {
+      ...SubjectInfo
+    }
   }
 }
 
-mutation updateSubject($id: Int!, $input: SubjectUpdateInput!) {
+mutation updateSubject($id: Int!, $input: UpdateSubjectInput!) {
   updateSubject(id: $id, input: $input) {
-    ...SubjectInfo
+    success
+    message
+    updatedSubject {
+      ...SubjectInfo
+    }
   }
 }
 
