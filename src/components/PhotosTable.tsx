@@ -197,7 +197,7 @@ const PhotosTable: React.FC = () => {
         borderRadius="6px"
         _hover={{ cursor: "default" }}
       >
-        <Table hasDividers isHoverable overflow="unset">
+        <Table hasDividers isHoverable overflow="unset" userSelect="none">
           <Table.Head>
             <Table.Row>
               {columns.map((col, idx) => (

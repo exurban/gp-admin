@@ -23,7 +23,8 @@ import {
   AddPhotographerMutationVariables,
   UpdatePhotographerInput,
   UpdatePhotographerDocument,
-  UpdatePhotographerMutationVariables
+  UpdatePhotographerMutationVariables,
+  PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
 import CoverImageModal from "./CoverImageModal";
@@ -72,6 +73,9 @@ const PhotographerForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {
@@ -93,6 +97,9 @@ const PhotographerForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {
@@ -147,6 +154,9 @@ const PhotographerForm: React.FC<Props> = ({
                 searchString: ""
               }
             }
+          },
+          {
+            query: PhotoEditOptionsDocument
           }
         ]
       });
@@ -179,6 +189,9 @@ const PhotographerForm: React.FC<Props> = ({
                 searchString: ""
               }
             }
+          },
+          {
+            query: PhotoEditOptionsDocument
           }
         ]
       });

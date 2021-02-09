@@ -7,7 +7,7 @@
   },
   "scripts": {
     "cdk": "cdk",
-    "dev": "next",
+    "dev": "next -p 3001",
     "debug": "NODE_OPTIONS='--inspect' next dev",
     "build": "next build",
     "start": "next start",

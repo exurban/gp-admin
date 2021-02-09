@@ -1,7 +1,8 @@
 import {
   Collection,
   SearchCollectionsDocument,
-  DeleteCollectionDocument
+  DeleteCollectionDocument,
+  PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { useMutation } from "@apollo/client";
 import { Box, Flex, Heading, Paragraph, Text, Button, useToasts } from "bumbag";
@@ -51,6 +52,9 @@ const CollectionView: React.FC<Props> = ({ selectedItem: col, setSelectedItem, s
                 searchString: ""
               }
             }
+          },
+          {
+            query: PhotoEditOptionsDocument
           }
         ]
       });

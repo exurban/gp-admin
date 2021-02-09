@@ -23,7 +23,8 @@ import {
   AddLocationMutationVariables,
   UpdateLocationDocument,
   UpdateLocationInput,
-  UpdateLocationMutationVariables
+  UpdateLocationMutationVariables,
+  PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
 import CoverImageModal from "./CoverImageModal";
@@ -69,6 +70,9 @@ const LocationForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {
@@ -90,6 +94,9 @@ const LocationForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {
@@ -141,6 +148,9 @@ const LocationForm: React.FC<Props> = ({
                 searchString: ""
               }
             }
+          },
+          {
+            query: PhotoEditOptionsDocument
           }
         ]
       });
@@ -172,6 +182,9 @@ const LocationForm: React.FC<Props> = ({
                 searchString: ""
               }
             }
+          },
+          {
+            query: PhotoEditOptionsDocument
           }
         ]
       });

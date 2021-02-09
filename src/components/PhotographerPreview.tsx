@@ -1,7 +1,8 @@
 import {
   Photographer,
   SearchPhotographersDocument,
-  DeletePhotographerDocument
+  DeletePhotographerDocument,
+  PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { useMutation } from "@apollo/client";
 import { Box, Flex, Heading, Paragraph, Text, Button, useToasts } from "bumbag";
@@ -53,6 +54,9 @@ const PhotographerView: React.FC<Props> = ({ selectedItem: pg, setSelectedItem, 
                 searchString: ""
               }
             }
+          },
+          {
+            query: PhotoEditOptionsDocument
           }
         ]
       });

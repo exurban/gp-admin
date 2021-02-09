@@ -23,7 +23,8 @@ import {
   AddCollectionMutationVariables,
   UpdateCollectionDocument,
   UpdateCollectionInput,
-  UpdateCollectionMutationVariables
+  UpdateCollectionMutationVariables,
+  PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
 import CoverImageModal from "./CoverImageModal";
@@ -69,6 +70,9 @@ const CollectionForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {
@@ -89,6 +93,9 @@ const CollectionForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {
@@ -124,24 +131,14 @@ const CollectionForm: React.FC<Props> = ({
     const coverImageId = coverImage ? parseInt(coverImage.id) : null;
 
     const input = { ...values, coverImageId };
-    console.log(`Adding Collection with input: ${JSON.stringify(input, null, 2)}`);
 
     if (isAdding) {
       const addVariables: AddCollectionMutationVariables = {
         input
       };
+
       addCollection({
-        variables: addVariables,
-        refetchQueries: [
-          {
-            query: SearchCollectionsDocument,
-            variables: {
-              input: {
-                searchString: ""
-              }
-            }
-          }
-        ]
+        variables: addVariables
       });
     }
     clearForm();
@@ -161,17 +158,7 @@ const CollectionForm: React.FC<Props> = ({
         input
       };
       updateCollection({
-        variables: editVariables,
-        refetchQueries: [
-          {
-            query: SearchCollectionsDocument,
-            variables: {
-              input: {
-                searchString: ""
-              }
-            }
-          }
-        ]
+        variables: editVariables
       });
     }
     clearForm();

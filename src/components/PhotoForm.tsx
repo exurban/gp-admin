@@ -59,7 +59,7 @@ const PhotoForm: React.FC<Props> = ({ photo }) => {
   const toasts = useToasts();
 
   // * BUILD MENUS
-  const { data } = useQuery(PhotoEditOptionsDocument, { ssr: false });
+  const { data } = useQuery(PhotoEditOptionsDocument);
 
   const photographerSelectionOptions = data?.photoEditOptions?.photographers?.map(pg => {
     const menuOption: MenuOption = {
@@ -197,45 +197,8 @@ const PhotoForm: React.FC<Props> = ({ photo }) => {
   };
 
   const updatePhotoWithInput = (input: UpdatePhotoMutationVariables) => {
-    // const test = Object.assign(input.input, photo);
-    // console.log(`TEST: ${JSON.stringify(test, null, 2)}`);
     updatePhoto({
       variables: input
-      // optimisticResponse: {
-      //   __typename: "Mutation",
-      //   updatePhoto: {
-      //     success: true,
-      //     message: `Successfully updated photo ${input.id}`,
-      //     updatedPhoto: {
-      //       ...photo,
-      //       ...input.input
-      //     },
-      //     __typename: "UpdatePhotoResponse"
-      //   }
-      // },
-      // update: (cache, { data: { ...updatePhoto } }) => {
-      //   const { ...existing } = cache.readQuery({
-      //     query: SearchPhotosDocument,
-      //     variables: {
-      //       input: {
-      //         searchString: ""
-      //       }
-      //     }
-      //   });
-      //   const existingPhotos = existing.searchPhotos?.datalist || [];
-      //   const newPhoto = updatePhoto?.updatePhoto.updatedPhoto;
-      //   console.log(`New Photo in update call: ${JSON.stringify(newPhoto, null, 2)}`);
-
-      //   cache.writeQuery({
-      //     query: SearchPhotosDocument,
-      //     data: {
-      //       searchPhotos: {
-      //         __typename: "SearchPhotosResponse",
-      //         datalist: newPhoto ? [newPhoto, ...existingPhotos] : [...existingPhotos]
-      //       }
-      //     }
-      //   });
-      // }
     });
   };
 
@@ -284,6 +247,10 @@ const PhotoForm: React.FC<Props> = ({ photo }) => {
     location: Yup.object().required("Required."),
     subjects: Yup.array().required("Must select at least 1 Subject.")
   };
+
+  if (typeof window === "undefined") {
+    return null;
+  }
 
   return (
     <Flex className="page-wrapper" flexDirection="column">
@@ -352,6 +319,8 @@ const PhotoForm: React.FC<Props> = ({ photo }) => {
         validationSchema={Yup.object(validationObject)}
         // innerRef={formRef}
         onSubmit={async values => {
+          //* show saving... callout
+
           const imageSaveResult = await imageEditorRef.current?.saveImage();
 
           console.log(`PhotoForm Image save result: ${JSON.stringify(imageSaveResult, null, 2)}`);
@@ -416,8 +385,9 @@ const PhotoForm: React.FC<Props> = ({ photo }) => {
                       component={SelectMenuField.Formik}
                       label="Location"
                       name="location"
-                      placeholder="Location..."
+                      placeholder="Select location..."
                       options={locationSelectionOptions}
+                      popoverProps={{ backgroundColor: "default", color: "text" }}
                     />
                   )}
 
@@ -430,8 +400,8 @@ const PhotoForm: React.FC<Props> = ({ photo }) => {
                       placeholder="Select subjects..."
                       name="subjects"
                       options={subjectSelectionOptions}
-                      // popoverProps={{ backgroundColor: "info300", color: "red" }}
-                      buttonProps={{ color: "info500" }}
+                      popoverProps={{ backgroundColor: "default", color: "text" }}
+                      buttonProps={{ backgroundColor: "red" }}
                     />
                   )}
                   {tagSelectionOptions && (
@@ -443,6 +413,7 @@ const PhotoForm: React.FC<Props> = ({ photo }) => {
                       placeholder="Select tags..."
                       name="tags"
                       options={tagSelectionOptions}
+                      popoverProps={{ backgroundColor: "default", color: "text" }}
                     />
                   )}
 
@@ -455,6 +426,7 @@ const PhotoForm: React.FC<Props> = ({ photo }) => {
                       name="collections"
                       placeholder="Select collections..."
                       options={collectionSelectionOptions}
+                      popoverProps={{ backgroundColor: "default", color: "text" }}
                     />
                   )}
                 </FieldStack>
@@ -473,8 +445,9 @@ const PhotoForm: React.FC<Props> = ({ photo }) => {
                       component={SelectMenuField.Formik}
                       label="Photographer"
                       name="photographer"
-                      placeholder="Photographer..."
+                      placeholder="Select photographer..."
                       options={photographerSelectionOptions}
+                      popoverProps={{ backgroundColor: "default", color: "text" }}
                     />
                   )}
                   <Field

@@ -7,6 +7,8 @@ fragment ImageInfo on Image {
   size
   width
   height
+  isPortrait
+  isPanoramic
   createdAt
   updatedAt
 }

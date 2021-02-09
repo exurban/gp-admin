@@ -23,7 +23,8 @@ import {
   AddTagMutationVariables,
   UpdateTagDocument,
   UpdateTagInput,
-  UpdateTagMutationVariables
+  UpdateTagMutationVariables,
+  PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
 import CoverImageModal from "./CoverImageModal";
@@ -68,6 +69,9 @@ const TagForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {
@@ -89,6 +93,9 @@ const TagForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {

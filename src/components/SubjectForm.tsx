@@ -23,7 +23,8 @@ import {
   AddSubjectMutationVariables,
   UpdateSubjectDocument,
   UpdateSubjectInput,
-  UpdateSubjectMutationVariables
+  UpdateSubjectMutationVariables,
+  PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
 import CoverImageModal from "./CoverImageModal";
@@ -68,6 +69,9 @@ const SubjectForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {
@@ -89,6 +93,9 @@ const SubjectForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {

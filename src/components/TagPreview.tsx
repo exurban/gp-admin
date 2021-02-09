@@ -1,4 +1,9 @@
-import { Tag, SearchTagsDocument, DeleteTagDocument } from "../graphql-operations";
+import {
+  Tag,
+  SearchTagsDocument,
+  DeleteTagDocument,
+  PhotoEditOptionsDocument
+} from "../graphql-operations";
 import { useMutation } from "@apollo/client";
 import { Box, Flex, Heading, Paragraph, Text, Button, useToasts } from "bumbag";
 import { Dispatch, SetStateAction } from "react";
@@ -46,6 +51,9 @@ const TagView: React.FC<Props> = ({ selectedItem: tag, setSelectedItem, setIsEdi
                 searchString: ""
               }
             }
+          },
+          {
+            query: PhotoEditOptionsDocument
           }
         ]
       });

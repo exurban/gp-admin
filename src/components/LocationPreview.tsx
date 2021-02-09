@@ -1,4 +1,9 @@
-import { Location, SearchLocationsDocument, DeleteLocationDocument } from "../graphql-operations";
+import {
+  Location,
+  SearchLocationsDocument,
+  DeleteLocationDocument,
+  PhotoEditOptionsDocument
+} from "../graphql-operations";
 import { useMutation } from "@apollo/client";
 import { Box, Flex, Heading, Paragraph, Text, Button, useToasts } from "bumbag";
 import { Dispatch, SetStateAction } from "react";
@@ -46,6 +51,9 @@ const LocationView: React.FC<Props> = ({ selectedItem: loc, setSelectedItem, set
                 searchString: ""
               }
             }
+          },
+          {
+            query: PhotoEditOptionsDocument
           }
         ]
       });

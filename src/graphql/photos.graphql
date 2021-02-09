@@ -2,7 +2,6 @@ fragment PhotoInfo on Photo {
   id
   rating
   sku
-  skuGenerator
   sortIndex
   title
   description

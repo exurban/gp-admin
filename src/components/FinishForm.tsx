@@ -23,7 +23,8 @@ import {
   AddFinishMutationVariables,
   UpdateFinishDocument,
   UpdateFinishInput,
-  UpdateFinishMutationVariables
+  UpdateFinishMutationVariables,
+  PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
 import CoverImageModal from "./CoverImageModal";
@@ -75,6 +76,9 @@ const FinishForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {
@@ -96,6 +100,9 @@ const FinishForm: React.FC<Props> = ({
             searchString: ""
           }
         }
+      },
+      {
+        query: PhotoEditOptionsDocument
       }
     ],
     onCompleted(data) {

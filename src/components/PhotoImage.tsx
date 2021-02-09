@@ -361,7 +361,7 @@ const PhotoImage: React.FC<Props> = forwardRef(({ image, photoId, photoSku, phot
         1400,
         1400,
         "WEBP",
-        75,
+        100,
         0,
         uri => {
           // console.log(`URI: ${uri}`);

@@ -1,4 +1,9 @@
-import { Subject, SearchSubjectsDocument, DeleteSubjectDocument } from "../graphql-operations";
+import {
+  Subject,
+  SearchSubjectsDocument,
+  DeleteSubjectDocument,
+  PhotoEditOptionsDocument
+} from "../graphql-operations";
 import { useMutation } from "@apollo/client";
 import { Box, Flex, Heading, Paragraph, Text, Button, useToasts } from "bumbag";
 import { Dispatch, SetStateAction } from "react";
@@ -46,6 +51,9 @@ const SubjectView: React.FC<Props> = ({ selectedItem: sbj, setSelectedItem, setI
                 searchString: ""
               }
             }
+          },
+          {
+            query: PhotoEditOptionsDocument
           }
         ]
       });
