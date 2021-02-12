@@ -2525,17 +2525,17 @@ builtin-status-codes@^3.0.0:
   resolved "https://registry.yarnpkg.com/builtin-status-codes/-/builtin-status-codes-3.0.0.tgz#85982878e21b98e1c66425e03d0174788f569ee8"
   integrity sha1-hZgoeOIbmOHGZCXgPQF0eI9Wnug=
 
-bumbag-server@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/bumbag-server/-/bumbag-server-1.7.0.tgz#406179991b3ed7fcff13c2061c8b5cf389f9c40a"
-  integrity sha512-OBzAWGI0JFCjwyJKf5vdoVHEy2ASULsHSn1edPTRA9o/XYX9ja7NvF94iD7YEhcMnSMWDU9s/wsl6vI80AEbSA==
+bumbag-server@^1.7.2:
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/bumbag-server/-/bumbag-server-1.7.2.tgz#9ec9fe5c689ffd5cd903b5a7cfbdb1e262f07d33"
+  integrity sha512-PHVzbX88HnSB8gvh428BZCsKKa/bzxdxFyJw9cNq/tBNk5LhVNwwCUBsiWD51Tpo0evMOZ7O50wAak+ZcT0hWQ==
   dependencies:
     emotion-server "10.0.27"
 
-bumbag@^1.7.1:
-  version "1.7.1"
-  resolved "https://registry.yarnpkg.com/bumbag/-/bumbag-1.7.1.tgz#9573627fb60928528bc58b68a431311bb1dcc686"
-  integrity sha512-C1YPPEpFvDEM0pPtD1vTsDwkJrHlicR06r+xHVRaNpdYb4H1/HWQcMgGUZzjTYJp/wT7YSfIJOgFZMMlP+TI+w==
+bumbag@^1.7.3:
+  version "1.7.3"
+  resolved "https://registry.yarnpkg.com/bumbag/-/bumbag-1.7.3.tgz#22ec8c4d0342f0b234278855090c76bdba7bb13a"
+  integrity sha512-5XelpQ9a380ZC57sW/JpykAGTHNza2siygXX0uGJOcK4h5bnPvr/mtMUaYoFHH1msNvAmMjTnvRHp9kWn4Kg1A==
   dependencies:
     "@emotion/core" "10.1.1"
     "@emotion/is-prop-valid" "0.8.2"

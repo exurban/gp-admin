@@ -87,12 +87,6 @@ const options: InitOptions = {
     },
     // redirect: async (url, baseUrl) => { return Promise.resolve(baseUrl) },
     jwt: async (token, user: GPUser) => {
-      // console.log(`***JWT CALLBACK***`);
-      // token && console.log(`token: ${JSON.stringify(token, null, 2)}`);
-      // user && console.log(`user: ${JSON.stringify(user, null, 2)}`);
-      // account && console.log(`account: ${JSON.stringify(account, null, 2)}`);
-      // profile && console.log(`profile: ${JSON.stringify(profile, null, 2)}`);
-      // isNewUser && console.log(`isNewUser: ${JSON.stringify(isNewUser, null, 2)}`);
       if (user && user !== undefined) {
         const signinArgs = {
           userId: user.id,
