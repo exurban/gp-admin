@@ -18,9 +18,7 @@ const EditPhoto: React.FC = () => {
     return null;
   }
 
-  // if (photo) {
-  //   console.log(`loaded photo data.`);
-  // }
+  console.log(`fetched photo with image: ${JSON.stringify(photo.images[0])}`);
 
   return (
     <Box height="90vh">

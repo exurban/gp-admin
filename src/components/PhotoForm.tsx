@@ -52,77 +52,166 @@ type Props = {
   isEditing: boolean;
 };
 
-const PhotoForm: React.FC<Props> = ({ photo }) => {
+const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
+  const imageEditorRef = useRef<PhotoImageEditorRef>();
   const router = useRouter();
   const [photoTitle, setPhotoTitle] = useState("");
-  const imageEditorRef = useRef<PhotoImageEditorRef>();
+  const [photographerSelectionOptions, setPhotographerSelectionOptions] = useState<
+    MenuOption[] | []
+  >([]);
+  const [locationSelectionOptions, setLocationSelectionOptions] = useState<MenuOption[] | []>([]);
+  const [subjectSelectionOptions, setSubjectSelectionOptions] = useState<MenuOption[] | []>([]);
+  const [tagSelectionOptions, setTagSelectionOptions] = useState<MenuOption[] | []>([]);
+  const [collectionSelectionOptions, setCollectionSelectionOptions] = useState<MenuOption[] | []>(
+    []
+  );
+  const [finishSelectionOptions, setFinishSelectionOptions] = useState<MenuOption[] | []>([]);
+
+  // const [initialPhotographer, setInitialPhotographer] = useState<MenuOption | undefined>(undefined);
+  // const [initialLocation, setInitialLocation] = useState<MenuOption | undefined>(undefined);
+
+  const [initialized, setInitialized] = useState(false);
   const toasts = useToasts();
 
   // * BUILD MENUS
-  const { data } = useQuery(PhotoEditOptionsDocument);
+  const { data } = useQuery(PhotoEditOptionsDocument, {
+    onCompleted(data) {
+      const pgOptions = data?.photoEditOptions?.photographers?.map(pg => {
+        const menuOption: MenuOption = {
+          key: pg.id,
+          label: pg.name,
+          value: pg.id.toString()
+        };
+        return menuOption;
+      });
+      setPhotographerSelectionOptions(pgOptions);
 
-  const photographerSelectionOptions = data?.photoEditOptions?.photographers?.map(pg => {
-    const menuOption: MenuOption = {
-      key: pg.id,
-      label: pg.name,
-      value: pg.id.toString()
-    };
-    return menuOption;
+      // const initialPg = photographerSelectionOptions?.find(
+      //   x => x.value === photo?.photographer?.id
+      // );
+      // setInitialPhotographer(initialPg);
+
+      const locOptions = data?.photoEditOptions?.locations?.map(l => {
+        const menuOption: MenuOption = {
+          key: l.id,
+          label: l.name,
+          value: l.id.toString()
+        };
+        return menuOption;
+      });
+      setLocationSelectionOptions(locOptions);
+
+      // const initialLoc = locationSelectionOptions?.find(x => x.value === photo?.location?.id);
+      // setInitialLocation(initialLoc);
+
+      const subjOptions = data?.photoEditOptions?.subjects?.map(s => {
+        const menuOption: MenuOption = {
+          key: s.id,
+          label: s.name,
+          value: s.id.toString()
+        };
+        return menuOption;
+      });
+      setSubjectSelectionOptions(subjOptions);
+
+      const tagOptions = data?.photoEditOptions?.tags?.map(t => {
+        const menuOption: MenuOption = {
+          key: t.id,
+          label: t.name,
+          value: t.id.toString()
+        };
+        return menuOption;
+      });
+      setTagSelectionOptions(tagOptions);
+
+      const collOptions = data?.photoEditOptions?.collections?.map(c => {
+        const menuOption: MenuOption = {
+          key: c.id,
+          label: c.name,
+          value: c.id.toString()
+        };
+        return menuOption;
+      });
+      setCollectionSelectionOptions(collOptions);
+
+      const finOptions = data?.photoEditOptions?.finishes?.map(f => {
+        const menuOption: MenuOption = {
+          key: f.id,
+          label: f.name,
+          value: f.id.toString()
+        };
+        return menuOption;
+      });
+      setFinishSelectionOptions(finOptions);
+
+      setInitialized(true);
+    }
   });
 
-  const locationSelectionOptions = data?.photoEditOptions?.locations?.map(l => {
-    const menuOption: MenuOption = {
-      key: l.id,
-      label: l.name,
-      value: l.id.toString()
-    };
-    return menuOption;
-  });
+  // * set initial values
 
-  const subjectSelectionOptions = data?.photoEditOptions?.subjects?.map(s => {
-    const menuOption: MenuOption = {
-      key: s.id,
-      label: s.name,
-      value: s.id.toString()
-    };
-    return menuOption;
-  });
+  // const photographerSelectionOptions = data?.photoEditOptions?.photographers?.map(pg => {
+  //   const menuOption: MenuOption = {
+  //     key: pg.id,
+  //     label: pg.name,
+  //     value: pg.id.toString()
+  //   };
+  //   return menuOption;
+  // });
+
+  // const locationSelectionOptions = data?.photoEditOptions?.locations?.map(l => {
+  //   const menuOption: MenuOption = {
+  //     key: l.id,
+  //     label: l.name,
+  //     value: l.id.toString()
+  //   };
+  //   return menuOption;
+  // });
+
+  // const subjectSelectionOptions = data?.photoEditOptions?.subjects?.map(s => {
+  //   const menuOption: MenuOption = {
+  //     key: s.id,
+  //     label: s.name,
+  //     value: s.id.toString()
+  //   };
+  //   return menuOption;
+  // });
 
   /**
    * Map all possible tags into menu options.
    */
-  const tagSelectionOptions = data?.photoEditOptions?.tags?.map(t => {
-    const menuOption: MenuOption = {
-      key: t.id,
-      label: t.name,
-      value: t.id.toString()
-    };
-    return menuOption;
-  });
+  // const tagSelectionOptions = data?.photoEditOptions?.tags?.map(t => {
+  //   const menuOption: MenuOption = {
+  //     key: t.id,
+  //     label: t.name,
+  //     value: t.id.toString()
+  //   };
+  //   return menuOption;
+  // });
 
   /**
    * Map all possible collections into menu options.
    */
-  const collectionSelectionOptions = data?.photoEditOptions?.collections?.map(c => {
-    const menuOption: MenuOption = {
-      key: c.id,
-      label: c.name,
-      value: c.id.toString()
-    };
-    return menuOption;
-  });
+  // const collectionSelectionOptions = data?.photoEditOptions?.collections?.map(c => {
+  //   const menuOption: MenuOption = {
+  //     key: c.id,
+  //     label: c.name,
+  //     value: c.id.toString()
+  //   };
+  //   return menuOption;
+  // });
 
   /**
    * Map all possible finishes into menu options.
    */
-  const finishSelectionOptions = data?.photoEditOptions?.finishes?.map(f => {
-    const menuOption: MenuOption = {
-      key: f.id,
-      label: f.name,
-      value: f.id.toString()
-    };
-    return menuOption;
-  });
+  // const finishSelectionOptions = data?.photoEditOptions?.finishes?.map(f => {
+  //   const menuOption: MenuOption = {
+  //     key: f.id,
+  //     label: f.name,
+  //     value: f.id.toString()
+  //   };
+  //   return menuOption;
+  // });
 
   const [updatePhoto] = useMutation(UpdatePhotoDocument, {
     refetchQueries: [
@@ -248,7 +337,8 @@ const PhotoForm: React.FC<Props> = ({ photo }) => {
     subjects: Yup.array().required("Must select at least 1 Subject.")
   };
 
-  if (typeof window === "undefined") {
+  if (typeof window === "undefined" || !initialized) {
+    console.log(`not initializes. returning.`);
     return null;
   }
 
@@ -257,7 +347,7 @@ const PhotoForm: React.FC<Props> = ({ photo }) => {
       <Flex flex="row wrap">
         <Flex className="image-wrapper" marginLeft="auto" marginRight="major-2" marginY="major-4">
           <PhotoImage
-            image={initialValues.image}
+            image={photo.images[0]}
             photoId={photo.id}
             photoSku={photo.sku}
             photoTitle={photoTitle}

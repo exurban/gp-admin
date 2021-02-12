@@ -409,6 +409,10 @@ const PhotoImage: React.FC<Props> = forwardRef(({ image, photoId, photoSku, phot
     accept: "image/*"
   });
 
+  console.log(
+    `PhotoImage loading with imageUrl: ${imageUrl} sku: ${photoSku} title: ${photoTitle}`
+  );
+
   return (
     <Flex className="image-data-wrapper" flexDirection="row" width="900">
       <Flex className="output" flexDirection="column" width="720px" height="500px">
