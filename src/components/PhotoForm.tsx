@@ -74,7 +74,7 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
   const toasts = useToasts();
 
   // * BUILD MENUS
-  const { data } = useQuery(PhotoEditOptionsDocument, {
+  useQuery(PhotoEditOptionsDocument, {
     onCompleted(data) {
       const pgOptions = data?.photoEditOptions?.photographers?.map(pg => {
         const menuOption: MenuOption = {
@@ -242,43 +242,47 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
   });
 
   // * Set Initial Values
-
-  const initialPhotographer = photographerSelectionOptions?.find(
-    x => x.value === photo?.photographer?.id
-  );
-
-  const initialLocation = locationSelectionOptions?.find(x => x.value === photo?.location?.id);
-
-  /**
-   * Select the photo's options in the select menu.
-   */
-  const photoSubjects = photo?.subjectsInPhoto?.map(s => s.subject.id);
+  let initialPhotographer, initialLocation;
   let initialSubjects: MenuOption[] | undefined;
-  if (subjectSelectionOptions) {
-    initialSubjects = subjectSelectionOptions.filter(x => photoSubjects?.includes(x.value));
-  }
-
-  /**
-   * Select the photo's options in the select menu.
-   */
-  const photoTags = photo?.tagsForPhoto?.map(t => t.tag.id);
   let initialTags: MenuOption[] | undefined;
-  if (tagSelectionOptions) {
-    initialTags = tagSelectionOptions.filter(x => photoTags?.includes(x.value));
-  }
-
-  const photoCollections = photo?.collectionsForPhoto?.map(c => c.collection.id);
   let initialCollections: MenuOption[] | undefined;
-  if (collectionSelectionOptions) {
-    initialCollections = collectionSelectionOptions.filter(x =>
-      photoCollections?.includes(x.value)
-    );
-  }
-
-  const photoFinishes = photo?.finishesForPhoto?.map(f => f.finish.id);
   let initialFinishes: MenuOption[] | undefined;
-  if (finishSelectionOptions) {
-    initialFinishes = finishSelectionOptions.filter(x => photoFinishes?.includes(x.value));
+
+  if (isEditing) {
+    initialPhotographer = photographerSelectionOptions?.find(
+      x => x.value === photo?.photographer?.id
+    );
+
+    initialLocation = locationSelectionOptions?.find(x => x.value === photo?.location?.id);
+
+    /**
+     * Select the photo's options in the select menu.
+     */
+    const photoSubjects = photo?.subjectsInPhoto?.map(s => s.subject.id);
+
+    if (subjectSelectionOptions) {
+      initialSubjects = subjectSelectionOptions.filter(x => photoSubjects?.includes(x.value));
+    }
+
+    /**
+     * Select the photo's options in the select menu.
+     */
+    const photoTags = photo?.tagsForPhoto?.map(t => t.tag.id);
+    if (tagSelectionOptions) {
+      initialTags = tagSelectionOptions.filter(x => photoTags?.includes(x.value));
+    }
+
+    const photoCollections = photo?.collectionsForPhoto?.map(c => c.collection.id);
+    if (collectionSelectionOptions) {
+      initialCollections = collectionSelectionOptions.filter(x =>
+        photoCollections?.includes(x.value)
+      );
+    }
+
+    const photoFinishes = photo?.finishesForPhoto?.map(f => f.finish.id);
+    if (finishSelectionOptions) {
+      initialFinishes = finishSelectionOptions.filter(x => photoFinishes?.includes(x.value));
+    }
   }
 
   const handleCancel = () => {
