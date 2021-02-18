@@ -303,6 +303,7 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
     description: string;
     isFeatured: boolean;
     isLimitedEdition: boolean;
+    isHidden: boolean;
     rating: number;
     basePrice: number;
     priceModifier: number;
@@ -318,6 +319,7 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
     description: photo?.description || "No description provided.",
     isFeatured: photo?.isFeatured || false,
     isLimitedEdition: photo?.isLimitedEdition || false,
+    isHidden: photo?.isHidden || false,
     rating: photo?.rating || 5,
     basePrice: photo?.basePrice || 400,
     priceModifier: photo?.priceModifier || 0,
@@ -431,6 +433,7 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
             description: values.description,
             isFeatured: values.isFeatured,
             isLimitedEdition: values.isLimitedEdition,
+            isHidden: values.isHidden,
             rating: values.rating,
             basePrice: values.basePrice,
             priceModifier: values.priceModifier,
@@ -581,6 +584,12 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                       component={Switch.Formik}
                       label="Limited Edition"
                       name="isLimitedEdition"
+                      marginTop="major-2"
+                    />
+                    <Field
+                      component={Switch.Formik}
+                      label="Hidden"
+                      name="isHidden"
                       marginTop="major-2"
                     />
                   </Stack>

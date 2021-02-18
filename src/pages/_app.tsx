@@ -6,19 +6,6 @@ import { Provider as BumbagProvider, ToastManager } from "bumbag";
 import Layout from "../components/Layout";
 import gpTheme from "../gp-theme";
 
-// const theme = {
-//   global: {
-//     styles: {
-//       base: css`
-//         body {
-//           overflow: hidden;
-//         }
-//       `
-//     }
-//   },
-//   ...gpTheme
-// };
-
 const App = ({ Component, pageProps }: AppProps): JSX.Element => {
   const apolloClient = useApollo(pageProps);
 

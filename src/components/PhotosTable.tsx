@@ -79,6 +79,11 @@ const PhotosTable: React.FC = () => {
         sortable: true
       },
       {
+        title: "Hidden",
+        attr: "isHidden",
+        sortable: true
+      },
+      {
         title: "Base Price",
         attr: "basePrice",
         sortable: true
@@ -241,6 +246,9 @@ const PhotosTable: React.FC = () => {
                 </Table.Cell>
                 <Table.Cell style={{ textAlign: "center" }}>
                   <input type="radio" readOnly checked={p.isLimitedEdition} />
+                </Table.Cell>
+                <Table.Cell style={{ textAlign: "center" }}>
+                  <input type="radio" readOnly checked={p.isHidden} />
                 </Table.Cell>
                 <Table.Cell style={{ textAlign: "right" }}>${p.basePrice}</Table.Cell>
                 <Table.Cell style={{ textAlign: "center" }}>{p.priceModifier}</Table.Cell>

@@ -33,9 +33,24 @@ import {
   faInstagram,
   faTwitter
 } from "@fortawesome/free-brands-svg-icons";
-import { ThemeConfig } from "bumbag";
+import { ThemeConfig, css } from "bumbag";
 
 const gpTheme: ThemeConfig = {
+  global: {
+    styles: {
+      base: css`
+        html,
+        body {
+          overflow: auto;
+          min-height: 100%;
+        }
+        body {
+          height: 100vh;
+          background-color: "background";
+        }
+      `
+    }
+  },
   fonts: {
     importUrls: [
       "https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800&display=swap"

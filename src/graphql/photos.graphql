@@ -7,6 +7,7 @@ fragment PhotoInfo on Photo {
   description
   isFeatured
   isLimitedEdition
+  isHidden
   rating
   basePrice
   priceModifier
@@ -45,7 +46,6 @@ fragment PhotoInfo on Photo {
       name
     }
   }
-  isDiscontinued
   createdAt
   updatedAt
 }
