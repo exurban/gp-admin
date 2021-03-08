@@ -9,8 +9,20 @@ fragment PhotoInfo on Photo {
   isLimitedEdition
   isHidden
   rating
-  basePrice
-  priceModifier
+  printTypes
+  basePrice12
+  priceModifier12
+  basePrice16
+  priceModifier16
+  basePrice20
+  priceModifier20
+  basePrice24
+  priceModifier24
+  basePrice30
+  priceModifier30
+  sharingImage {
+    ...ImageInfo
+  }
   images {
     ...ImageInfo
   }
@@ -36,12 +48,6 @@ fragment PhotoInfo on Photo {
   }
   collectionsForPhoto {
     collection {
-      id
-      name
-    }
-  }
-  finishesForPhoto {
-    finish {
       id
       name
     }
@@ -103,10 +109,6 @@ query photoEditOptions {
       name
     }
     collections {
-      id
-      name
-    }
-    finishes {
       id
       name
     }

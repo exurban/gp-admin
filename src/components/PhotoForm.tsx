@@ -14,20 +14,25 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 
 import PhotoImage from "./PhotoImage";
+import SharingImageModal from "./SharingImageModal";
 
 import {
+  Level,
+  Divider,
+  Box,
   Flex,
   Button,
   Stack,
   Heading,
-  Card,
+  Text,
   FieldStack,
+  Input,
   InputField,
   Switch,
   TextareaField,
   SelectMenuField,
-  RadioGroupField,
-  Tabs,
+  Label,
+  styled,
   useToasts
 } from "bumbag";
 
@@ -54,6 +59,9 @@ type Props = {
 
 const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
   const imageEditorRef = useRef<PhotoImageEditorRef>();
+  const [imageUrl, setImageUrl] = useState(photo?.sharingImage?.imageUrl);
+  const [sharingImage, setSharingImage] = useState<Image | null | undefined>(photo?.sharingImage);
+
   const router = useRouter();
   const [photoTitle, setPhotoTitle] = useState("");
   const [photographerSelectionOptions, setPhotographerSelectionOptions] = useState<
@@ -65,10 +73,6 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
   const [collectionSelectionOptions, setCollectionSelectionOptions] = useState<MenuOption[] | []>(
     []
   );
-  const [finishSelectionOptions, setFinishSelectionOptions] = useState<MenuOption[] | []>([]);
-
-  // const [initialPhotographer, setInitialPhotographer] = useState<MenuOption | undefined>(undefined);
-  // const [initialLocation, setInitialLocation] = useState<MenuOption | undefined>(undefined);
 
   const [initialized, setInitialized] = useState(false);
   const toasts = useToasts();
@@ -133,16 +137,6 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
         return menuOption;
       });
       setCollectionSelectionOptions(collOptions);
-
-      const finOptions = data?.photoEditOptions?.finishes?.map(f => {
-        const menuOption: MenuOption = {
-          key: f.id,
-          label: f.name,
-          value: f.id.toString()
-        };
-        return menuOption;
-      });
-      setFinishSelectionOptions(finOptions);
 
       setInitialized(true);
     }
@@ -246,7 +240,6 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
   let initialSubjects: MenuOption[] | undefined;
   let initialTags: MenuOption[] | undefined;
   let initialCollections: MenuOption[] | undefined;
-  let initialFinishes: MenuOption[] | undefined;
 
   if (isEditing) {
     initialPhotographer = photographerSelectionOptions?.find(
@@ -278,11 +271,6 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
         photoCollections?.includes(x.value)
       );
     }
-
-    const photoFinishes = photo?.finishesForPhoto?.map(f => f.finish.id);
-    if (finishSelectionOptions) {
-      initialFinishes = finishSelectionOptions.filter(x => photoFinishes?.includes(x.value));
-    }
   }
 
   const handleCancel = () => {
@@ -305,12 +293,19 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
     isLimitedEdition: boolean;
     isHidden: boolean;
     rating: number;
-    basePrice: number;
-    priceModifier: number;
+    basePrice12: number;
+    priceModifier12: number;
+    basePrice16: number;
+    priceModifier16: number;
+    basePrice20: number;
+    priceModifier20: number;
+    basePrice24: number;
+    priceModifier24: number;
+    basePrice30: number;
+    priceModifier30: number;
     subjects: MenuOption[];
     tags: MenuOption[];
     collections: MenuOption[];
-    finishes: MenuOption[];
   } = {
     image: photo?.images?.[0] || undefined,
     photographer: initialPhotographer,
@@ -321,12 +316,19 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
     isLimitedEdition: photo?.isLimitedEdition || false,
     isHidden: photo?.isHidden || false,
     rating: photo?.rating || 5,
-    basePrice: photo?.basePrice || 400,
-    priceModifier: photo?.priceModifier || 0,
+    basePrice12: photo?.basePrice12 || 100,
+    priceModifier12: photo?.priceModifier12 || 1,
+    basePrice16: photo?.basePrice16 || 120,
+    priceModifier16: photo?.priceModifier16 || 1,
+    basePrice20: photo?.basePrice20 || 150,
+    priceModifier20: photo?.priceModifier20 || 1,
+    basePrice24: photo?.basePrice24 || 180,
+    priceModifier24: photo?.priceModifier24 || 1,
+    basePrice30: photo?.basePrice30 || 220,
+    priceModifier30: photo?.priceModifier30 || 1,
     subjects: initialSubjects || [],
     tags: initialTags || [],
-    collections: initialCollections || [],
-    finishes: initialFinishes || []
+    collections: initialCollections || []
   };
 
   const validationObject = {
@@ -336,8 +338,17 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
       .min(1, "Rating must be 1-10.")
       .max(10, "Rating must be 1-10.")
       .required("Required"),
-    basePrice: Yup.number().min(1, "Must be greater than 0.").required("Required"),
-    priceModifier: Yup.number().min(-75, "Must be greater than -75.").required("Required"),
+    basePrice12: Yup.number().min(1, "Must be greater than 0.").required("Required"),
+    priceModifier12: Yup.number().min(0.1, "Must be greater than 0.1.").required("Required"),
+
+    basePrice16: Yup.number().min(1, "Must be greater than 0.").required("Required"),
+    priceModifier16: Yup.number().min(0.1, "Must be greater than 0.1.").required("Required"),
+    basePrice20: Yup.number().min(1, "Must be greater than 0.").required("Required"),
+    priceModifier20: Yup.number().min(0.1, "Must be greater than 0.1.").required("Required"),
+    basePrice24: Yup.number().min(1, "Must be greater than 0.").required("Required"),
+    priceModifier24: Yup.number().min(0.1, "Must be greater than 0.1.").required("Required"),
+    basePrice30: Yup.number().min(1, "Must be greater than 0.").required("Required"),
+    priceModifier30: Yup.number().min(0.1, "Must be greater than 0.1.").required("Required"),
     photographer: Yup.object().required("Required."),
     location: Yup.object().required("Required."),
     subjects: Yup.array().required("Must select at least 1 Subject.")
@@ -369,45 +380,35 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
           marginRight="auto"
         >
           <Heading use="h5">{photo.sku}</Heading>
-          <Card width="450px" height="300px" margin="major-3">
-            {/* {console.log(formRef.current)}
-            {formRef.current && (
-              <>
-                <Heading use="h5">{formRef.current.values.title}</Heading>
-                <Heading use="h6" color="info500">
-                  {formRef.current.values.photographer?.label}
-                </Heading>
-                <Text>{formRef.current.values.location?.label}</Text>
-                <Box width="100%" height="80px">
-                  <Text fontSize="150">{formRef.current.values.description}</Text>
-                </Box>
-
-                {values.subjects && <Divider marginY="major-1" />}
-                {values.subjects &&
-                  values.subjects?.map(s => (
-                    <Tag key={s.key} palette="primary" marginX="minor-1">
-                      {s.label}
-                    </Tag>
-                  ))}
-                {values.tags &&
-                  values.tags?.map(t => (
-                    <Tag key={t.key} palette="secondary" marginX="minor-1">
-                      {t.label}
-                    </Tag>
-                  ))}
-                {values.collections && <Divider marginY="major-1" />}
-                {values.collections && (
-                  <Text.Block fontVariant="small-caps">Collections</Text.Block>
-                )}
-                {values.collections &&
-                  values.collections?.map(c => (
-                    <Text.Block marginY="major-1" fontSize="150" key={c.key}>
-                      {c.label}
-                    </Text.Block>
-                  ))}
-              </>
-            )} */}
-          </Card>
+          {imageUrl && imageUrl.length > 0 ? (
+            <img
+              key={Date.now()}
+              src={imageUrl}
+              width="600px"
+              height="315px"
+              style={{ borderRadius: "4px" }}
+            />
+          ) : (
+            <Box
+              width="600px"
+              height="315px"
+              backgroundColor="default"
+              border="1px solid"
+              borderColor="grey800"
+              borderRadius="4px"
+              alignX="center"
+              alignY="center"
+            >
+              No Sharing Image
+            </Box>
+          )}
+          <SharingImageModal
+            sharingImage={sharingImage}
+            setSharingImage={setSharingImage}
+            name={`photo-${photo.sku}-share`}
+            imageUrl={imageUrl}
+            setImageUrl={setImageUrl}
+          />
         </Flex>
       </Flex>
       <Formik
@@ -435,8 +436,16 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
             isLimitedEdition: values.isLimitedEdition,
             isHidden: values.isHidden,
             rating: values.rating,
-            basePrice: values.basePrice,
-            priceModifier: values.priceModifier,
+            basePrice12: values.basePrice12,
+            priceModifier12: values.priceModifier12,
+            basePrice16: values.basePrice16,
+            priceModifier16: values.priceModifier16,
+            basePrice20: values.basePrice20,
+            priceModifier20: values.priceModifier20,
+            basePrice24: values.basePrice24,
+            priceModifier24: values.priceModifier24,
+            basePrice30: values.basePrice30,
+            priceModifier30: values.priceModifier30,
             // imageId: parseInt(imageId),
             photographerId: values.photographer ? parseInt(values.photographer.value) : null,
             locationId: values.location ? parseInt(values.location.value) : null,
@@ -444,9 +453,6 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
             tagIds: values.tags ? values.tags.map(tag => parseInt(tag.value)) : null,
             collectionIds: values.collections
               ? values.collections.map(collection => parseInt(collection.value))
-              : null,
-            finishIds: values.finishes
-              ? values.finishes.map(finish => parseInt(finish.value))
               : null
           };
 
@@ -464,18 +470,12 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
             <Flex
               className="form-wrapper"
               padding="major-2"
-              maxWidth="90%"
+              width="90vw"
+              maxWidth="1400px"
               marginX="auto"
               flexFlow="row wrap"
             >
-              <Flex
-                className="form-col1-wrapper"
-                flexDirection="column"
-                margin="major-2"
-                flex="1 1 25%"
-                maxWidth="450px"
-                minWidth="300px"
-              >
+              <Flex className="col-1" flexDirection="column" margin="major-2" flex="1 1 25%">
                 <FieldStack orientation="vertical" spacing="major-3">
                   {locationSelectionOptions && (
                     <Field
@@ -528,14 +528,7 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   )}
                 </FieldStack>
               </Flex>
-              <Flex
-                className="form-col2-wrapper"
-                flexDirection="column"
-                margin="major-2"
-                flex="1 1 25%"
-                maxWidth="450px"
-                minWidth="300px"
-              >
+              <Flex className="col-2" flexDirection="column" margin="major-2" flex="1 1 25%">
                 <FieldStack orientation="vertical" spacing="major-3">
                   {photographerSelectionOptions && (
                     <Field
@@ -564,35 +557,8 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   />
                 </FieldStack>
               </Flex>
-              <Flex
-                className="form-col3-wrapper"
-                flexDirection="column"
-                margin="major-2"
-                flex="1 1 20%"
-                maxWidth="450px"
-                minWidth="300px"
-              >
-                <Stack orientation="horizontal" spacing="major-2">
-                  <Stack maxWidth="160px">
-                    <Field
-                      component={Switch.Formik}
-                      label="Featured"
-                      name="isFeatured"
-                      marginTop="major-4"
-                    />
-                    <Field
-                      component={Switch.Formik}
-                      label="Limited Edition"
-                      name="isLimitedEdition"
-                      marginTop="major-2"
-                    />
-                    <Field
-                      component={Switch.Formik}
-                      label="Hidden"
-                      name="isHidden"
-                      marginTop="major-2"
-                    />
-                  </Stack>
+              <Flex className="col-3" flexDirection="column" margin="major-2" flex="1 1 15%">
+                <Stack orientation="vertical" spacing="major-2">
                   <Field
                     component={InputField.Formik}
                     name="rating"
@@ -605,96 +571,201 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                       textAlign: "right"
                     }}
                   />
+                  <Field
+                    component={Switch.Formik}
+                    label="Featured"
+                    name="isFeatured"
+                    marginTop="major-4"
+                  />
+                  <Field
+                    component={Switch.Formik}
+                    label="Limited Edition"
+                    name="isLimitedEdition"
+                    marginTop="major-2"
+                  />
+                  <Field
+                    component={Switch.Formik}
+                    label="Hidden"
+                    name="isHidden"
+                    marginTop="major-2"
+                  />
                 </Stack>
-
-                <Card width="260px" marginTop="major-3">
-                  <Heading use="h5">Pricing</Heading>
-                  <Stack spacing="major-2" marginLeft="auto" marginRight="0">
-                    <Field
-                      addonBefore={<Button isStatic>$</Button>}
-                      component={InputField.Formik}
-                      name="basePrice"
-                      textAlign="right"
-                      type="number"
-                      step="1"
-                      autoComplete="off"
-                      value="basePrice"
-                      inputProps={{ textAlign: "right" }}
-                    />
-                    <Flex justifyContent="flex-end">
-                      <Heading use="h5" alignSelf="flex-end">
-                        X
-                      </Heading>
-                      <Field
-                        marginLeft="major-3"
-                        alignSelf="flexEnd"
-                        addonBefore={<Button isStatic>%</Button>}
-                        component={InputField.Formik}
-                        name="priceModifier"
-                        type="number"
-                        step="1"
-                        min="-75"
-                        max="1000"
-                        autoComplete="off"
-                        value="priceModifier"
-                        inputProps={{ textAlign: "right" }}
-                      />
-                    </Flex>
-                    <Heading use="h3" textAlign="right">
-                      {values.priceModifier > 0
-                        ? values.basePrice +
-                          Math.abs((values.priceModifier / 100) * values.basePrice)
-                        : values.basePrice -
-                          Math.abs((values.priceModifier / 100) * values.basePrice)}
-                    </Heading>
-                  </Stack>
-                </Card>
+                <Stack spacing="major-1" marginTop="major-4">
+                  <Text.Block>sku: {photo.sku}</Text.Block>
+                  <Text.Block>sortIndex: {photo.sortIndex}</Text.Block>
+                </Stack>
               </Flex>
-              <Flex
-                className="form-col4-wrapper"
-                flexDirection="column"
-                margin="major-2"
-                flex="1 1 20%"
-                maxWidth="450px"
-                minWidth="300px"
-              >
-                <Tabs selectedId="tab1">
-                  <Tabs.List>
-                    <Tabs.Tab tabId="tab1">Epic</Tabs.Tab>
-                    <Tabs.Tab tabId="tab2">Art</Tabs.Tab>
-                    <Tabs.Tab tabId="tab3">Thin</Tabs.Tab>
-                    <Tabs.Tab tabId="tab4">Metal</Tabs.Tab>
-                  </Tabs.List>
-                  <Tabs.Panel tabId="tab1" padding="major-2">
-                    <Field
-                      component={RadioGroupField.Formik}
-                      name="finishes"
-                      value="finishes"
-                      options={[
-                        { key: 1, label: "12 x 18 $150 $600", value: "1218" },
-                        { key: 2, label: "16 x 20", value: "1620" },
-                        { key: 3, label: "20 x 30", value: "2030" },
-                        { key: 4, label: "30 x 40", value: "3040" }
-                      ]}
-                    />
-                  </Tabs.Panel>
-                  <Tabs.Panel tabId="tab2" padding="major-2">
-                    Cats are alright
-                  </Tabs.Panel>
-                  <Tabs.Panel tabId="tab3" padding="major-2">
-                    Parrots are cool
-                  </Tabs.Panel>
-                  <Tabs.Panel tabId="tab4" padding="major-2">
-                    Parrots are cool
-                  </Tabs.Panel>
-                </Tabs>
+              <Flex className="col-4" flexDirection="column" margin="major-2" flex="1 1 20%">
+                <Level>
+                  <Text.Block>Base Price</Text.Block>
+                  <Text.Block>Modifier</Text.Block>
+                  <Divider orientation="vertical" />
+                </Level>
+                <Flex alignY="center" alignX="center" marginY="major-1">
+                  <Label marginRight="major-1" marginTop="4px">
+                    12"
+                  </Label>
+                  <Field
+                    component={Input.Formik}
+                    name="basePrice12"
+                    size="small"
+                    value="basePrice12"
+                    maxWidth="70px"
+                    inputProps={{
+                      textAlign: "right"
+                    }}
+                  />
+                  <Label marginX="major-1" marginTop="major-1">
+                    X
+                  </Label>
+                  <Field
+                    component={Input.Formik}
+                    name="priceModifier12"
+                    size="small"
+                    value="priceModifier12"
+                    maxWidth="70px"
+                    inputProps={{
+                      textAlign: "right"
+                    }}
+                  />
+                  <Label marginX="major-1" marginTop="major-1">
+                    = {(values.basePrice12 * values.priceModifier12).toFixed(0)}
+                  </Label>
+                </Flex>
+                <Flex alignY="center" alignX="center" marginY="major-1">
+                  <Label marginRight="major-1" marginTop="4px">
+                    16"
+                  </Label>
+                  <Field
+                    component={Input.Formik}
+                    name="basePrice16"
+                    size="small"
+                    value="basePrice16"
+                    maxWidth="70px"
+                    inputProps={{
+                      textAlign: "right"
+                    }}
+                  />
+                  <Label marginX="major-1" marginTop="major-1">
+                    X
+                  </Label>
+                  <Field
+                    component={Input.Formik}
+                    name="priceModifier16"
+                    size="small"
+                    value="priceModifier16"
+                    maxWidth="70px"
+                    inputProps={{
+                      textAlign: "right"
+                    }}
+                  />
+                  <Label marginX="major-1" marginTop="major-1">
+                    = {(values.basePrice16 * values.priceModifier16).toFixed(0)}
+                  </Label>
+                </Flex>
+                <Flex alignY="center" alignX="center" marginY="major-1">
+                  <Label marginRight="major-1" marginTop="4px">
+                    20"
+                  </Label>
+                  <Field
+                    component={Input.Formik}
+                    name="basePrice20"
+                    size="small"
+                    value="basePrice20"
+                    maxWidth="70px"
+                    inputProps={{
+                      textAlign: "right"
+                    }}
+                  />
+                  <Label marginX="major-1" marginTop="major-1">
+                    X
+                  </Label>
+                  <Field
+                    component={Input.Formik}
+                    name="priceModifier20"
+                    size="small"
+                    value="priceModifier20"
+                    maxWidth="70px"
+                    inputProps={{
+                      textAlign: "right"
+                    }}
+                  />
+                  <Label marginX="major-1" marginTop="major-1">
+                    = {(values.basePrice20 * values.priceModifier20).toFixed(0)}
+                  </Label>
+                </Flex>
+                <Flex alignY="center" alignX="center" marginY="major-1">
+                  <Label marginRight="major-1" marginTop="4px">
+                    24"
+                  </Label>
+                  <Field
+                    component={Input.Formik}
+                    name="basePrice24"
+                    size="small"
+                    value="basePrice24"
+                    maxWidth="70px"
+                    inputProps={{
+                      textAlign: "right"
+                    }}
+                  />
+                  <Label marginX="major-1" marginTop="major-1">
+                    X
+                  </Label>
+                  <Field
+                    component={Input.Formik}
+                    name="priceModifier24"
+                    size="small"
+                    value="priceModifier24"
+                    maxWidth="70px"
+                    inputProps={{
+                      textAlign: "right"
+                    }}
+                  />
+                  <Label marginX="major-1" marginTop="major-1">
+                    = {(values.basePrice24 * values.priceModifier24).toFixed(0)}
+                  </Label>
+                </Flex>
+                <Flex alignY="center" alignX="center" marginY="major-1">
+                  <Label marginRight="major-1" marginTop="4px">
+                    30"
+                  </Label>
+                  <Field
+                    component={Input.Formik}
+                    name="basePrice30"
+                    size="small"
+                    value="basePrice30"
+                    maxWidth="70px"
+                    inputProps={{
+                      textAlign: "right"
+                    }}
+                  />
+                  <Label marginX="major-1" marginTop="major-1">
+                    X
+                  </Label>
+                  <Field
+                    component={Input.Formik}
+                    name="priceModifier30"
+                    size="small"
+                    value="priceModifier30"
+                    maxWidth="70px"
+                    inputProps={{
+                      textAlign: "right",
+                      appearance: "none",
+                      margin: 0
+                    }}
+                  />
+                  <Label marginX="major-1" marginTop="major-1">
+                    = {(values.basePrice30 * values.priceModifier30).toFixed(0)}
+                  </Label>
+                </Flex>
               </Flex>
             </Flex>
             <Flex
               flexDirection="horizontal"
-              width="1100px"
+              width="1200px"
               maxWidth="90%"
               marginX="auto"
+              marginY="major-4"
               alignX="right"
             >
               <Button onClick={() => handleCancel()}>Cancel</Button>
@@ -705,8 +776,32 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
           </Form>
         )}
       </Formik>
+      <NumberInput width="200px" marginY="50px" />
     </Flex>
   );
 };
 
 export default PhotoForm;
+
+const NumberInput = styled(Input)`
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+`;
+
+// /* Chrome, Safari, Edge, Opera */
+// input::-webkit-outer-spin-button,
+// input::-webkit-inner-spin-button {
+//   -webkit-appearance: none;
+//   margin: 0;
+// }
+
+// /* Firefox */
+// input[type=number] {
+//   -moz-appearance: textfield;
+// }

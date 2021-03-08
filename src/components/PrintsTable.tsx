@@ -1,18 +1,18 @@
 import { useMemo, useState, Dispatch, SetStateAction } from "react";
 import { useApolloClient, useQuery, useLazyQuery } from "@apollo/client";
-import { SearchFinishesDocument, Finish } from "../graphql-operations";
+import { SearchPrintsDocument, Print } from "../graphql-operations";
 import { Box, Flex, Icon, Button, Table, Text } from "bumbag";
 import Search from "./Search";
 import { orderBy } from "lodash";
 
 type Props = {
-  selectedItem: Finish | undefined;
-  setSelectedItem: Dispatch<SetStateAction<Finish | undefined>>;
+  selectedItem: Print | undefined;
+  setSelectedItem: Dispatch<SetStateAction<Print | undefined>>;
   isAddingOrEditing: boolean;
   setIsAdding: Dispatch<SetStateAction<boolean>>;
 };
 
-const FinishesTable: React.FC<Props> = ({
+const PrintsTable: React.FC<Props> = ({
   selectedItem,
   setSelectedItem,
   isAddingOrEditing,
@@ -23,7 +23,7 @@ const FinishesTable: React.FC<Props> = ({
   const [selectedColumn, setSelectedColumn] = useState(0);
   const [sortAscending, setSortAscending] = useState(false);
 
-  const [search, { data: searchData }] = useLazyQuery(SearchFinishesDocument, {
+  const [search, { data: searchData }] = useLazyQuery(SearchPrintsDocument, {
     variables: {
       input: {
         searchString: searchString
@@ -43,43 +43,49 @@ const FinishesTable: React.FC<Props> = ({
         width: "220px"
       },
       {
+        title: "Type",
+        attr: "type",
+        sortable: true,
+        width: "220px"
+      },
+      {
         title: "SKU",
-        attr: "finishSku",
+        attr: "printSku",
         sortable: true,
         width: "120px"
       },
       {
-        title: "Width",
-        attr: "width",
+        title: "Aspect",
+        attr: "aspectRatio",
+        sortable: true,
+        width: "120px"
+      },
+      {
+        title: "Dim. 1",
+        attr: "dimension1",
         sortable: true,
         width: "90px"
       },
       {
-        title: "Height",
-        attr: "height",
+        title: "Dim. 2",
+        attr: "dimension2",
         sortable: true,
         width: "90px"
       },
       {
-        title: "Depth",
-        attr: "depth",
+        title: "Cost",
+        attr: "cost",
         sortable: true,
         width: "90px"
       },
       {
-        title: "Weight",
-        attr: "weight",
+        title: "Ship Cost",
+        attr: "shippingCost",
         sortable: true,
         width: "90px"
       },
       {
-        title: "Ship. Wt.",
-        attr: "shippingWeight",
-        sortable: true,
-        width: "90px"
-      },
-      {
-        title: "Base",
+        title: "Price",
         attr: "basePrice",
         sortable: true,
         width: "90px"
@@ -91,8 +97,14 @@ const FinishesTable: React.FC<Props> = ({
         width: "90px"
       },
       {
-        title: "Count",
-        attr: "countOfPhotos",
+        title: "Resale",
+        attr: "resale",
+        sortable: true,
+        width: "90px"
+      },
+      {
+        title: "Markup",
+        attr: "markup",
         sortable: true,
         width: "90px"
       }
@@ -100,7 +112,7 @@ const FinishesTable: React.FC<Props> = ({
     []
   );
 
-  const { error, loading, data } = useQuery(SearchFinishesDocument, {
+  const { error, loading, data } = useQuery(SearchPrintsDocument, {
     variables: {
       input: {
         searchString: searchString
@@ -108,10 +120,10 @@ const FinishesTable: React.FC<Props> = ({
     }
   });
 
-  if (error) return <p>Error loading finishes</p>;
+  if (error) return <p>Error loading prints</p>;
   if (loading) return <p>Loading...</p>;
 
-  const finishes = searchData ? searchData.searchFinishes : data?.searchFinishes;
+  const prints = searchData ? searchData.searchPrints : data?.searchPrints;
 
   /**
    * In-cache sorting.
@@ -121,7 +133,7 @@ const FinishesTable: React.FC<Props> = ({
   const sort = (sortBy: string, sortAscending: boolean): void => {
     const dir = sortAscending ? "asc" : "desc";
     const data = client.cache.readQuery({
-      query: SearchFinishesDocument,
+      query: SearchPrintsDocument,
       variables: {
         input: {
           searchString: searchString
@@ -131,11 +143,11 @@ const FinishesTable: React.FC<Props> = ({
 
     if (data) {
       client.cache.writeQuery({
-        query: SearchFinishesDocument,
+        query: SearchPrintsDocument,
         data: {
-          searchFinishes: {
-            __typename: "SearchFinishesResponse",
-            datalist: orderBy([...data.searchFinishes.datalist], sortBy, dir)
+          searchPrints: {
+            __typename: "SearchPrintsResponse",
+            datalist: orderBy([...data.searchPrints.datalist], sortBy, dir)
           }
         },
         variables: {
@@ -166,12 +178,12 @@ const FinishesTable: React.FC<Props> = ({
     setIsAdding(true);
   };
 
-  const handleRowClick = (fn: Finish) => {
+  const handleRowClick = (pr: Print) => {
     if (isAddingOrEditing) {
       return;
     }
 
-    setSelectedItem(fn);
+    setSelectedItem(pr);
   };
 
   return (
@@ -213,24 +225,26 @@ const FinishesTable: React.FC<Props> = ({
             </Table.Row>
           </Table.Head>
           <Table.Body>
-            {finishes?.datalist?.map(fin => (
+            {prints?.datalist?.map(pr => (
               <Table.Row
-                key={fin.id}
+                key={pr.id}
                 // @ts-ignore
-                onClick={() => handleRowClick(fin)}
-                background={fin.id === selectedItem?.id ? "rgba(158, 70, 215, 0.7)" : undefined}
-                color={fin.id === selectedItem?.id ? "white" : "text"}
+                onClick={() => handleRowClick(pr)}
+                background={pr.id === selectedItem?.id ? "rgba(158, 70, 215, 0.7)" : undefined}
+                color={pr.id === selectedItem?.id ? "white" : "text"}
               >
-                <Table.Cell>{fin.name}</Table.Cell>
-                <Table.Cell>{fin.finishSku}</Table.Cell>
-                <Table.Cell>{fin.width}</Table.Cell>
-                <Table.Cell>{fin.height}</Table.Cell>
-                <Table.Cell>{fin.depth}</Table.Cell>
-                <Table.Cell>{fin.weight}</Table.Cell>
-                <Table.Cell>{fin.shippingWeight}</Table.Cell>
-                <Table.Cell>{fin.basePrice}</Table.Cell>
-                <Table.Cell>{fin.priceModifier}</Table.Cell>
-                <Table.Cell style={{ textAlign: "center" }}>{fin.countOfPhotos}</Table.Cell>
+                <Table.Cell>{pr.name}</Table.Cell>
+                <Table.Cell>{pr.type}</Table.Cell>
+                <Table.Cell>{pr.printSku}</Table.Cell>
+                <Table.Cell>{pr.aspectRatio}</Table.Cell>
+                <Table.Cell>{pr.dimension1}"</Table.Cell>
+                <Table.Cell>{pr.dimension2}"</Table.Cell>
+                <Table.Cell>${pr.cost.toFixed(2)}</Table.Cell>
+                <Table.Cell>${pr.shippingCost.toFixed(2)}</Table.Cell>
+                <Table.Cell>${pr.basePrice.toFixed(2)}</Table.Cell>
+                <Table.Cell>{pr.priceModifier * 100}%</Table.Cell>
+                <Table.Cell>${(pr.basePrice * pr.priceModifier).toFixed(2)}</Table.Cell>
+                <Table.Cell>${(pr.basePrice * pr.priceModifier - pr.cost).toFixed(2)}</Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>
@@ -251,4 +265,4 @@ const FinishesTable: React.FC<Props> = ({
   );
 };
 
-export default FinishesTable;
+export default PrintsTable;

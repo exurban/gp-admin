@@ -1,0 +1,22 @@
+{
+  "headers": [
+    {
+      "source": "/fonts/raleway-v19-latin-700.woff2",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immmutable"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/raleway-v19-latin-regular.woff2",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immmutable"
+        }
+      ]
+    }
+  ]
+}

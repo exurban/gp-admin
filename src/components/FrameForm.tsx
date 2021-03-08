@@ -16,28 +16,27 @@ import {
 } from "bumbag";
 import {
   Image,
-  Finish,
-  SearchFinishesDocument,
-  AddFinishDocument,
-  AddFinishInput,
-  AddFinishMutationVariables,
-  UpdateFinishDocument,
-  UpdateFinishInput,
-  UpdateFinishMutationVariables,
+  Frame,
+  SearchFramesDocument,
+  AddFrameDocument,
+  AddFrameInput,
+  AddFrameMutationVariables,
+  UpdateFrameDocument,
+  UpdateFrameInput,
+  UpdateFrameMutationVariables,
   PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
 import CoverImageModal from "./CoverImageModal";
 
 // * name
+// * type
 // * description
 // * coverImage
-// * finSku
-// * width
-// * height
-// * depth
-// * weight
-// * shippingWeight
+// * printSku
+// * dimension1
+// * dimension2
+// * shippingCost
 // * basePrice
 // * priceModifier
 // id
@@ -47,30 +46,30 @@ import CoverImageModal from "./CoverImageModal";
 // updatedAt
 
 type Props = {
-  item: Finish | undefined;
-  setSelectedItem: Dispatch<SetStateAction<Finish | undefined>>;
+  item: Frame | undefined;
+  setSelectedItem: Dispatch<SetStateAction<Frame | undefined>>;
   isAdding: boolean;
   setIsAdding: Dispatch<SetStateAction<boolean>>;
   isEditing: boolean;
   setIsEditing: Dispatch<SetStateAction<boolean>>;
 };
 
-const FinishForm: React.FC<Props> = ({
-  item: fn,
+const FrameForm: React.FC<Props> = ({
+  item: fr,
   setSelectedItem,
   isAdding,
   setIsAdding,
   isEditing,
   setIsEditing
 }) => {
-  const [imageUrl, setImageUrl] = useState(fn?.coverImage?.imageUrl);
-  const [coverImage, setCoverImage] = useState<Image | null | undefined>(fn?.coverImage);
+  const [imageUrl, setImageUrl] = useState(fr?.coverImage?.imageUrl);
+  const [coverImage, setCoverImage] = useState<Image | null | undefined>(fr?.coverImage);
 
   const toasts = useToasts();
-  const [addFinish] = useMutation(AddFinishDocument, {
+  const [addFrame] = useMutation(AddFrameDocument, {
     refetchQueries: [
       {
-        query: SearchFinishesDocument,
+        query: SearchFramesDocument,
         variables: {
           input: {
             searchString: ""
@@ -82,19 +81,19 @@ const FinishForm: React.FC<Props> = ({
       }
     ],
     onCompleted(data) {
-      console.log(`data.addFinish: ${JSON.stringify(data.addFinish, null, 2)}`);
+      console.log(`data.addMat: ${JSON.stringify(data.addFrame, null, 2)}`);
       clearForm();
       toasts.success({
         title: `Succeessfully added`,
-        message: `Added ${data.addFinish.newFinish?.name}.`
+        message: `Added ${data.addFrame.newFrame?.name}.`
       });
     }
   });
 
-  const [updateFinish] = useMutation(UpdateFinishDocument, {
+  const [updateFrame] = useMutation(UpdateFrameDocument, {
     refetchQueries: [
       {
-        query: SearchFinishesDocument,
+        query: SearchFramesDocument,
         variables: {
           input: {
             searchString: ""
@@ -109,7 +108,7 @@ const FinishForm: React.FC<Props> = ({
       clearForm();
       toasts.success({
         title: `Successfully updated`,
-        message: `Updated ${data.updateFinish.updatedFinish?.name}`
+        message: `Updated ${data.updateFrame.updatedFrame?.name}`
       });
     }
   });
@@ -120,16 +119,18 @@ const FinishForm: React.FC<Props> = ({
   };
 
   const initialValues = {
-    name: fn?.name || "",
-    description: fn?.description || "",
-    finSku: fn?.finSku || "",
-    width: fn?.width || 0,
-    height: fn?.height || 0,
-    depth: fn?.depth || 0,
-    weight: fn?.weight || 0,
-    shippingWeight: fn?.shippingWeight || 0,
-    basePrice: fn?.basePrice || 0,
-    priceModifier: fn?.priceModifier || 0
+    name: fr?.name || "",
+    description: fr?.description || "",
+    material: fr?.material || "",
+    color: fr?.color || "",
+    printType: fr?.printType || "",
+    frameSku: fr?.frameSku || "",
+    dimension1: fr?.dimension1 || 0,
+    dimension2: fr?.dimension2 || 0,
+    cost: fr?.cost || 0,
+    shippingCost: fr?.shippingCost || 0,
+    basePrice: fr?.basePrice || 100,
+    priceModifier: fr?.priceModifier || 1
   };
 
   const validationObject = {
@@ -137,24 +138,24 @@ const FinishForm: React.FC<Props> = ({
     description: Yup.string().required("Required")
   };
 
-  const handleAdd = (values: AddFinishInput) => {
+  const handleAdd = (values: AddFrameInput) => {
     setSelectedItem(undefined);
 
     // if coverImage is set, add to input
     const coverImageId = coverImage ? parseInt(coverImage.id) : null;
 
     const input = { ...values, coverImageId };
-    console.log(`Adding Finish with input: ${JSON.stringify(input, null, 2)}`);
+    console.log(`Adding Mat with input: ${JSON.stringify(input, null, 2)}`);
 
     if (isAdding) {
-      const addVariables: AddFinishMutationVariables = {
+      const addVariables: AddFrameMutationVariables = {
         input
       };
-      addFinish({
+      addFrame({
         variables: addVariables,
         refetchQueries: [
           {
-            query: SearchFinishesDocument,
+            query: SearchFramesDocument,
             variables: {
               input: {
                 searchString: ""
@@ -167,7 +168,7 @@ const FinishForm: React.FC<Props> = ({
     clearForm();
   };
 
-  const handleUpdate = (values: UpdateFinishInput) => {
+  const handleUpdate = (values: UpdateFrameInput) => {
     setSelectedItem(undefined);
 
     // if coverImage is set, add to input
@@ -175,16 +176,16 @@ const FinishForm: React.FC<Props> = ({
 
     const input = { ...values, coverImageId };
 
-    if (isEditing && fn) {
-      const editVariables: UpdateFinishMutationVariables = {
-        id: parseInt(fn.id),
+    if (isEditing && fr) {
+      const editVariables: UpdateFrameMutationVariables = {
+        id: parseInt(fr.id),
         input
       };
-      updateFinish({
+      updateFrame({
         variables: editVariables,
         refetchQueries: [
           {
-            query: SearchFinishesDocument,
+            query: SearchFramesDocument,
             variables: {
               input: {
                 searchString: ""
@@ -234,7 +235,7 @@ const FinishForm: React.FC<Props> = ({
           <CoverImageModal
             coverImage={coverImage}
             setCoverImage={setCoverImage}
-            name={fn?.name || ""}
+            name={fr?.name || ""}
             imageUrl={imageUrl}
             setImageUrl={setImageUrl}
           />
@@ -261,12 +262,38 @@ const FinishForm: React.FC<Props> = ({
               <FieldStack orientation="horizontal">
                 <Field
                   component={InputField.Formik}
-                  name="finSku"
-                  label="Type"
+                  name="printType"
+                  label="Print Type"
                   type="text"
                   autoComplete="off"
-                  value="finSku"
+                  value="printType"
                 />
+                <Field
+                  component={InputField.Formik}
+                  name="material"
+                  label="Material"
+                  type="text"
+                  autoComplete="off"
+                  value="material"
+                />
+                <Field
+                  component={InputField.Formik}
+                  name="color"
+                  label="Color"
+                  type="text"
+                  autoComplete="off"
+                  value="color"
+                />
+                <Field
+                  component={InputField.Formik}
+                  name="frameSku"
+                  label="Sku"
+                  type="text"
+                  autoComplete="off"
+                  value="frameSku"
+                />
+              </FieldStack>
+              <FieldStack orientation="horizontal">
                 <Field
                   component={InputField.Formik}
                   name="basePrice"
@@ -284,12 +311,21 @@ const FinishForm: React.FC<Props> = ({
                   autoComplete="off"
                   value="priceModifier"
                 />
+                <Field
+                  component={InputField.Formik}
+                  name="cost"
+                  label="Cost"
+                  type="number"
+                  step="0.01"
+                  autoComplete="off"
+                  value="cost"
+                />
               </FieldStack>
               <FieldStack orientation="horizontal">
                 <Field
                   component={InputField.Formik}
-                  name="width"
-                  label="Width"
+                  name="dimension1"
+                  label="Shorter Dimension"
                   type="number"
                   step="0.01"
                   autoComplete="off"
@@ -297,8 +333,8 @@ const FinishForm: React.FC<Props> = ({
                 />
                 <Field
                   component={InputField.Formik}
-                  name="height"
-                  label="Height"
+                  name="dimension2"
+                  label="Longer Dimension"
                   type="number"
                   step="0.01"
                   autoComplete="off"
@@ -306,32 +342,12 @@ const FinishForm: React.FC<Props> = ({
                 />
                 <Field
                   component={InputField.Formik}
-                  name="depth"
-                  label="Depth"
+                  name="shippingCost"
+                  label="Shipping Cost"
                   type="number"
                   step="0.01"
                   autoComplete="off"
-                  value="depth"
-                />
-              </FieldStack>
-              <FieldStack orientation="horizontal">
-                <Field
-                  component={InputField.Formik}
-                  name="weight"
-                  label="Weight"
-                  type="number"
-                  step="0.01"
-                  autoComplete="off"
-                  value="weight"
-                />
-                <Field
-                  component={InputField.Formik}
-                  name="shippingWeight"
-                  label="Shipping Weight"
-                  type="number"
-                  step="0.01"
-                  autoComplete="off"
-                  value="shippingWeight"
+                  value="shippingCost"
                 />
               </FieldStack>
               <Field
@@ -357,14 +373,13 @@ const FinishForm: React.FC<Props> = ({
         flex="1 1 25%"
         fontSize="100"
       >
-        {fn?.id && <Text>id: {fn.id}</Text>}
-        {fn?.__typename && <Text>type: {fn.__typename}</Text>}
-        {fn?.countOfPhotos && <Text>Count of Photos: {fn.countOfPhotos}</Text>}
-        {fn?.createdAt && <Text>Created: {new Date(fn.createdAt).toDateString()}</Text>}
-        {fn?.updatedAt && <Text>Updated: {new Date(fn.updatedAt).toDateString()}</Text>}
+        {fr?.id && <Text>id: {fr.id}</Text>}
+        {fr?.__typename && <Text>type: {fr.__typename}</Text>}
+        {fr?.createdAt && <Text>Created: {new Date(fr.createdAt).toDateString()}</Text>}
+        {fr?.updatedAt && <Text>Updated: {new Date(fr.updatedAt).toDateString()}</Text>}
       </Flex>
     </Flex>
   );
 };
 
-export default FinishForm;
+export default FrameForm;

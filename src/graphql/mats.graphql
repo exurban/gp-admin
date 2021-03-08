@@ -1,0 +1,60 @@
+fragment MatInfo on Mat {
+  id
+  name
+  description
+  color
+  printType
+  matSku
+  aspectRatio
+  dimension1
+  dimension2
+  cost
+  shippingCost
+  basePrice
+  priceModifier
+  coverImage {
+    ...ImageInfo
+  }
+  __typename
+  createdAt
+  updatedAt
+}
+
+query searchMats($input: SearchMatsInput!) {
+  searchMats(input: $input) {
+    __typename
+    datalist {
+      ...MatInfo
+    }
+  }
+}
+
+query mat($id: Int!) {
+  mat(id: $id) {
+    ...MatInfo
+  }
+}
+
+mutation addMat($input: AddMatInput!) {
+  addMat(input: $input) {
+    success
+    message
+    newMat {
+      ...MatInfo
+    }
+  }
+}
+
+mutation updateMat($id: Int!, $input: UpdateMatInput!) {
+  updateMat(id: $id, input: $input) {
+    success
+    message
+    updatedMat {
+      ...MatInfo
+    }
+  }
+}
+
+mutation deleteMat($id: Int!) {
+  deleteMat(id: $id)
+}

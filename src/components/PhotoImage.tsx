@@ -268,7 +268,6 @@ const PhotoImage: React.FC<Props> = forwardRef(({ image, photoId, photoSku, phot
     const img = document.getElementById("image") as HTMLImageElement;
     const height = img.naturalHeight;
     const width = img.naturalWidth;
-    console.log(`IMAGE H:${height} W:${width}`);
 
     const input: UpdateImageInput = {
       imageName: imageName,

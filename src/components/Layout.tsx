@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import ActiveLink from "./ActiveLink";
 import Head from "next/head";
 import Signin from "../components/Signin";
 import { useSession, signOut } from "next-auth/client";
@@ -15,7 +16,9 @@ import {
   Icon,
   Divider,
   Button,
-  Flex
+  Flex,
+  styled,
+  palette
 } from "bumbag";
 
 const Layout: React.FC<{ title?: string }> = ({
@@ -30,6 +33,21 @@ const Layout: React.FC<{ title?: string }> = ({
   const isDesktopAndUnder = useBreakpoint("max-desktop");
   const isDesktopAndOver = useBreakpoint("max-desktop");
 
+  const StyledItem = styled(TopNav.Item)`
+    &.active {
+      color: ${palette("primary300")};
+      box-shadow: inset 0 -2px 0 0;
+    }
+  `;
+
+  const StyledSideNavItem = styled(SideNav.Item)`
+    &.active {
+      color: ${palette("primary")};
+      background-color: ${palette("primaryShade")};
+      box-shadow: inset 3px 0 0 0 ${palette("primary")};
+    }
+  `;
+
   const menuItems = [
     "Dashboard",
     "Photos",
@@ -38,7 +56,7 @@ const Layout: React.FC<{ title?: string }> = ({
     "Subjects",
     "Tags",
     "Collections",
-    "Finishes"
+    "Prints"
   ];
 
   if (!session) {
@@ -68,20 +86,171 @@ const Layout: React.FC<{ title?: string }> = ({
               onChange={(id: React.SetStateAction<string>) => setSelectedId(id)}
             >
               <TopNav.Section>
-                <Link href="/">
-                  <TopNav.Item navId="home">
-                    <Icon icon="gpLogo" fontSize="900" marginLeft="major-2" />
-                  </TopNav.Item>
-                </Link>
-                {isDesktopAndUnder
-                  ? null
-                  : menuItems.map(item => (
-                      <Link href={`/${item.toLowerCase()}`} passHref={true} key={item}>
-                        <TopNav.Item variant="navigationText" navId={item.toLowerCase()}>
-                          {item}
-                        </TopNav.Item>
-                      </Link>
-                    ))}
+                <ActiveLink activeClassName="active" aria-label="home" href={`/`} passHref={true}>
+                  <StyledItem className="nav-link" fontSize="60px" fontWeight="800">
+                    <Icon icon="gpLogo" marginLeft="major-2" />
+                  </StyledItem>
+                </ActiveLink>
+                <ActiveLink
+                  className="link"
+                  activeClassName="active"
+                  aria-label="dashboard"
+                  href={`/dashboard`}
+                  passHref={true}
+                >
+                  <StyledItem
+                    className="nav-link"
+                    variant="navigationText"
+                    fontSize="32px"
+                    fontWeight="700"
+                  >
+                    Dashboard
+                  </StyledItem>
+                </ActiveLink>
+                <ActiveLink
+                  className="link"
+                  activeClassName="active"
+                  aria-label="photos"
+                  href={`/photos`}
+                  passHref={true}
+                >
+                  <StyledItem
+                    className="nav-link"
+                    variant="navigationText"
+                    fontSize="32px"
+                    fontWeight="700"
+                  >
+                    Photos
+                  </StyledItem>
+                </ActiveLink>
+                <ActiveLink
+                  className="link"
+                  activeClassName="active"
+                  aria-label="locations"
+                  href={`/locations`}
+                  passHref={true}
+                >
+                  <StyledItem
+                    className="nav-link"
+                    variant="navigationText"
+                    fontSize="32px"
+                    fontWeight="700"
+                  >
+                    Locations
+                  </StyledItem>
+                </ActiveLink>
+                <ActiveLink
+                  className="link"
+                  activeClassName="active"
+                  aria-label="photographers"
+                  href={`/photographers`}
+                  passHref={true}
+                >
+                  <StyledItem
+                    className="nav-link"
+                    variant="navigationText"
+                    fontSize="32px"
+                    fontWeight="700"
+                  >
+                    Photographers
+                  </StyledItem>
+                </ActiveLink>
+                <ActiveLink
+                  className="link"
+                  activeClassName="active"
+                  aria-label="subjects"
+                  href={`/subjects`}
+                  passHref={true}
+                >
+                  <StyledItem
+                    className="nav-link"
+                    variant="navigationText"
+                    fontSize="32px"
+                    fontWeight="700"
+                  >
+                    Subjects
+                  </StyledItem>
+                </ActiveLink>
+                <ActiveLink
+                  className="link"
+                  activeClassName="active"
+                  aria-label="tags"
+                  href={`/tags`}
+                  passHref={true}
+                >
+                  <StyledItem
+                    className="nav-link"
+                    variant="navigationText"
+                    fontSize="32px"
+                    fontWeight="700"
+                  >
+                    Tags
+                  </StyledItem>
+                </ActiveLink>
+                <ActiveLink
+                  className="link"
+                  activeClassName="active"
+                  aria-label="collections"
+                  href={`/collections`}
+                  passHref={true}
+                >
+                  <StyledItem
+                    className="nav-link"
+                    variant="navigationText"
+                    fontSize="32px"
+                    fontWeight="700"
+                  >
+                    Collections
+                  </StyledItem>
+                </ActiveLink>
+                <ActiveLink
+                  className="link"
+                  activeClassName="active"
+                  aria-label="prints"
+                  href={`/prints`}
+                  passHref={true}
+                >
+                  <StyledItem
+                    className="nav-link"
+                    variant="navigationText"
+                    fontSize="32px"
+                    fontWeight="700"
+                  >
+                    Prints
+                  </StyledItem>
+                </ActiveLink>
+                <ActiveLink
+                  className="link"
+                  activeClassName="active"
+                  aria-label="mats"
+                  href={`/mats`}
+                  passHref={true}
+                >
+                  <StyledItem
+                    className="nav-link"
+                    variant="navigationText"
+                    fontSize="32px"
+                    fontWeight="700"
+                  >
+                    Mats
+                  </StyledItem>
+                </ActiveLink>
+                <ActiveLink
+                  className="link"
+                  activeClassName="active"
+                  aria-label="frames"
+                  href={`/frames`}
+                  passHref={true}
+                >
+                  <StyledItem
+                    className="nav-link"
+                    variant="navigationText"
+                    fontSize="32px"
+                    fontWeight="700"
+                  >
+                    Frames
+                  </StyledItem>
+                </ActiveLink>
               </TopNav.Section>
 
               <TopNav.Section marginRight="major-4">
@@ -116,45 +285,7 @@ const Layout: React.FC<{ title?: string }> = ({
           </>
         }
       >
-        {isDesktopAndOver ? page.sidebar.close : null}
-        <PageWithSidebar
-          defaultIsVisible={false}
-          minHeight="calc(100vh - 180px)"
-          sidebar={
-            <SideNav.Level>
-              <Flex justifyContent="space-between">
-                <Icon aria-label="logo" icon="gpLogo" fontSize="800" margin="major-2" />
-                <Button
-                  variant="ghost"
-                  margin="major-2"
-                  onClick={() => setColorMode(colorMode != "default" ? "default" : "dark")}
-                >
-                  {colorMode == "default" ? (
-                    <Icon color="#dbe29c" icon="solid-moon" fontSize="300" />
-                  ) : (
-                    <Icon color="#fee61e" icon="solid-sun" fontSize="300" />
-                  )}
-                </Button>
-              </Flex>
-
-              <Divider />
-              {menuItems.map(item => (
-                <Link href={`/${item.toLowerCase()}`} passHref={true} key={item}>
-                  <SideNav.Item
-                    key={item}
-                    variant="navigationText"
-                    navId={item.toLowerCase()}
-                    onClick={page.sidebar.close}
-                  >
-                    {item}
-                  </SideNav.Item>
-                </Link>
-              ))}
-            </SideNav.Level>
-          }
-        >
-          {children}
-        </PageWithSidebar>
+        {children}
       </PageWithHeader>
     </>
   );

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Box, Flex, Divider } from "bumbag";
-import FinishesTable from "../components/FinishesTable";
-import FinishPreview from "../components/FinishPreview";
-import FinishForm from "../components/FinishForm";
-import { Finish } from "../graphql-operations";
+import FramesTable from "../components/FramesTable";
+import FramePreview from "../components/FramePreview";
+import FrameForm from "../components/FrameForm";
+import { Frame } from "../graphql-operations";
 
-const Finishes: React.FC = () => {
-  const [selectedItem, setSelectedItem] = useState<Finish | undefined>(undefined);
+const Frames: React.FC = () => {
+  const [selectedItem, setSelectedItem] = useState<Frame | undefined>(undefined);
   const [isAdding, setIsAdding] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -18,7 +18,7 @@ const Finishes: React.FC = () => {
 
   return (
     <Flex flexDirection="column" width="90%" marginX="auto">
-      <FinishesTable
+      <FramesTable
         selectedItem={selectedItem}
         setSelectedItem={setSelectedItem}
         isAddingOrEditing={isAddingOrEditing}
@@ -28,7 +28,7 @@ const Finishes: React.FC = () => {
       <Divider marginY="major-4" />
       <Box width="90%" maxWidth="1400px" marginX="auto">
         {isAddingOrEditing && (
-          <FinishForm
+          <FrameForm
             item={selectedItem}
             setSelectedItem={setSelectedItem}
             isAdding={isAdding}
@@ -38,7 +38,7 @@ const Finishes: React.FC = () => {
           />
         )}
         {!isAddingOrEditing && selectedItem && (
-          <FinishPreview
+          <FramePreview
             selectedItem={selectedItem}
             setSelectedItem={setSelectedItem}
             setIsEditing={setIsEditing}
@@ -49,4 +49,4 @@ const Finishes: React.FC = () => {
   );
 };
 
-export default Finishes;
+export default Frames;

@@ -1,0 +1,62 @@
+fragment FrameInfo on Frame {
+  id
+  name
+  displayName
+  description
+  material
+  color
+  printType
+  frameSku
+  aspectRatio
+  dimension1
+  dimension2
+  cost
+  shippingCost
+  basePrice
+  priceModifier
+  coverImage {
+    ...ImageInfo
+  }
+  __typename
+  createdAt
+  updatedAt
+}
+
+query searchFrames($input: SearchFramesInput!) {
+  searchFrames(input: $input) {
+    __typename
+    datalist {
+      ...FrameInfo
+    }
+  }
+}
+
+query frame($id: Int!) {
+  frame(id: $id) {
+    ...FrameInfo
+  }
+}
+
+mutation addFrame($input: AddFrameInput!) {
+  addFrame(input: $input) {
+    success
+    message
+    newFrame {
+      ...FrameInfo
+    }
+  }
+}
+
+mutation updateFrame($id: Int!, $input: UpdateFrameInput!) {
+  updateFrame(id: $id, input: $input) {
+    success
+    message
+    updatedFrame {
+      ...FrameInfo
+    }
+  }
+}
+
+mutation deleteFrame($id: Int!) {
+  deleteFrame(id: $id)
+}
