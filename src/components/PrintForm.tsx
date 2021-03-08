@@ -274,6 +274,17 @@ const PrintForm: React.FC<Props> = ({
                   autoComplete="off"
                   value="printSku"
                 />
+              </FieldStack>
+              <FieldStack orientation="horizontal">
+                <Field
+                  component={InputField.Formik}
+                  name="cost"
+                  label="Cost"
+                  type="number"
+                  step="0.01"
+                  autoComplete="off"
+                  value="cost"
+                />
                 <Field
                   component={InputField.Formik}
                   name="basePrice"
@@ -290,6 +301,15 @@ const PrintForm: React.FC<Props> = ({
                   step="0.01"
                   autoComplete="off"
                   value="priceModifier"
+                />
+                <Field
+                  component={InputField.Formik}
+                  name="shippingCost"
+                  label="Shipping Cost"
+                  type="number"
+                  step="0.01"
+                  autoComplete="off"
+                  value="shippingCost"
                 />
               </FieldStack>
               <FieldStack orientation="horizontal">
@@ -310,15 +330,6 @@ const PrintForm: React.FC<Props> = ({
                   step="0.01"
                   autoComplete="off"
                   value="height"
-                />
-                <Field
-                  component={InputField.Formik}
-                  name="shippingCost"
-                  label="Shipping Cost"
-                  type="number"
-                  step="0.01"
-                  autoComplete="off"
-                  value="shippingCost"
                 />
               </FieldStack>
               <Field
