@@ -609,9 +609,10 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   <Field
                     component={Input.Formik}
                     name="basePrice12"
+                    type="number"
                     size="small"
                     value="basePrice12"
-                    maxWidth="70px"
+                    width="70px"
                     inputProps={{
                       textAlign: "right"
                     }}
@@ -622,9 +623,10 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   <Field
                     component={Input.Formik}
                     name="priceModifier12"
+                    type="number"
                     size="small"
                     value="priceModifier12"
-                    maxWidth="70px"
+                    width="70px"
                     inputProps={{
                       textAlign: "right"
                     }}
@@ -640,9 +642,10 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   <Field
                     component={Input.Formik}
                     name="basePrice16"
+                    type="number"
                     size="small"
                     value="basePrice16"
-                    maxWidth="70px"
+                    width="70px"
                     inputProps={{
                       textAlign: "right"
                     }}
@@ -653,9 +656,10 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   <Field
                     component={Input.Formik}
                     name="priceModifier16"
+                    type="number"
                     size="small"
                     value="priceModifier16"
-                    maxWidth="70px"
+                    width="70px"
                     inputProps={{
                       textAlign: "right"
                     }}
@@ -671,9 +675,10 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   <Field
                     component={Input.Formik}
                     name="basePrice20"
+                    type="number"
                     size="small"
                     value="basePrice20"
-                    maxWidth="70px"
+                    width="70px"
                     inputProps={{
                       textAlign: "right"
                     }}
@@ -684,9 +689,10 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   <Field
                     component={Input.Formik}
                     name="priceModifier20"
+                    type="number"
                     size="small"
                     value="priceModifier20"
-                    maxWidth="70px"
+                    width="70px"
                     inputProps={{
                       textAlign: "right"
                     }}
@@ -702,9 +708,10 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   <Field
                     component={Input.Formik}
                     name="basePrice24"
+                    type="number"
                     size="small"
                     value="basePrice24"
-                    maxWidth="70px"
+                    width="70px"
                     inputProps={{
                       textAlign: "right"
                     }}
@@ -715,9 +722,10 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   <Field
                     component={Input.Formik}
                     name="priceModifier24"
+                    type="number"
                     size="small"
                     value="priceModifier24"
-                    maxWidth="70px"
+                    width="70px"
                     inputProps={{
                       textAlign: "right"
                     }}
@@ -733,9 +741,10 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   <Field
                     component={Input.Formik}
                     name="basePrice30"
+                    type="number"
                     size="small"
                     value="basePrice30"
-                    maxWidth="70px"
+                    width="70px"
                     inputProps={{
                       textAlign: "right"
                     }}
@@ -746,9 +755,10 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                   <Field
                     component={Input.Formik}
                     name="priceModifier30"
+                    type="number"
                     size="small"
                     value="priceModifier30"
-                    maxWidth="70px"
+                    width="70px"
                     inputProps={{
                       textAlign: "right",
                       appearance: "none",
