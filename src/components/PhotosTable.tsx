@@ -84,52 +84,52 @@ const PhotosTable: React.FC = () => {
         sortable: true
       },
       {
-        title: 'Price 12"',
+        title: '12"',
         attr: "basePrice12",
         sortable: true
       },
       {
-        title: "Modifier",
+        title: "Mod.",
         attr: "priceModifier12",
         sortable: true
       },
       {
-        title: 'Price 16"',
+        title: '16"',
         attr: "basePrice16",
         sortable: true
       },
       {
-        title: "Modifier",
+        title: "Mod.",
         attr: "priceModifier16",
         sortable: true
       },
       {
-        title: 'Price 20"',
+        title: '20"',
         attr: "basePrice20",
         sortable: true
       },
       {
-        title: "Modifier",
+        title: "Mod.",
         attr: "priceModifier20",
         sortable: true
       },
       {
-        title: 'Price 24"',
+        title: '24"',
         attr: "basePrice24",
         sortable: true
       },
       {
-        title: "Modifier",
+        title: "Mod.",
         attr: "priceModifier",
         sortable: true
       },
       {
-        title: 'Price 30"',
+        title: '30"',
         attr: "basePrice30",
         sortable: true
       },
       {
-        title: "Modifier",
+        title: "Mod.",
         attr: "priceModifier",
         sortable: true
       },
