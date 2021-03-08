@@ -245,6 +245,7 @@ const MatForm: React.FC<Props> = ({
           initialValues={initialValues}
           validationSchema={Yup.object(validationObject)}
           onSubmit={values => {
+            // @ts-ignore
             isAdding ? handleAdd(values) : handleUpdate(values);
           }}
         >

@@ -120,6 +120,7 @@ const FrameForm: React.FC<Props> = ({
 
   const initialValues = {
     name: fr?.name || "",
+    displayName: fr?.displayName || "",
     description: fr?.description || "",
     material: fr?.material || "",
     color: fr?.color || "",
@@ -258,6 +259,14 @@ const FrameForm: React.FC<Props> = ({
                 type="text"
                 autoComplete="off"
                 value="name"
+              />
+              <Field
+                component={InputField.Formik}
+                name="displayName"
+                label="Display Name"
+                type="text"
+                autoComplete="off"
+                value="displayName"
               />
               <FieldStack orientation="horizontal">
                 <Field
