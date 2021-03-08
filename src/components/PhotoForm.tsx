@@ -777,32 +777,8 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
           </Form>
         )}
       </Formik>
-      <NumberInput width="200px" marginY="50px" />
     </Flex>
   );
 };
 
 export default PhotoForm;
-
-const NumberInput = styled(Input)`
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-  input[type="number"] {
-    -moz-appearance: textfield;
-  }
-`;
-
-// /* Chrome, Safari, Edge, Opera */
-// input::-webkit-outer-spin-button,
-// input::-webkit-inner-spin-button {
-//   -webkit-appearance: none;
-//   margin: 0;
-// }
-
-// /* Firefox */
-// input[type=number] {
-//   -moz-appearance: textfield;
-// }
