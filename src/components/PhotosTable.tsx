@@ -84,8 +84,48 @@ const PhotosTable: React.FC = () => {
         sortable: true
       },
       {
-        title: "Base Price",
-        attr: "basePrice",
+        title: 'Price 12"',
+        attr: "basePrice12",
+        sortable: true
+      },
+      {
+        title: "Modifier",
+        attr: "priceModifier12",
+        sortable: true
+      },
+      {
+        title: 'Price 16"',
+        attr: "basePrice16",
+        sortable: true
+      },
+      {
+        title: "Modifier",
+        attr: "priceModifier16",
+        sortable: true
+      },
+      {
+        title: 'Price 20"',
+        attr: "basePrice20",
+        sortable: true
+      },
+      {
+        title: "Modifier",
+        attr: "priceModifier20",
+        sortable: true
+      },
+      {
+        title: 'Price 24"',
+        attr: "basePrice24",
+        sortable: true
+      },
+      {
+        title: "Modifier",
+        attr: "priceModifier",
+        sortable: true
+      },
+      {
+        title: 'Price 30"',
+        attr: "basePrice30",
         sortable: true
       },
       {
@@ -250,8 +290,16 @@ const PhotosTable: React.FC = () => {
                 <Table.Cell style={{ textAlign: "center" }}>
                   <input type="radio" readOnly checked={p.isHidden} />
                 </Table.Cell>
-                <Table.Cell style={{ textAlign: "right" }}>${p.basePrice}</Table.Cell>
-                <Table.Cell style={{ textAlign: "center" }}>{p.priceModifier}</Table.Cell>
+                <Table.Cell style={{ textAlign: "right" }}>${p.basePrice12}</Table.Cell>
+                <Table.Cell style={{ textAlign: "center" }}>{p.priceModifier12}</Table.Cell>
+                <Table.Cell style={{ textAlign: "right" }}>${p.basePrice16}</Table.Cell>
+                <Table.Cell style={{ textAlign: "center" }}>{p.priceModifier16}</Table.Cell>
+                <Table.Cell style={{ textAlign: "right" }}>${p.basePrice20}</Table.Cell>
+                <Table.Cell style={{ textAlign: "center" }}>{p.priceModifier20}</Table.Cell>
+                <Table.Cell style={{ textAlign: "right" }}>${p.basePrice24}</Table.Cell>
+                <Table.Cell style={{ textAlign: "center" }}>{p.priceModifier24}</Table.Cell>
+                <Table.Cell style={{ textAlign: "right" }}>${p.basePrice30}</Table.Cell>
+                <Table.Cell style={{ textAlign: "center" }}>{p.priceModifier30}</Table.Cell>
                 <Table.Cell>{p.subjectsInPhoto?.map(s => s.subject.name).join(", ")}</Table.Cell>
                 <Table.Cell>{p.tagsForPhoto?.map(t => t.tag.name).join(", ")}</Table.Cell>
                 <Table.Cell>

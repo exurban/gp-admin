@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import ActiveLink from "./ActiveLink";
 import Head from "next/head";
 import Signin from "../components/Signin";
@@ -8,15 +7,10 @@ import {
   useColorMode,
   usePage,
   PageWithHeader,
-  PageWithSidebar,
-  useBreakpoint,
   Hide,
   TopNav,
-  SideNav,
   Icon,
-  Divider,
   Button,
-  Flex,
   styled,
   palette
 } from "bumbag";
@@ -30,8 +24,6 @@ const Layout: React.FC<{ title?: string }> = ({
 
   const { colorMode, setColorMode } = useColorMode();
   const page = usePage();
-  const isDesktopAndUnder = useBreakpoint("max-desktop");
-  const isDesktopAndOver = useBreakpoint("max-desktop");
 
   const StyledItem = styled(TopNav.Item)`
     &.active {
@@ -39,25 +31,6 @@ const Layout: React.FC<{ title?: string }> = ({
       box-shadow: inset 0 -2px 0 0;
     }
   `;
-
-  const StyledSideNavItem = styled(SideNav.Item)`
-    &.active {
-      color: ${palette("primary")};
-      background-color: ${palette("primaryShade")};
-      box-shadow: inset 3px 0 0 0 ${palette("primary")};
-    }
-  `;
-
-  const menuItems = [
-    "Dashboard",
-    "Photos",
-    "Locations",
-    "Photographers",
-    "Subjects",
-    "Tags",
-    "Collections",
-    "Prints"
-  ];
 
   if (!session) {
     return (

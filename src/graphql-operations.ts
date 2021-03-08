@@ -30,7 +30,7 @@ export type Image = {
   fileExtension: Scalars["String"];
   imageUrl: Scalars["String"];
   altText: Scalars["String"];
-  aspectRatio: Scalars["String"];
+  aspectRatio?: Maybe<Scalars["String"]>;
   size: Scalars["String"];
   width: Scalars["Int"];
   height: Scalars["Int"];
@@ -260,6 +260,7 @@ export type Frame = {
   __typename?: "Frame";
   id: Scalars["ID"];
   name: Scalars["String"];
+  displayName: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
   material: Scalars["String"];
   color: Scalars["String"];
@@ -366,6 +367,7 @@ export type Mat = {
   __typename?: "Mat";
   id: Scalars["ID"];
   name: Scalars["String"];
+  displayName: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
   color: Scalars["String"];
   printType: Scalars["String"];
@@ -411,6 +413,57 @@ export type ItemCount = {
   __typename?: "ItemCount";
   name?: Maybe<Scalars["String"]>;
   count: Scalars["Int"];
+};
+
+export type Print = {
+  __typename?: "Print";
+  id: Scalars["ID"];
+  name: Scalars["String"];
+  description?: Maybe<Scalars["String"]>;
+  type: Scalars["String"];
+  /** Optional. An image of the print. */
+  coverImage?: Maybe<Image>;
+  printSku: Scalars["String"];
+  aspectRatio: Scalars["String"];
+  dimension1: Scalars["Float"];
+  dimension2: Scalars["Float"];
+  cost: Scalars["Float"];
+  shippingCost: Scalars["Float"];
+  basePrice: Scalars["Float"];
+  priceModifier: Scalars["Float"];
+  createdAt: Scalars["DateTime"];
+  updatedAt: Scalars["DateTime"];
+};
+
+export type PrintsResponse = {
+  __typename?: "PrintsResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  prints?: Maybe<Array<Print>>;
+};
+
+export type MatsResponse = {
+  __typename?: "MatsResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  mats?: Maybe<Array<Mat>>;
+};
+
+export type FinishOptions = {
+  __typename?: "FinishOptions";
+  prints: Array<Print>;
+  mats: Array<Mat>;
+  frames: Array<Frame>;
+};
+
+export type PhotoWithFinishOptionsResponse = {
+  __typename?: "PhotoWithFinishOptionsResponse";
+  success: Scalars["Boolean"];
+  message: Scalars["String"];
+  photo?: Maybe<Photo>;
+  prints?: Maybe<Array<Print>>;
+  mats?: Maybe<Array<Mat>>;
+  frames?: Maybe<Array<Frame>>;
 };
 
 export type SearchPhotographersResponse = {
@@ -542,26 +595,6 @@ export type AllFeaturedPhotosResponse = {
   __typename?: "AllFeaturedPhotosResponse";
   total: Scalars["Int"];
   photos: Array<Photo>;
-};
-
-export type Print = {
-  __typename?: "Print";
-  id: Scalars["ID"];
-  name: Scalars["String"];
-  description?: Maybe<Scalars["String"]>;
-  type: Scalars["String"];
-  /** Optional. An image of the print. */
-  coverImage?: Maybe<Image>;
-  printSku: Scalars["String"];
-  aspectRatio: Scalars["String"];
-  dimension1: Scalars["Float"];
-  dimension2: Scalars["Float"];
-  cost: Scalars["Float"];
-  shippingCost: Scalars["Float"];
-  basePrice: Scalars["Float"];
-  priceModifier: Scalars["Float"];
-  createdAt: Scalars["DateTime"];
-  updatedAt: Scalars["DateTime"];
 };
 
 export type SearchPrintsResponse = {
@@ -746,6 +779,7 @@ export type AllPhotosInCollectionInput = {
 
 export type AddFrameInput = {
   name: Scalars["String"];
+  displayName: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
   material: Scalars["String"];
   color: Scalars["String"];
@@ -762,6 +796,7 @@ export type AddFrameInput = {
 
 export type UpdateFrameInput = {
   name?: Maybe<Scalars["String"]>;
+  displayName?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   material?: Maybe<Scalars["String"]>;
   color?: Maybe<Scalars["String"]>;
@@ -861,6 +896,7 @@ export type PaginatedPhotosAtLocationInput = {
 
 export type AddMatInput = {
   name: Scalars["String"];
+  shortDescription: Scalars["String"];
   description?: Maybe<Scalars["String"]>;
   color: Scalars["String"];
   printType: Scalars["String"];
@@ -876,6 +912,7 @@ export type AddMatInput = {
 
 export type UpdateMatInput = {
   name?: Maybe<Scalars["String"]>;
+  shortDescription?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   color?: Maybe<Scalars["String"]>;
   printType?: Maybe<Scalars["String"]>;
@@ -896,6 +933,17 @@ export type SearchMatsInput = {
 export type PhotoCollectionInput = {
   photoId: Scalars["Int"];
   collectionId: Scalars["Int"];
+};
+
+export type PrintsInput = {
+  type: Scalars["String"];
+  aspectRatio: Scalars["String"];
+};
+
+export type MatsInput = {
+  printType: Scalars["String"];
+  dimension1: Scalars["String"];
+  dimension2: Scalars["String"];
 };
 
 /** Inputs to create a new Photographer entity. */
@@ -972,7 +1020,6 @@ export type AddPhotoInput = {
   subjectIds?: Maybe<Array<Scalars["Int"]>>;
   tagIds?: Maybe<Array<Scalars["Int"]>>;
   collectionIds?: Maybe<Array<Scalars["Int"]>>;
-  printIds?: Maybe<Array<Scalars["Int"]>>;
   imageId?: Maybe<Scalars["Int"]>;
   sharingImageId?: Maybe<Scalars["Int"]>;
 };
@@ -1001,7 +1048,6 @@ export type UpdatePhotoInput = {
   subjectIds?: Maybe<Array<Scalars["Int"]>>;
   tagIds?: Maybe<Array<Scalars["Int"]>>;
   collectionIds?: Maybe<Array<Scalars["Int"]>>;
-  printIds?: Maybe<Array<Scalars["Int"]>>;
 };
 
 export type PhotoSearchSortInput = {
@@ -1177,6 +1223,10 @@ export type Query = {
   photoCountByCollection: ItemCountList;
   photoCountByLocation: ItemCountList;
   photoCountByPhotographer: ItemCountList;
+  printsOfTypeAndAspectRatio: PrintsResponse;
+  matsOfTypeAndSize: MatsResponse;
+  finishOptions: FinishOptions;
+  photoAndFinishOptionsForSku: PhotoWithFinishOptionsResponse;
   /** Returns all Photographers + portraits, only. Meant to be used on the backend. */
   searchPhotographers: SearchPhotographersResponse;
   /** Returns all Photographers + portraits, only. Meant to be used on the backend. */
@@ -1299,6 +1349,22 @@ export type QueryMatsWithAspectRatioArgs = {
 
 export type QueryMatArgs = {
   id: Scalars["Int"];
+};
+
+export type QueryPrintsOfTypeAndAspectRatioArgs = {
+  input: PrintsInput;
+};
+
+export type QueryMatsOfTypeAndSizeArgs = {
+  input: MatsInput;
+};
+
+export type QueryFinishOptionsArgs = {
+  aspectRatio: Scalars["String"];
+};
+
+export type QueryPhotoAndFinishOptionsForSkuArgs = {
+  sku: Scalars["Int"];
 };
 
 export type QuerySearchPhotographersArgs = {
@@ -1705,6 +1771,7 @@ export type FrameInfoFragment = { __typename: "Frame" } & Pick<
   Frame,
   | "id"
   | "name"
+  | "displayName"
   | "description"
   | "material"
   | "color"
@@ -2539,6 +2606,7 @@ export const FrameInfoFragmentDoc: DocumentNode<FrameInfoFragment, unknown> = {
         selections: [
           { kind: "Field", name: { kind: "Name", value: "id" } },
           { kind: "Field", name: { kind: "Name", value: "name" } },
+          { kind: "Field", name: { kind: "Name", value: "displayName" } },
           { kind: "Field", name: { kind: "Name", value: "description" } },
           { kind: "Field", name: { kind: "Name", value: "material" } },
           { kind: "Field", name: { kind: "Name", value: "color" } },
@@ -6876,6 +6944,7 @@ export type AllPhotosInCollectionResponseFieldPolicy = {
 export type FrameKeySpecifier = (
   | "id"
   | "name"
+  | "displayName"
   | "description"
   | "material"
   | "color"
@@ -6896,6 +6965,7 @@ export type FrameKeySpecifier = (
 export type FrameFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  displayName?: FieldPolicy<any> | FieldReadFunction<any>;
   description?: FieldPolicy<any> | FieldReadFunction<any>;
   material?: FieldPolicy<any> | FieldReadFunction<any>;
   color?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -7044,6 +7114,7 @@ export type UpdateLocationResponseFieldPolicy = {
 export type MatKeySpecifier = (
   | "id"
   | "name"
+  | "displayName"
   | "description"
   | "color"
   | "printType"
@@ -7063,6 +7134,7 @@ export type MatKeySpecifier = (
 export type MatFieldPolicy = {
   id?: FieldPolicy<any> | FieldReadFunction<any>;
   name?: FieldPolicy<any> | FieldReadFunction<any>;
+  displayName?: FieldPolicy<any> | FieldReadFunction<any>;
   description?: FieldPolicy<any> | FieldReadFunction<any>;
   color?: FieldPolicy<any> | FieldReadFunction<any>;
   printType?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -7122,6 +7194,91 @@ export type ItemCountKeySpecifier = (
 export type ItemCountFieldPolicy = {
   name?: FieldPolicy<any> | FieldReadFunction<any>;
   count?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type PrintKeySpecifier = (
+  | "id"
+  | "name"
+  | "description"
+  | "type"
+  | "coverImage"
+  | "printSku"
+  | "aspectRatio"
+  | "dimension1"
+  | "dimension2"
+  | "cost"
+  | "shippingCost"
+  | "basePrice"
+  | "priceModifier"
+  | "createdAt"
+  | "updatedAt"
+  | PrintKeySpecifier
+)[];
+export type PrintFieldPolicy = {
+  id?: FieldPolicy<any> | FieldReadFunction<any>;
+  name?: FieldPolicy<any> | FieldReadFunction<any>;
+  description?: FieldPolicy<any> | FieldReadFunction<any>;
+  type?: FieldPolicy<any> | FieldReadFunction<any>;
+  coverImage?: FieldPolicy<any> | FieldReadFunction<any>;
+  printSku?: FieldPolicy<any> | FieldReadFunction<any>;
+  aspectRatio?: FieldPolicy<any> | FieldReadFunction<any>;
+  dimension1?: FieldPolicy<any> | FieldReadFunction<any>;
+  dimension2?: FieldPolicy<any> | FieldReadFunction<any>;
+  cost?: FieldPolicy<any> | FieldReadFunction<any>;
+  shippingCost?: FieldPolicy<any> | FieldReadFunction<any>;
+  basePrice?: FieldPolicy<any> | FieldReadFunction<any>;
+  priceModifier?: FieldPolicy<any> | FieldReadFunction<any>;
+  createdAt?: FieldPolicy<any> | FieldReadFunction<any>;
+  updatedAt?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type PrintsResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "prints"
+  | PrintsResponseKeySpecifier
+)[];
+export type PrintsResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  prints?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type MatsResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "mats"
+  | MatsResponseKeySpecifier
+)[];
+export type MatsResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  mats?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type FinishOptionsKeySpecifier = (
+  | "prints"
+  | "mats"
+  | "frames"
+  | FinishOptionsKeySpecifier
+)[];
+export type FinishOptionsFieldPolicy = {
+  prints?: FieldPolicy<any> | FieldReadFunction<any>;
+  mats?: FieldPolicy<any> | FieldReadFunction<any>;
+  frames?: FieldPolicy<any> | FieldReadFunction<any>;
+};
+export type PhotoWithFinishOptionsResponseKeySpecifier = (
+  | "success"
+  | "message"
+  | "photo"
+  | "prints"
+  | "mats"
+  | "frames"
+  | PhotoWithFinishOptionsResponseKeySpecifier
+)[];
+export type PhotoWithFinishOptionsResponseFieldPolicy = {
+  success?: FieldPolicy<any> | FieldReadFunction<any>;
+  message?: FieldPolicy<any> | FieldReadFunction<any>;
+  photo?: FieldPolicy<any> | FieldReadFunction<any>;
+  prints?: FieldPolicy<any> | FieldReadFunction<any>;
+  mats?: FieldPolicy<any> | FieldReadFunction<any>;
+  frames?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type SearchPhotographersResponseKeySpecifier = (
   | "datalist"
@@ -7321,41 +7478,6 @@ export type AllFeaturedPhotosResponseKeySpecifier = (
 export type AllFeaturedPhotosResponseFieldPolicy = {
   total?: FieldPolicy<any> | FieldReadFunction<any>;
   photos?: FieldPolicy<any> | FieldReadFunction<any>;
-};
-export type PrintKeySpecifier = (
-  | "id"
-  | "name"
-  | "description"
-  | "type"
-  | "coverImage"
-  | "printSku"
-  | "aspectRatio"
-  | "dimension1"
-  | "dimension2"
-  | "cost"
-  | "shippingCost"
-  | "basePrice"
-  | "priceModifier"
-  | "createdAt"
-  | "updatedAt"
-  | PrintKeySpecifier
-)[];
-export type PrintFieldPolicy = {
-  id?: FieldPolicy<any> | FieldReadFunction<any>;
-  name?: FieldPolicy<any> | FieldReadFunction<any>;
-  description?: FieldPolicy<any> | FieldReadFunction<any>;
-  type?: FieldPolicy<any> | FieldReadFunction<any>;
-  coverImage?: FieldPolicy<any> | FieldReadFunction<any>;
-  printSku?: FieldPolicy<any> | FieldReadFunction<any>;
-  aspectRatio?: FieldPolicy<any> | FieldReadFunction<any>;
-  dimension1?: FieldPolicy<any> | FieldReadFunction<any>;
-  dimension2?: FieldPolicy<any> | FieldReadFunction<any>;
-  cost?: FieldPolicy<any> | FieldReadFunction<any>;
-  shippingCost?: FieldPolicy<any> | FieldReadFunction<any>;
-  basePrice?: FieldPolicy<any> | FieldReadFunction<any>;
-  priceModifier?: FieldPolicy<any> | FieldReadFunction<any>;
-  createdAt?: FieldPolicy<any> | FieldReadFunction<any>;
-  updatedAt?: FieldPolicy<any> | FieldReadFunction<any>;
 };
 export type SearchPrintsResponseKeySpecifier = (
   | "datalist"
@@ -7606,6 +7728,10 @@ export type QueryKeySpecifier = (
   | "photoCountByCollection"
   | "photoCountByLocation"
   | "photoCountByPhotographer"
+  | "printsOfTypeAndAspectRatio"
+  | "matsOfTypeAndSize"
+  | "finishOptions"
+  | "photoAndFinishOptionsForSku"
   | "searchPhotographers"
   | "sortedPhotographers"
   | "photographer"
@@ -7672,6 +7798,10 @@ export type QueryFieldPolicy = {
   photoCountByCollection?: FieldPolicy<any> | FieldReadFunction<any>;
   photoCountByLocation?: FieldPolicy<any> | FieldReadFunction<any>;
   photoCountByPhotographer?: FieldPolicy<any> | FieldReadFunction<any>;
+  printsOfTypeAndAspectRatio?: FieldPolicy<any> | FieldReadFunction<any>;
+  matsOfTypeAndSize?: FieldPolicy<any> | FieldReadFunction<any>;
+  finishOptions?: FieldPolicy<any> | FieldReadFunction<any>;
+  photoAndFinishOptionsForSku?: FieldPolicy<any> | FieldReadFunction<any>;
   searchPhotographers?: FieldPolicy<any> | FieldReadFunction<any>;
   sortedPhotographers?: FieldPolicy<any> | FieldReadFunction<any>;
   photographer?: FieldPolicy<any> | FieldReadFunction<any>;
@@ -8168,6 +8298,56 @@ export type TypedTypePolicies = TypePolicies & {
     subscriptionType?: true;
     fields?: ItemCountFieldPolicy;
   };
+  Print?: {
+    keyFields?:
+      | false
+      | PrintKeySpecifier
+      | (() => undefined | PrintKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: PrintFieldPolicy;
+  };
+  PrintsResponse?: {
+    keyFields?:
+      | false
+      | PrintsResponseKeySpecifier
+      | (() => undefined | PrintsResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: PrintsResponseFieldPolicy;
+  };
+  MatsResponse?: {
+    keyFields?:
+      | false
+      | MatsResponseKeySpecifier
+      | (() => undefined | MatsResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: MatsResponseFieldPolicy;
+  };
+  FinishOptions?: {
+    keyFields?:
+      | false
+      | FinishOptionsKeySpecifier
+      | (() => undefined | FinishOptionsKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: FinishOptionsFieldPolicy;
+  };
+  PhotoWithFinishOptionsResponse?: {
+    keyFields?:
+      | false
+      | PhotoWithFinishOptionsResponseKeySpecifier
+      | (() => undefined | PhotoWithFinishOptionsResponseKeySpecifier);
+    queryType?: true;
+    mutationType?: true;
+    subscriptionType?: true;
+    fields?: PhotoWithFinishOptionsResponseFieldPolicy;
+  };
   SearchPhotographersResponse?: {
     keyFields?:
       | false
@@ -8377,16 +8557,6 @@ export type TypedTypePolicies = TypePolicies & {
     mutationType?: true;
     subscriptionType?: true;
     fields?: AllFeaturedPhotosResponseFieldPolicy;
-  };
-  Print?: {
-    keyFields?:
-      | false
-      | PrintKeySpecifier
-      | (() => undefined | PrintKeySpecifier);
-    queryType?: true;
-    mutationType?: true;
-    subscriptionType?: true;
-    fields?: PrintFieldPolicy;
   };
   SearchPrintsResponse?: {
     keyFields?:
