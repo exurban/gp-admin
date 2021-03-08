@@ -593,6 +593,7 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
                 <Stack spacing="major-1" marginTop="major-4">
                   <Text.Block>sku: {photo.sku}</Text.Block>
                   <Text.Block>sortIndex: {photo.sortIndex}</Text.Block>
+                  <Text.Block>Aspect Ratio: {photo.images[0].aspectRatio}</Text.Block>
                 </Stack>
               </Flex>
               <Flex className="col-4" flexDirection="column" margin="major-2" flex="1 1 20%">
