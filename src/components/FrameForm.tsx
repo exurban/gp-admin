@@ -202,8 +202,8 @@ const FrameForm: React.FC<Props> = ({
           <img
             key={Date.now()}
             src={imageUrl}
-            width="225px"
-            height="225px"
+            width="300px"
+            height="270px"
             style={{ borderRadius: "6px" }}
           />
         )}

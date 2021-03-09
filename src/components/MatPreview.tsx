@@ -64,29 +64,16 @@ const PrintView: React.FC<Props> = ({ selectedItem: mat, setSelectedItem, setIsE
         alignItems="flex-end"
         padding="major-2"
       >
-        {mat.coverImage && mat.coverImage.imageUrl.length > 0 ? (
+        {mat.coverImage && mat.coverImage.imageUrl.length > 0 && (
           <img
             key={Date.now()}
             src={mat.coverImage.imageUrl}
-            width="200px"
-            height="300px"
+            width="426px"
+            height="281px"
             style={{
               borderRadius: "6px"
             }}
           />
-        ) : (
-          <Box
-            width="200px"
-            height="300px"
-            backgroundColor="default"
-            border="1px solid"
-            borderColor="grey800"
-            borderRadius="6px"
-            alignX="center"
-            alignY="center"
-          >
-            No Cover Image
-          </Box>
         )}
       </Flex>
       <Flex className="fields-wrapper" flexDirection="column" margin="major-3" flex="2 1 50%">

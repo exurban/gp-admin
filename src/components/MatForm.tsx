@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useMutation } from "@apollo/client";
@@ -11,11 +10,9 @@ import {
   TextareaField,
   ActionButtons,
   Text,
-  useToasts,
-  Box
+  useToasts
 } from "bumbag";
 import {
-  Image,
   Mat,
   SearchMatsDocument,
   AddMatDocument,
@@ -27,7 +24,6 @@ import {
   PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
-import CoverImageModal from "./CoverImageModal";
 
 // * name
 // * type
@@ -62,9 +58,6 @@ const MatForm: React.FC<Props> = ({
   isEditing,
   setIsEditing
 }) => {
-  const [imageUrl, setImageUrl] = useState(mat?.coverImage?.imageUrl);
-  const [coverImage, setCoverImage] = useState<Image | null | undefined>(mat?.coverImage);
-
   const toasts = useToasts();
   const [addMat] = useMutation(AddMatDocument, {
     refetchQueries: [
@@ -140,10 +133,7 @@ const MatForm: React.FC<Props> = ({
   const handleAdd = (values: AddMatInput) => {
     setSelectedItem(undefined);
 
-    // if coverImage is set, add to input
-    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
-
-    const input = { ...values, coverImageId };
+    const input = { ...values };
     console.log(`Adding Mat with input: ${JSON.stringify(input, null, 2)}`);
 
     if (isAdding) {
@@ -170,10 +160,7 @@ const MatForm: React.FC<Props> = ({
   const handleUpdate = (values: UpdateMatInput) => {
     setSelectedItem(undefined);
 
-    // if coverImage is set, add to input
-    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
-
-    const input = { ...values, coverImageId };
+    const input = { ...values };
 
     if (isEditing && mat) {
       const editVariables: UpdateMatMutationVariables = {
@@ -197,6 +184,8 @@ const MatForm: React.FC<Props> = ({
     clearForm();
   };
 
+  const imageUrl = mat?.coverImage?.imageUrl;
+
   return (
     <Flex className="form-wrapper">
       <Flex
@@ -208,35 +197,13 @@ const MatForm: React.FC<Props> = ({
         alignItems="flex-end"
         padding="major-2"
       >
-        {imageUrl && imageUrl.length > 0 ? (
+        {imageUrl && imageUrl.length > 0 && (
           <img
             key={Date.now()}
             src={imageUrl}
-            width="200px"
-            height="300px"
+            width="426px"
+            height="281px"
             style={{ borderRadius: "6px" }}
-          />
-        ) : (
-          <Box
-            width="200px"
-            height="300px"
-            backgroundColor="default"
-            border="1px solid"
-            borderColor="grey800"
-            borderRadius="6px"
-            alignX="center"
-            alignY="center"
-          >
-            No Cover Image
-          </Box>
-        )}
-        {(isAdding || isEditing) && (
-          <CoverImageModal
-            coverImage={coverImage}
-            setCoverImage={setCoverImage}
-            name={mat?.name || ""}
-            imageUrl={imageUrl}
-            setImageUrl={setImageUrl}
           />
         )}
       </Flex>

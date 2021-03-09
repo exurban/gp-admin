@@ -69,8 +69,8 @@ const PrintView: React.FC<Props> = ({ selectedItem: fr, setSelectedItem, setIsEd
           <img
             key={Date.now()}
             src={fr.coverImage.imageUrl}
-            width="225px"
-            height="225px"
+            width="300px"
+            height="270px"
             style={{
               borderRadius: "6px"
             }}
