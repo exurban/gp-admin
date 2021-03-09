@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useMutation } from "@apollo/client";
@@ -11,11 +10,9 @@ import {
   TextareaField,
   ActionButtons,
   Text,
-  useToasts,
-  Box
+  useToasts
 } from "bumbag";
 import {
-  Image,
   Frame,
   SearchFramesDocument,
   AddFrameDocument,
@@ -27,7 +24,6 @@ import {
   PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
-import CoverImageModal from "./CoverImageModal";
 
 // * name
 // * type
@@ -62,9 +58,6 @@ const FrameForm: React.FC<Props> = ({
   isEditing,
   setIsEditing
 }) => {
-  const [imageUrl, setImageUrl] = useState(fr?.coverImage?.imageUrl);
-  const [coverImage, setCoverImage] = useState<Image | null | undefined>(fr?.coverImage);
-
   const toasts = useToasts();
   const [addFrame] = useMutation(AddFrameDocument, {
     refetchQueries: [
@@ -142,11 +135,7 @@ const FrameForm: React.FC<Props> = ({
   const handleAdd = (values: AddFrameInput) => {
     setSelectedItem(undefined);
 
-    // if coverImage is set, add to input
-    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
-
-    const input = { ...values, coverImageId };
-    console.log(`Adding Mat with input: ${JSON.stringify(input, null, 2)}`);
+    const input = { ...values };
 
     if (isAdding) {
       const addVariables: AddFrameMutationVariables = {
@@ -172,10 +161,7 @@ const FrameForm: React.FC<Props> = ({
   const handleUpdate = (values: UpdateFrameInput) => {
     setSelectedItem(undefined);
 
-    // if coverImage is set, add to input
-    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
-
-    const input = { ...values, coverImageId };
+    const input = { ...values };
 
     if (isEditing && fr) {
       const editVariables: UpdateFrameMutationVariables = {
@@ -199,6 +185,8 @@ const FrameForm: React.FC<Props> = ({
     clearForm();
   };
 
+  const imageUrl = fr?.coverImage?.imageUrl;
+
   return (
     <Flex className="form-wrapper">
       <Flex
@@ -210,35 +198,13 @@ const FrameForm: React.FC<Props> = ({
         alignItems="flex-end"
         padding="major-2"
       >
-        {imageUrl && imageUrl.length > 0 ? (
+        {imageUrl && imageUrl.length > 0 && (
           <img
             key={Date.now()}
             src={imageUrl}
-            width="200px"
-            height="300px"
+            width="225px"
+            height="225px"
             style={{ borderRadius: "6px" }}
-          />
-        ) : (
-          <Box
-            width="200px"
-            height="300px"
-            backgroundColor="default"
-            border="1px solid"
-            borderColor="grey800"
-            borderRadius="6px"
-            alignX="center"
-            alignY="center"
-          >
-            No Cover Image
-          </Box>
-        )}
-        {(isAdding || isEditing) && (
-          <CoverImageModal
-            coverImage={coverImage}
-            setCoverImage={setCoverImage}
-            name={fr?.name || ""}
-            imageUrl={imageUrl}
-            setImageUrl={setImageUrl}
           />
         )}
       </Flex>
