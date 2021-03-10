@@ -69,8 +69,8 @@ const PrintView: React.FC<Props> = ({ selectedItem: fr, setSelectedItem, setIsEd
           <img
             key={Date.now()}
             src={fr.coverImage.imageUrl}
-            width="300px"
-            height="270px"
+            width="200px"
+            height="180px"
             style={{
               borderRadius: "6px"
             }}
@@ -155,6 +155,9 @@ const PrintView: React.FC<Props> = ({ selectedItem: fr, setSelectedItem, setIsEd
             <Text.Block paddingY="major-1">${fr.cost.toFixed(2)}</Text.Block>
             <Text.Block paddingY="major-1">${fr.basePrice.toFixed(2)}</Text.Block>
             <Text.Block paddingY="major-1">{fr.priceModifier * 100}%</Text.Block>
+            <Text.Block paddingY="major-1">
+              ${(fr.priceModifier * fr.basePrice).toFixed(2)}
+            </Text.Block>
             <Text.Block paddingY="major-1">
               ${(fr.priceModifier * fr.basePrice - fr.cost).toFixed(2)}
             </Text.Block>

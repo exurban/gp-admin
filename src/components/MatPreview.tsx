@@ -143,13 +143,12 @@ const PrintView: React.FC<Props> = ({ selectedItem: mat, setSelectedItem, setIsE
             <Text.Block paddingY="major-1">Cost:</Text.Block>
             <Text.Block paddingY="major-1">Base Price:</Text.Block>
             <Text.Block paddingY="major-1">Modifier:</Text.Block>
-            <Text.Block paddingY="major-1">Total Resale:</Text.Block>
+            <Text.Block paddingY="major-1">Resale:</Text.Block>
             <Text.Block paddingY="major-1">Markup:</Text.Block>
-            <Text.Block paddingY="major-1">Ship Cost:</Text.Block>
           </Columns.Column>
           <Columns.Column alignX="left" fontWeight="500">
             <Text.Block paddingY="major-1">${mat.cost}</Text.Block>
-            <Text.Block paddingY="major-1">${mat.basePrice.toFixed(2)}</Text.Block>
+            <Text.Block paddingY="major-1">${mat.basePrice}</Text.Block>
             <Text.Block paddingY="major-1">{mat.priceModifier * 100}%</Text.Block>
             <Text.Block paddingY="major-1">
               ${(mat.priceModifier * mat.basePrice).toFixed(2)}
@@ -157,7 +156,6 @@ const PrintView: React.FC<Props> = ({ selectedItem: mat, setSelectedItem, setIsE
             <Text.Block paddingY="major-1">
               ${(mat.priceModifier * mat.basePrice - mat.cost).toFixed(2)}
             </Text.Block>
-            <Text.Block paddingY="major-1">${mat.shippingCost.toFixed(2)}</Text.Block>
           </Columns.Column>
         </Columns>
       </Flex>
