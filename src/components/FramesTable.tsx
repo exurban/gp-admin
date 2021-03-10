@@ -91,12 +91,7 @@ const FramesTable: React.FC<Props> = ({
         sortable: true,
         width: "90px"
       },
-      {
-        title: "Ship Cost",
-        attr: "shippingCost",
-        sortable: true,
-        width: "90px"
-      },
+
       {
         title: "Base",
         attr: "basePrice",
@@ -106,6 +101,12 @@ const FramesTable: React.FC<Props> = ({
       {
         title: "Mod.",
         attr: "priceModifier",
+        sortable: true,
+        width: "90px"
+      },
+      {
+        title: "Resale",
+        attr: "resale",
         sortable: true,
         width: "90px"
       }
@@ -243,9 +244,10 @@ const FramesTable: React.FC<Props> = ({
                 <Table.Cell>{fr.dimension1}</Table.Cell>
                 <Table.Cell>{fr.dimension2}</Table.Cell>
                 <Table.Cell>{fr.cost}</Table.Cell>
-                <Table.Cell>{fr.shippingCost}</Table.Cell>
+
                 <Table.Cell>{fr.basePrice}</Table.Cell>
                 <Table.Cell>{fr.priceModifier}</Table.Cell>
+                <Table.Cell>{(fr.basePrice * fr.priceModifier).toFixed(2)}</Table.Cell>
               </Table.Row>
             ))}
           </Table.Body>
