@@ -55,40 +55,6 @@ const PrintView: React.FC<Props> = ({ selectedItem: pr, setSelectedItem, setIsEd
 
   return (
     <Flex>
-      <Flex
-        className="image-wrapper"
-        flexDirection="column"
-        margin="major-2"
-        marginTop="30px"
-        flex="1 1 25%"
-        alignItems="flex-end"
-        padding="major-2"
-      >
-        {pr.coverImage && pr.coverImage.imageUrl.length > 0 ? (
-          <img
-            key={Date.now()}
-            src={pr.coverImage.imageUrl}
-            width="200px"
-            height="300px"
-            style={{
-              borderRadius: "6px"
-            }}
-          />
-        ) : (
-          <Box
-            width="200px"
-            height="300px"
-            backgroundColor="default"
-            border="1px solid"
-            borderColor="grey800"
-            borderRadius="6px"
-            alignX="center"
-            alignY="center"
-          >
-            No Cover Image
-          </Box>
-        )}
-      </Flex>
       <Flex className="fields-wrapper" flexDirection="column" margin="major-3" flex="2 1 50%">
         <Flex flexDirection="row" alignX="right" justifyContent="space-between">
           <Heading use="h3" marginTop="major-4">
@@ -159,7 +125,6 @@ const PrintView: React.FC<Props> = ({ selectedItem: pr, setSelectedItem, setIsEd
             <Text.Block paddingY="major-1">Modifier:</Text.Block>
             <Text.Block paddingY="major-1">Total Resale:</Text.Block>
             <Text.Block paddingY="major-1">Markup:</Text.Block>
-            <Text.Block paddingY="major-1">Ship Cost:</Text.Block>
           </Columns.Column>
           <Columns.Column alignX="left" fontWeight="500">
             <Text.Block paddingY="major-1">${pr.cost}</Text.Block>
@@ -167,7 +132,6 @@ const PrintView: React.FC<Props> = ({ selectedItem: pr, setSelectedItem, setIsEd
             <Text.Block paddingY="major-1">{pr.priceModifier * 100}%</Text.Block>
             <Text.Block paddingY="major-1">${pr.priceModifier * pr.basePrice}</Text.Block>
             <Text.Block paddingY="major-1">${pr.priceModifier * pr.basePrice - pr.cost}</Text.Block>
-            <Text.Block paddingY="major-1">${pr.shippingCost}</Text.Block>
           </Columns.Column>
         </Columns>
       </Flex>

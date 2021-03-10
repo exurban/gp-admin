@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { useMutation } from "@apollo/client";
@@ -11,11 +10,9 @@ import {
   TextareaField,
   ActionButtons,
   Text,
-  useToasts,
-  Box
+  useToasts
 } from "bumbag";
 import {
-  Image,
   Print,
   SearchPrintsDocument,
   AddPrintDocument,
@@ -27,7 +24,6 @@ import {
   PhotoEditOptionsDocument
 } from "../graphql-operations";
 import { Dispatch, SetStateAction } from "react";
-import CoverImageModal from "./CoverImageModal";
 
 // * name
 // * type
@@ -62,9 +58,6 @@ const PrintForm: React.FC<Props> = ({
   isEditing,
   setIsEditing
 }) => {
-  const [imageUrl, setImageUrl] = useState(pr?.coverImage?.imageUrl);
-  const [coverImage, setCoverImage] = useState<Image | null | undefined>(pr?.coverImage);
-
   const toasts = useToasts();
   const [addPrint] = useMutation(AddPrintDocument, {
     refetchQueries: [
@@ -139,10 +132,7 @@ const PrintForm: React.FC<Props> = ({
   const handleAdd = (values: AddPrintInput) => {
     setSelectedItem(undefined);
 
-    // if coverImage is set, add to input
-    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
-
-    const input = { ...values, coverImageId };
+    const input = { ...values };
     console.log(`Adding Print with input: ${JSON.stringify(input, null, 2)}`);
 
     if (isAdding) {
@@ -169,10 +159,7 @@ const PrintForm: React.FC<Props> = ({
   const handleUpdate = (values: UpdatePrintInput) => {
     setSelectedItem(undefined);
 
-    // if coverImage is set, add to input
-    const coverImageId = coverImage ? parseInt(coverImage.id) : null;
-
-    const input = { ...values, coverImageId };
+    const input = { ...values };
 
     if (isEditing && pr) {
       const editVariables: UpdatePrintMutationVariables = {
@@ -198,47 +185,6 @@ const PrintForm: React.FC<Props> = ({
 
   return (
     <Flex className="form-wrapper">
-      <Flex
-        className="image-wrapper"
-        flexDirection="column"
-        margin="major-2"
-        marginTop="30px"
-        flex="1 1 25%"
-        alignItems="flex-end"
-        padding="major-2"
-      >
-        {imageUrl && imageUrl.length > 0 ? (
-          <img
-            key={Date.now()}
-            src={imageUrl}
-            width="200px"
-            height="300px"
-            style={{ borderRadius: "6px" }}
-          />
-        ) : (
-          <Box
-            width="200px"
-            height="300px"
-            backgroundColor="default"
-            border="1px solid"
-            borderColor="grey800"
-            borderRadius="6px"
-            alignX="center"
-            alignY="center"
-          >
-            No Cover Image
-          </Box>
-        )}
-        {(isAdding || isEditing) && (
-          <CoverImageModal
-            coverImage={coverImage}
-            setCoverImage={setCoverImage}
-            name={pr?.name || ""}
-            imageUrl={imageUrl}
-            setImageUrl={setImageUrl}
-          />
-        )}
-      </Flex>
       <Flex className="fields-wrapper" flexDirection="column" margin="major-3" flex="2 1 50%">
         <Formik
           initialValues={initialValues}
