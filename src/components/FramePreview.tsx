@@ -99,7 +99,7 @@ const PrintView: React.FC<Props> = ({ selectedItem: fr, setSelectedItem, setIsEd
             />
           </Columns.Column>
           <Columns.Column alignX="center">
-            <Text.Block fontWeight="600">Pricing</Text.Block>
+            <Text.Block fontWeight="600">Dimensions</Text.Block>
             <Divider
               orientation="horizontal"
               backgroundColor="info300"
@@ -110,7 +110,7 @@ const PrintView: React.FC<Props> = ({ selectedItem: fr, setSelectedItem, setIsEd
             />
           </Columns.Column>
           <Columns.Column alignX="center">
-            <Text.Block fontWeight="600">Dimensions</Text.Block>
+            <Text.Block fontWeight="600">Pricing</Text.Block>
             <Divider
               orientation="horizontal"
               backgroundColor="info300"
@@ -135,26 +135,29 @@ const PrintView: React.FC<Props> = ({ selectedItem: fr, setSelectedItem, setIsEd
             <Text.Block paddingY="major-1">{fr.color}</Text.Block>
           </Columns.Column>
           <Columns.Column alignX="right" fontWeight="300">
-            <Text.Block paddingY="major-1">Base:</Text.Block>
-            <Text.Block paddingY="major-1">Modifier:</Text.Block>
-            <Text.Block paddingY="major-1">Total:</Text.Block>
-            <Text.Block paddingY="major-1">Ship Cost:</Text.Block>
-          </Columns.Column>
-          <Columns.Column alignX="left" fontWeight="500">
-            <Text.Block paddingY="major-1">${fr.basePrice}</Text.Block>
-            <Text.Block paddingY="major-1">{fr.priceModifier}</Text.Block>
-            <Text.Block paddingY="major-1">${fr.priceModifier * fr.basePrice}</Text.Block>
-            <Text.Block paddingY="major-1">${fr.shippingCost}</Text.Block>
-          </Columns.Column>
-          <Columns.Column alignX="right" fontWeight="300">
+            <Text.Block paddingY="major-1">Aspect:</Text.Block>
             <Text.Block paddingY="major-1">Dimension 1:</Text.Block>
             <Text.Block paddingY="major-1">Dimension 2:</Text.Block>
-            <Text.Block paddingY="major-1">Aspect:</Text.Block>
           </Columns.Column>
           <Columns.Column alignX="left" fontWeight="500">
+            <Text.Block paddingY="major-1">{fr.aspectRatio}"</Text.Block>
             <Text.Block paddingY="major-1">{fr.dimension1}"</Text.Block>
             <Text.Block paddingY="major-1">{fr.dimension2}"</Text.Block>
-            <Text.Block paddingY="major-1">{fr.aspectRatio}"</Text.Block>
+          </Columns.Column>
+          <Columns.Column alignX="right" fontWeight="300">
+            <Text.Block paddingY="major-1">Cost:</Text.Block>
+            <Text.Block paddingY="major-1">Base:</Text.Block>
+            <Text.Block paddingY="major-1">Modifier:</Text.Block>
+            <Text.Block paddingY="major-1">Resale:</Text.Block>
+            <Text.Block paddingY="major-1">Markup:</Text.Block>
+          </Columns.Column>
+          <Columns.Column alignX="left" fontWeight="500">
+            <Text.Block paddingY="major-1">${fr.cost.toFixed(2)}</Text.Block>
+            <Text.Block paddingY="major-1">${fr.basePrice.toFixed(2)}</Text.Block>
+            <Text.Block paddingY="major-1">{fr.priceModifier * 100}%</Text.Block>
+            <Text.Block paddingY="major-1">
+              ${(fr.priceModifier * fr.basePrice - fr.cost).toFixed(2)}
+            </Text.Block>
           </Columns.Column>
         </Columns>
       </Flex>
