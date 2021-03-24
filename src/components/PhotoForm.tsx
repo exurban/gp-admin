@@ -59,7 +59,8 @@ type Props = {
 const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
   const imageEditorRef = useRef<PhotoImageEditorRef>();
   const [imageUrl, setImageUrl] = useState(photo?.sharingImage?.imageUrl);
-  const [sharingImage, setSharingImage] = useState<Image | null | undefined>(photo?.sharingImage);
+  const shareImage = photo.sharingImage || photo.images[0];
+  const [sharingImage, setSharingImage] = useState<Image | null | undefined>(shareImage);
 
   const router = useRouter();
   const [photoTitle, setPhotoTitle] = useState("");
@@ -402,6 +403,7 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
             </Box>
           )}
           <SharingImageModal
+            photoId={photo.id}
             sharingImage={sharingImage}
             setSharingImage={setSharingImage}
             name={`photo-${photo.sku}-share`}

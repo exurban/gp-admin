@@ -15,7 +15,7 @@ const TextButton = applyTheme(Button, {
     }
   },
   defaultProps: {
-    palette: "info500",
+    color: "info500",
     variant: "ghost",
     size: "small",
     _focus: {
@@ -29,6 +29,7 @@ interface SharingImageEditorRef {
 }
 
 type Props = {
+  photoId: string;
   sharingImage: Image | null | undefined;
   setSharingImage: Dispatch<SetStateAction<Image | null | undefined>>;
   name: string;
@@ -37,6 +38,7 @@ type Props = {
 };
 
 const SharingImageModal: React.FC<Props> = ({
+  photoId,
   sharingImage,
   setSharingImage,
   name,
@@ -68,6 +70,7 @@ const SharingImageModal: React.FC<Props> = ({
           {!isSaving ? (
             <>
               <SharingImageEditor
+                photoId={photoId}
                 sharingImage={sharingImage}
                 setSharingImage={setSharingImage}
                 imageUrl={imageUrl}

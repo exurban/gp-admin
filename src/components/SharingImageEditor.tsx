@@ -20,7 +20,10 @@ import {
   AddImageDocument,
   AddImageInput,
   UpdateImageDocument,
-  UpdateImageInput
+  UpdateImageInput,
+  UpdatePhotoMutationVariables,
+  UpdatePhotoDocument,
+  SearchPhotosDocument
 } from "../graphql-operations";
 import { getCroppedImgAsBase64String } from "../utils/CanvasUtils";
 
@@ -42,6 +45,7 @@ type Area = {
 };
 
 type Props = {
+  photoId: string;
   sharingImage: Image | null | undefined;
   setSharingImage: Dispatch<SetStateAction<Image | null | undefined>>;
   imageUrl: string | undefined;
@@ -51,7 +55,7 @@ type Props = {
 };
 
 const CoverImageEditor: React.FC<Props> = forwardRef(
-  ({ sharingImage, setSharingImage, imageUrl, setImageUrl, name, closeModal }, ref) => {
+  ({ photoId, sharingImage, imageUrl, setImageUrl, name, closeModal }, ref) => {
     const [imageHasChanges, setImageHasChanges] = useState(false);
     const [editorImageUrl, setEditorImageUrl] = useState(imageUrl);
 
@@ -62,19 +66,51 @@ const CoverImageEditor: React.FC<Props> = forwardRef(
     const [, setCroppedImage] = useState<string | null>(null);
     const toasts = useToasts();
 
-    const [addImage] = useMutation(AddImageDocument, {
+    const [updatePhoto] = useMutation(UpdatePhotoDocument, {
+      refetchQueries: [
+        {
+          query: SearchPhotosDocument,
+          variables: {
+            input: {
+              searchString: ""
+            }
+          }
+        }
+      ],
       onCompleted(data) {
-        if (data.addImage.success) {
-          data.addImage.newImage ? setSharingImage(data.addImage.newImage) : null;
+        console.log(`Saved sharing image id to photo.`);
+        if (data.updatePhoto.success) {
           toasts.success({
-            title: `Success`,
-            message: data.addImage.message
+            title: `Successfully updated`,
+            message: `${data.updatePhoto.message}`
           });
         } else {
           toasts.danger({
-            title: `Failure`,
-            message: data.addImage.message
+            title: `Updates failed`,
+            message: `${data.updatePhoto.message}`
           });
+        }
+      }
+    });
+
+    const updatePhotoWithInput = (input: UpdatePhotoMutationVariables) => {
+      updatePhoto({
+        variables: input
+      });
+    };
+
+    const [addImage] = useMutation(AddImageDocument, {
+      onCompleted(data) {
+        if (data.addImage.success && data.addImage.newImage) {
+          const input = {
+            id: parseInt(photoId),
+            input: {
+              sharingImageId: parseInt(data.addImage.newImage.id)
+            }
+          };
+          updatePhotoWithInput(input);
+        } else {
+          console.log(`failed to save sharing image to database.`);
         }
         resetAndCloseEditor();
       }
@@ -82,17 +118,17 @@ const CoverImageEditor: React.FC<Props> = forwardRef(
 
     const [updateImage] = useMutation(UpdateImageDocument, {
       onCompleted(data) {
-        if (data.updateImage.success) {
-          data.updateImage.updatedImage ? setSharingImage(data.updateImage.updatedImage) : null;
-          toasts.success({
-            title: `Success`,
-            message: data.updateImage.message
-          });
+        console.log(`sharing image updated and saved to DB. Updating sharing image ref on photo.`);
+        if (data.updateImage.success && data.updateImage.updatedImage) {
+          const input = {
+            id: parseInt(photoId),
+            input: {
+              sharingImageId: parseInt(data.updateImage.updatedImage.id)
+            }
+          };
+          updatePhotoWithInput(input);
         } else {
-          toasts.danger({
-            title: `Failure`,
-            message: data.updateImage.message
-          });
+          console.log(`failed to save sharing image to database.`);
         }
         resetAndCloseEditor();
       }
