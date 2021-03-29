@@ -1,33 +1,38 @@
-import { useCallback, useState, useEffect, forwardRef, useImperativeHandle } from "react";
+import {
+  useState,
+  useCallback,
+  useEffect,
+  ChangeEvent,
+  forwardRef,
+  useImperativeHandle
+} from "react";
 import { useMutation } from "@apollo/client";
+import { useDropzone } from "react-dropzone";
+import Cropper from "react-easy-crop";
+import { Box, Flex, Text, Label, Stack, useToasts } from "bumbag";
+import { blobToFile, resizeBlob, dataUrlToBlob } from "../utils/ImageUtils";
+import { uploadFile } from "../utils/UploadUtils";
 import {
   Image,
-  ImageInfoFragment,
   ImageDocument,
   AddImageDocument,
   AddImageInput,
   UpdateImageDocument,
   UpdateImageInput,
-  UpdatePhotoDocument,
   UpdatePhotoMutationVariables,
-  PhotoWithSkuDocument
+  UpdatePhotoDocument,
+  PhotoWithSkuDocument,
+  ImageInfoFragment
 } from "../graphql-operations";
-import Cropper from "react-easy-crop";
-import { getOrientation } from "get-orientation/browser";
-import { getCroppedImgAsBase64String, getRotatedImage } from "../utils/CanvasUtils";
-import { blobToFile, resizeBlob, dataUrlToBlob } from "../utils/ImageUtils";
-import { uploadFile } from "../utils/UploadUtils";
-import { Box, Flex, Stack, Text, useToasts } from "bumbag";
+import { getCroppedImgAsBase64String } from "../utils/CanvasUtils";
 
 /**
- * on open, hydrate image from photo.images[0].imageUrl
+ * 1. if image exists, hydrate it
+ * 2. select or drop new image
+ * 3. crop and rotate
+ * 4. save image to s3
+ * 5. if image existed, update image in database, else add image
  */
-
-const ORIENTATION_TO_ANGLE = {
-  3: 180,
-  6: 90,
-  8: -90
-};
 
 type Area = {
   width: number;
@@ -39,23 +44,27 @@ type Area = {
 type Props = {
   photoId: number;
   photoSku: number;
-  photoImage: ImageInfoFragment | null | undefined;
-  sharingImageId: number | undefined;
+  sharingImage: ImageInfoFragment | null | undefined;
 
   closeModal: () => void;
 };
 
 const SharingImageEditor: React.FC<Props> = forwardRef(
-  ({ photoId, photoSku, photoImage, sharingImageId, closeModal }, ref) => {
-    const [sharingImageUrl, setSharingImageUrl] = useState<string | undefined>();
-    const toasts = useToasts();
+  ({ photoId, photoSku, sharingImage, closeModal }, ref) => {
+    // true if sharingImage already exists, set on load
+    const [isEditing, setIsEditing] = useState(false);
+    const [imageHasChanges, setImageHasChanges] = useState(false);
+    // const [imageUrl, setImageUrl] = useState<string | null>(
+    //   photo.sharingImage ? photo.sharingImage.imageUrl : photo.images[0].imageUrl
+    // );
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
 
-    // react-easy-crop vars
     const [crop, setCrop] = useState({ x: 0, y: 0 });
     const [rotation, setRotation] = useState(0);
     const [zoom, setZoom] = useState(1);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
     const [, setCroppedImage] = useState<string | null>(null);
+    const toasts = useToasts();
 
     const [updatePhoto] = useMutation(UpdatePhotoDocument, {
       refetchQueries: [
@@ -97,7 +106,6 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
               sharingImageId: parseInt(data.addImage.newImage.id)
             }
           };
-          console.log(`updating photo with input: ${JSON.stringify(input, null, 2)}`);
           updatePhotoWithInput(input);
         } else {
           console.log(`failed to save sharing image to database.`);
@@ -135,6 +143,14 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
 
     useImperativeHandle(ref, () => ({
       async saveImage() {
+        if (!imageHasChanges) {
+          resetAndCloseEditor();
+          return {
+            success: true,
+            message: `No changes made to cover image.`
+          };
+        }
+
         const saveResult = await uploadAndSave();
 
         if (!saveResult || !saveResult.success) {
@@ -149,6 +165,21 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
         };
       }
     }));
+
+    /**
+     * Converts file or Binary Large Object (BLOB) to Base64-encoded string.
+     */
+    function readBlob(blob: Blob) {
+      return new Promise(resolve => {
+        const reader = new FileReader();
+        reader.addEventListener("load", () => resolve(reader.result), false);
+        reader.readAsDataURL(blob);
+      });
+    }
+
+    useEffect(() => {
+      setImageHasChanges(true);
+    }, [setImageUrl, setCrop, setRotation, setZoom, setCroppedAreaPixels]);
 
     const addSharingImage = (input: AddImageInput) => {
       addImage({
@@ -175,6 +206,7 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
       });
     };
 
+    // * 6. save sharing image to database
     const saveImageData = (url: string) => {
       console.log(`Sharing Image URL: ${url}`);
       const newImageUrl = new URL(url);
@@ -183,7 +215,7 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
       const imageName = nameExt.split(".")?.[0];
       const fileExtension = nameExt.split(".")?.[1];
 
-      if (!sharingImageId) {
+      if (!isEditing) {
         const input: AddImageInput = {
           imageName: imageName,
           imageUrl: url,
@@ -196,6 +228,12 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
         console.log(`Adding share image with input: ${JSON.stringify(input, null, 2)}`);
         addSharingImage(input);
       } else {
+        if (!sharingImage) {
+          console.error(`something bad happened`);
+          return;
+        }
+        const imageId = parseInt(sharingImage?.id);
+
         const input: UpdateImageInput = {
           imageName: imageName,
           imageUrl: url,
@@ -205,7 +243,7 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
           width: 1200,
           height: 630
         };
-        updateSharingImage(sharingImageId, input);
+        updateSharingImage(imageId, input);
       }
     };
 
@@ -215,8 +253,9 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
       coverImage?: Image | null;
     };
 
+    // * 5. resize, upload to S3 and save Image
     const uploadAndSave = async (): Promise<SaveResponse> => {
-      setSharingImageUrl("");
+      setImageUrl("");
       const croppedImageAsBase64String = await cropImage();
 
       if (!croppedImageAsBase64String) {
@@ -279,8 +318,8 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
       console.log(`Received URL from S3 save: ${uploadResult.url}`);
 
       // * setImageUrl
-      setSharingImageUrl(undefined);
-      setSharingImageUrl(uploadResult.url);
+      setImageUrl(null);
+      setImageUrl(uploadResult.url);
 
       // * save Image Data
       saveImageData(uploadResult.url);
@@ -290,24 +329,25 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
       };
     };
 
+    // * 4. Resize
+
+    // * 3. Crop & Rotate
     const onCropComplete = useCallback(async (_, croppedAreaPixels) => {
       setCroppedAreaPixels(croppedAreaPixels);
     }, []);
 
-    // const onClose = useCallback(() => {
-    //   setCroppedImage(null);
-    // }, []);
-
     const cropImage = async (): Promise<string | null> => {
-      if (!sharingImageUrl || typeof sharingImageUrl !== "string") {
+      console.log(`cropping image.`);
+      if (!imageUrl || typeof imageUrl !== "string") {
         return null;
       }
       if (croppedAreaPixels && croppedAreaPixels === null) {
         return null;
       }
       try {
+        console.log(`Cropped area pixels: ${croppedAreaPixels}`);
         if (croppedAreaPixels && croppedAreaPixels !== null) {
-          return await getCroppedImgAsBase64String(sharingImageUrl, croppedAreaPixels, rotation);
+          return await getCroppedImgAsBase64String(imageUrl, croppedAreaPixels, rotation);
         }
       } catch (e) {
         console.error(e);
@@ -315,18 +355,66 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
       return null;
     };
 
-    /**
-     * Converts file or Binary Large Object (BLOB) to Base64-encoded string.
-     */
-    function readBlob(blob: Blob) {
+    // * 2. load preview
+    function readFile(file: File) {
+      console.log(`reading file`);
       return new Promise(resolve => {
         const reader = new FileReader();
         reader.addEventListener("load", () => resolve(reader.result), false);
-        reader.readAsDataURL(blob);
+        reader.readAsDataURL(file);
       });
     }
 
-    const blobToData = useCallback(async (blob: Blob) => {
+    const loadPreview = useCallback(async (file: File) => {
+      console.log(`loading preview`);
+      const dataUrl = await readFile(file);
+      if (typeof dataUrl === "string") {
+        setImageUrl(dataUrl);
+      }
+    }, []);
+
+    // * 1. select image
+    /**
+     * Used when user clicks `replace image`
+     */
+    const removeSharingImage = () => {
+      console.info(`FILE CHANGED AFTER CLICKING REPLACE FILE`);
+      setImageUrl(null);
+    };
+
+    /**
+     * Dropzone methods
+     */
+    const onDrop = useCallback(
+      async acceptedFiles => {
+        const file = acceptedFiles[0];
+        console.log(
+          `dropped or selected file: ${Object.keys(file)} ${file.path} ${file.name} ${file.type} ${
+            file.size
+          }`
+        );
+        loadPreview(file);
+        setImageHasChanges(true);
+      },
+      [loadPreview]
+    );
+
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({
+      onDrop,
+      maxFiles: 1,
+      accept: "image/*"
+    });
+
+    /**
+     * 1. if image exists, load and hydrate it
+     */
+    /**
+     * convert an image file or blob to base64 string (imageData)
+     * reads file or blob to base64 string
+     * rotates file or blob, as needed
+     * sets imageData var to string value
+     */
+    const fileOrBlobToData = useCallback(async (blob: Blob) => {
       const result = await readBlob(blob);
 
       let base64String = "";
@@ -337,49 +425,33 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
         base64String = result;
       }
 
-      // console.log(`image data: ${base64String}`);
-      // apply rotation if needed
-      const orientation = await getOrientation(blob);
-      // @ts-ignore
-      // eslint-disable-next-line
-      const rotation = ORIENTATION_TO_ANGLE[orientation];
-      let rotationResult;
-      if (rotation) {
-        rotationResult = await getRotatedImage(base64String, rotation);
-      }
-
-      if (typeof rotationResult === "string") {
-        base64String = rotationResult;
-      }
-
-      // setSharingImageUrl(base64String);
-      return base64String;
+      setImageUrl(base64String);
     }, []);
 
+    // ? if image exists on load, hydrate that image and set isEditing to true. Used to pick between add image and update image in database.
     useEffect(() => {
-      const photoUrl = photoImage?.imageUrl;
+      const shareImgUrl = sharingImage?.imageUrl;
 
-      if (!photoUrl) {
+      if (!shareImgUrl) {
         return;
       }
 
-      console.log(`hydrating image`);
+      console.log(`sharing image exists. Hydrate it and setIsEditing(true)`);
 
       (async function hydrateImage() {
-        const response = await fetch(photoUrl);
+        const response = await fetch(shareImgUrl);
         const blob = await response.blob();
-        const hydratedImage = await blobToData(blob);
-        setSharingImageUrl(hydratedImage);
+        fileOrBlobToData(blob);
         console.log(`Image Editor onFileChange mimetype: ${blob.type}`);
       })();
 
-      // sharingImage ? setIsEditing(true) : setIsEditing(false);
+      sharingImage ? setIsEditing(true) : setIsEditing(false);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
       <Flex flexDirection="column">
-        {sharingImageUrl && sharingImageUrl.length > 0 && (
+        {imageUrl && imageUrl.length > 0 ? (
           <>
             <Box
               className="crop-container"
@@ -391,7 +463,7 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
               borderRadius="4px"
             >
               <Cropper
-                image={sharingImageUrl}
+                image={imageUrl}
                 crop={crop}
                 rotation={rotation}
                 zoom={zoom}
@@ -402,6 +474,16 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
                 onZoomChange={setZoom}
               />
             </Box>
+            <Flex marginRight="major-1" marginLeft="auto" marginY="major-1">
+              <Label
+                htmlFor="fileUpload"
+                fontSize="100"
+                color="info500"
+                onClick={() => removeSharingImage()}
+              >
+                Replace Image
+              </Label>
+            </Flex>
             <Box paddingY="major-3">
               <Stack spacing="major-5" width="500px" orientation="horizontal">
                 <input
@@ -434,6 +516,24 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
               </Stack>
             </Box>
           </>
+        ) : (
+          <Box {...getRootProps({ className: "dropzone" })}>
+            <input {...getInputProps()} />
+            <Box
+              width="600px"
+              height="315px"
+              alignX="center"
+              alignY="center"
+              backgroundColor="default"
+              border="2px solid"
+              borderRadius="4px"
+              borderColor={isDragActive ? "blue" : "gray100"}
+            >
+              <Text textAlign="center" padding="major-2" color="text">
+                Drop image here or click to select an image.
+              </Text>
+            </Box>
+          </Box>
         )}
       </Flex>
     );

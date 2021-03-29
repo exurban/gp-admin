@@ -1,6 +1,6 @@
-import { useRef, useState, Dispatch, SetStateAction } from "react";
+import { useRef, useState } from "react";
 import { Modal, Flex, Card, Button, Text, Spinner, applyTheme } from "bumbag";
-import { Image } from "../graphql-operations";
+import { ImageInfoFragment } from "../graphql-operations";
 
 import SharingImageEditor from "./SharingImageEditor";
 
@@ -29,22 +29,13 @@ interface SharingImageEditorRef {
 }
 
 type Props = {
-  photoId: string;
-  sharingImage: Image | null | undefined;
-  setSharingImage: Dispatch<SetStateAction<Image | null | undefined>>;
-  name: string;
-  imageUrl: string | undefined;
-  setImageUrl: Dispatch<SetStateAction<string | undefined>>;
+  photoId: number;
+  photoSku: number;
+  photoImage: ImageInfoFragment | null | undefined;
+  sharingImageId: number | undefined;
 };
 
-const SharingImageModal: React.FC<Props> = ({
-  photoId,
-  sharingImage,
-  setSharingImage,
-  name,
-  imageUrl,
-  setImageUrl
-}) => {
+const SharingImageModal: React.FC<Props> = ({ photoImage, photoId, photoSku }) => {
   const [isSaving, setIsSaving] = useState(false);
   const modal = Modal.useState();
   const imageEditorRef = useRef<SharingImageEditorRef>();
@@ -62,20 +53,22 @@ const SharingImageModal: React.FC<Props> = ({
 
   return (
     <>
-      <Modal.Disclosure use={TextButton} {...modal}>
-        Edit
-      </Modal.Disclosure>
+      <Flex flexDirection="row">
+        <Text.Block paddingY="major-1" fontSize="150">
+          {photoImage?.imageName}
+        </Text.Block>
+        <Modal.Disclosure use={TextButton} {...modal}>
+          Edit
+        </Modal.Disclosure>
+      </Flex>
       <Modal {...modal}>
         <Card>
           {!isSaving ? (
             <>
               <SharingImageEditor
                 photoId={photoId}
-                sharingImage={sharingImage}
-                setSharingImage={setSharingImage}
-                imageUrl={imageUrl}
-                setImageUrl={setImageUrl}
-                name={name}
+                photoSku={photoSku}
+                photoImage={photoImage}
                 closeModal={close}
                 // @ts-ignore
                 ref={imageEditorRef}

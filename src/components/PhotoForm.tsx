@@ -58,9 +58,6 @@ type Props = {
 
 const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
   const imageEditorRef = useRef<PhotoImageEditorRef>();
-  const [imageUrl, setImageUrl] = useState(photo?.sharingImage?.imageUrl);
-  const shareImage = photo.sharingImage || photo.images[0];
-  const [sharingImage, setSharingImage] = useState<Image | null | undefined>(shareImage);
 
   const router = useRouter();
   const [photoTitle, setPhotoTitle] = useState("");
@@ -141,71 +138,6 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
       setInitialized(true);
     }
   });
-
-  // * set initial values
-
-  // const photographerSelectionOptions = data?.photoEditOptions?.photographers?.map(pg => {
-  //   const menuOption: MenuOption = {
-  //     key: pg.id,
-  //     label: pg.name,
-  //     value: pg.id.toString()
-  //   };
-  //   return menuOption;
-  // });
-
-  // const locationSelectionOptions = data?.photoEditOptions?.locations?.map(l => {
-  //   const menuOption: MenuOption = {
-  //     key: l.id,
-  //     label: l.name,
-  //     value: l.id.toString()
-  //   };
-  //   return menuOption;
-  // });
-
-  // const subjectSelectionOptions = data?.photoEditOptions?.subjects?.map(s => {
-  //   const menuOption: MenuOption = {
-  //     key: s.id,
-  //     label: s.name,
-  //     value: s.id.toString()
-  //   };
-  //   return menuOption;
-  // });
-
-  /**
-   * Map all possible tags into menu options.
-   */
-  // const tagSelectionOptions = data?.photoEditOptions?.tags?.map(t => {
-  //   const menuOption: MenuOption = {
-  //     key: t.id,
-  //     label: t.name,
-  //     value: t.id.toString()
-  //   };
-  //   return menuOption;
-  // });
-
-  /**
-   * Map all possible collections into menu options.
-   */
-  // const collectionSelectionOptions = data?.photoEditOptions?.collections?.map(c => {
-  //   const menuOption: MenuOption = {
-  //     key: c.id,
-  //     label: c.name,
-  //     value: c.id.toString()
-  //   };
-  //   return menuOption;
-  // });
-
-  /**
-   * Map all possible finishes into menu options.
-   */
-  // const finishSelectionOptions = data?.photoEditOptions?.finishes?.map(f => {
-  //   const menuOption: MenuOption = {
-  //     key: f.id,
-  //     label: f.name,
-  //     value: f.id.toString()
-  //   };
-  //   return menuOption;
-  // });
 
   const [updatePhoto] = useMutation(UpdatePhotoDocument, {
     refetchQueries: [
@@ -355,7 +287,7 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
   };
 
   if (typeof window === "undefined" || !initialized) {
-    console.log(`not initializes. returning.`);
+    console.log(`not initialized. returning.`);
     return null;
   }
 
@@ -373,17 +305,17 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
           />
         </Flex>
         <Flex
-          className="info-card-wrapper"
+          className="sharing-image-wrapper"
           flexDirection="column"
           marginY="auto"
           marginLeft="major-2"
           marginRight="auto"
         >
           <Heading use="h5">{photo.sku}</Heading>
-          {imageUrl && imageUrl.length > 0 ? (
+          {photo.sharingImage?.imageUrl && photo.sharingImage?.imageUrl.length > 0 ? (
             <img
               key={Date.now()}
-              src={imageUrl}
+              src={photo.sharingImage?.imageUrl}
               width="600px"
               height="315px"
               style={{ borderRadius: "4px" }}
@@ -403,12 +335,10 @@ const PhotoForm: React.FC<Props> = ({ photo, isEditing }) => {
             </Box>
           )}
           <SharingImageModal
-            photoId={photo.id}
-            sharingImage={sharingImage}
-            setSharingImage={setSharingImage}
-            name={`photo-${photo.sku}-share`}
-            imageUrl={imageUrl}
-            setImageUrl={setImageUrl}
+            photoId={parseInt(photo.id)}
+            photoSku={photo.sku}
+            photoImage={photo.images[0]}
+            sharingImageId={photo.sharingImage ? parseInt(photo.sharingImage.id) : undefined}
           />
         </Flex>
       </Flex>
