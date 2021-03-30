@@ -1,11 +1,4 @@
-import {
-  useState,
-  useCallback,
-  useEffect,
-  ChangeEvent,
-  forwardRef,
-  useImperativeHandle
-} from "react";
+import { useState, useCallback, useEffect, forwardRef, useImperativeHandle } from "react";
 import { useMutation } from "@apollo/client";
 import { useDropzone } from "react-dropzone";
 import Cropper from "react-easy-crop";
@@ -49,7 +42,7 @@ type Props = {
   closeModal: () => void;
 };
 
-const SharingImageEditor: React.FC<Props> = forwardRef(
+const SharingImageEditorOLD: React.FC<Props> = forwardRef(
   ({ photoId, photoSku, sharingImage, closeModal }, ref) => {
     // true if sharingImage already exists, set on load
     const [isEditing, setIsEditing] = useState(false);
@@ -540,4 +533,4 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
   }
 );
 
-export default SharingImageEditor;
+export default SharingImageEditorOLD;

@@ -83,6 +83,7 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
     });
 
     const updatePhotoWithInput = (input: UpdatePhotoMutationVariables) => {
+      console.log(`updating photo with input ${JSON.stringify(input, null, 2)}`);
       updatePhoto({
         variables: input
       });
@@ -97,7 +98,7 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
               sharingImageId: parseInt(data.addImage.newImage.id)
             }
           };
-          console.log(`updating photo with input: ${JSON.stringify(input, null, 2)}`);
+          console.log(`updating photo with newly added input: ${JSON.stringify(input, null, 2)}`);
           updatePhotoWithInput(input);
         } else {
           console.log(`failed to save sharing image to database.`);
@@ -116,6 +117,7 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
               sharingImageId: parseInt(data.updateImage.updatedImage.id)
             }
           };
+          console.log(`updating photo with updated imagae: ${JSON.stringify(input, null, 2)}`);
           updatePhotoWithInput(input);
         } else {
           console.log(`failed to save sharing image to database.`);
@@ -205,6 +207,7 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
           width: 1200,
           height: 630
         };
+        console.log(`Updating share image with input: ${JSON.stringify(input, null, 2)}`);
         updateSharingImage(sharingImageId, input);
       }
     };

@@ -102,7 +102,7 @@ const options: InitOptions = {
     },
     session: async (session, user: GPUser) => {
       // console.log(`***SESSION***`);
-      console.log(`USER: ${JSON.stringify(user, null, 2)}`);
+      // console.log(`USER: ${JSON.stringify(user, null, 2)}`);
       session.accessToken = user.accessToken;
       // console.log(
       //   `USER: ${JSON.stringify(user, null, 2)}\nSESSION: ${JSON.stringify(session, null, 2)}`
