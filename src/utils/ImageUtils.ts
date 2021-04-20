@@ -151,7 +151,7 @@ export const resizeBlob = (
   blob: Blob,
   width: number,
   height: number,
-  format = "WEBP",
+  format = "JPEG",
   quality = 75
 ): Promise<Blob> =>
   new Promise(resolve => {

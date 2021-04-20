@@ -241,7 +241,7 @@ const SharingImageEditor: React.FC<Props> = forwardRef(
       // * resizeBlob
       const width = 1200;
       const height = 630;
-      const format = "WEBP";
+      const format = "JPEG";
 
       const resizedBlob = await resizeBlob(croppedBlob, width, height, format);
       if (!resizedBlob) {

@@ -48,7 +48,7 @@ const SignIn: React.FC = () => {
                 palette="secondary"
                 iconBefore="brands-google"
                 borderRadius="4px"
-                onClick={() => signIn("google")}
+                onClick={() => signIn()}
               >
                 <Text fontSize="150">Continue with Google</Text>
               </Button>
